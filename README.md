@@ -6,19 +6,16 @@ within yaml type files to be used by Puppet
 (similar to [hiera-gpg](http://github.com/crayfishx/hiera-gpg))
 
 The main reasons to create an alternative backend for hiera are summed up in
-[this blog](http://slashdevslashrandom.wordpress.com/2013/06/03/my-griefs-with-hiera-gpg/)
+[this post](http://slashdevslashrandom.wordpress.com/2013/06/03/my-griefs-with-hiera-gpg/)
 which I stumbled on whilst looking for options, but the main one is the ability to
 encrypt each value individually and not the whole file. This provides a bit more transparency
 and allows those configuring Puppet to know where each value is defined.
 
 I also ran into problems using hiera-gpg (actually not hiera-gpg's fault
-but another project it uses internally [ruby-gpgme](http://github.com/ueno/ruby-gpgme))
-and the whole thing seemed a bit brittle.
+but another project it uses internally [ruby-gpgme](http://github.com/ueno/ruby-gpgme) 
+which didn't seem to recognise my keychain)
 
-Usage
-=====
-
-The Hiera eYaml backend uses yaml formatted files with .eyaml extension. Simply wrap your
+The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. Simply wrap your
 encrypted string with ENC[] and place it in an eyaml file. You can mix your plain values
 in as well or separate them into different files.
 
@@ -26,7 +23,7 @@ in as well or separate them into different files.
 ---
 plain-property: You can see me
 
-encrypted-property : >
+encrypted-property: >
     ENC[Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
     NBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDh
     jJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4y
@@ -35,14 +32,15 @@ encrypted-property : >
     IZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
 </pre>
 
-eYaml also supports encrypted values within arrays, hashes, nested arrays and nested hashes
+eYaml also supports encrypted values within arrays, hashes, nested arrays and nested hashes 
+(see below for examples)
 
 N.B. when using the multi-line string syntax (i.e. >) **don't wrap encrypted strings with "" or ''**
 
 Setup
 =====
 
-# Generate keys
+### Generate keys
 
 The first step is to create a pair of keys on the Puppet master
 
@@ -60,17 +58,17 @@ so I don’t see that as adding much in the way of security."
 Change the permissions so that the private key is only readable by the user that hiera (puppet) is
 running as.
 
-# Install eYaml backend
+### Install eYaml backend
 
 I'm new to ruby and tight on deadlines so I will create a gem thing when I get a chance,
 but for now just copy eyaml_backend.rb to the same directory as the existing backends e.g.
 /usr/lib/ruby/site_ruby/1.8/hiera/backend
 
-You can find the directory by running
+You can find the directory with:
 
     $ sudo find / -name yaml_backend.rb
 
-# Configure Hiera
+### Configure Hiera
 
 Next configure hiera.yaml to use the eyaml backend
 
@@ -93,7 +91,7 @@ Next configure hiera.yaml to use the eyaml backend
     :private_key: /new/path/to/key/my_key.pem
 </pre>
 
-# Encrypt value
+### Encrypt value
 
 Copy public_key.pem created earlier to any machine where values will be encrypted and
 use openssl to encrypt sensitive data.
@@ -110,7 +108,7 @@ If you wish to rename your key or keep it in another directory run
 
     $ ruby encrypt_value.rb "my secret thing" /path/to/key/my_key.pem
 
-# Insert encrypted value
+### Insert encrypted value
 
 As above, once the value is encrypted, wrap it with ENC[] and place it in the .eyaml file.
 
