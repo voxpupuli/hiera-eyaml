@@ -26,7 +26,7 @@ class Hiera
                     next unless data.include?(key)
                     debug ("Key #{key} found in YAML document")
 
-                    parsed_answer = parse_answer(data[key], nil)
+                    parsed_answer = parse_answer(data[key], scope)
 
                     begin
                         case resolution_type
