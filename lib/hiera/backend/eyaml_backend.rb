@@ -85,8 +85,12 @@ class Hiera
     
                     private_key = OpenSSL::PKey::RSA.new(File.read( private_key_path ))
     
-                    plain_text = private_key.private_decrypt( Base64.decode64(cipher_text) )
-    
+                    begin
+                      plain_text = private_key.private_decrypt( Base64.decode64(cipher_text) )
+                    rescue
+                      raise Exception, "Hiera eyaml backend: Unable to decrypt hiera data. Private key mismatch?"
+                    end
+                    
                     return plain_text
                 else
                     return value

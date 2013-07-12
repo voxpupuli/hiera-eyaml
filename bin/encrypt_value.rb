@@ -1,9 +1,10 @@
+#!/usr/bin/env ruby
 require 'openssl'
 require 'base64'
 
 # Run from this directory using: ruby encrypt_value.rb "value to encrypt"
 
-public_key_path = './public_key.pem'
+public_key_path = 'keys/public_key.pem'
 
 plain_text = ARGV[0]
 public_key_arg = ARGV[1]
