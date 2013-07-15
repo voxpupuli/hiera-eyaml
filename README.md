@@ -2,18 +2,9 @@ Hiera eYaml
 ===========
 
 A backend for Hiera that provides per-value asymmetric encryption of sensitive data
-within yaml type files to be used by Puppet
-(similar to [hiera-gpg](http://github.com/crayfishx/hiera-gpg))
+within yaml type files to be used by Puppet.
 
-The main reasons to create an alternative backend for hiera are summed up in
-[this post](http://slashdevslashrandom.wordpress.com/2013/06/03/my-griefs-with-hiera-gpg/)
-which I stumbled on whilst looking for options, but the main one is the ability to
-encrypt each value individually and not the whole file. This provides a bit more transparency
-and allows those configuring Puppet to know where each value is defined.
-
-I also ran into problems using hiera-gpg (actually not hiera-gpg's fault
-but another project it uses internally [ruby-gpgme](http://github.com/ueno/ruby-gpgme) 
-which didn't seem to recognise my keychain)
+More info can be found [in this corresponding post](http://themettlemonkey.wordpress.com/2013/07/15/hiera-eyaml-per-value-encrypted-backend-for-hiera-and-puppet/).
 
 The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. Simply wrap your
 encrypted string with ENC[] and place it in an eyaml file. You can mix your plain values
@@ -50,18 +41,12 @@ The first step is to create a pair of keys on the Puppet master
 
 This creates a public and private key with default names in the default location.
 
-eYaml doesn't support keys with a passphrase yet, but as Craig Dunn explains in his
-[post about hiera-gpg](http://www.craigdunn.org/2011/10/secret-variables-in-puppet-with-hiera-and-gpg)
-"it would mean having the password stored in /etc/puppet/hiera.yaml as plaintext anyway,
-so I don’t see that as adding much in the way of security."
-
 Change the permissions so that the private key is only readable by the user that hiera (puppet) is
 running as.
 
 ### Install eYaml backend
 
-I'm new to ruby and tight on deadlines so I will create a gem thing when I get a chance,
-but for now just copy eyaml_backend.rb to the same directory as the existing backends e.g.
+Gem coming soon, for now just copy eyaml_backend.rb to the same directory as the existing backends e.g.
 /usr/lib/ruby/site_ruby/1.8/hiera/backend
 
 You can find the directory with:
@@ -75,8 +60,8 @@ Next configure hiera.yaml to use the eyaml backend
 <pre>
 ---
 :backends:
-    - yaml
     - eyaml
+    - yaml
 
 :hierarchy:
     - %{environment}
@@ -152,19 +137,3 @@ things:
     -   - nested thing 2.0
         - nested thing 2.1
 </pre>
-
-ToDo
-====
-
-It's not exactly the most compact syntax ever so I'll try and find a way of
-slimming it down a bit. I did try using [Zlib](http://ruby-doc.org/stdlib-2.0/libdoc/zlib/rdoc/Zlib.html)
-but that didn't really help much.
-
-GPG seems to have this secure "feel to it" so there might be a better encryption method to use than
-a pair of pem keys.
-
-Thanks
-======
-
-Thank you to Craig Dunn for his work on hiera-gpg and corresponding blog post mentioned above,
-it definitely made it easier to write this having his code as a reference.
