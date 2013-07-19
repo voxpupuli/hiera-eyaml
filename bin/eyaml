@@ -6,6 +6,15 @@ require 'trollop'
 require 'highline/import'
 require 'hiera/backend/version'
 
+def ensureKeyDirExists(key_file)
+  key_dir = File.dirname(key_file)
+
+  if !File.directory?(key_dir)
+    Dir.mkdir(key_dir)
+    puts "Created #{key_dir} dir for #{key_file}."
+  end
+end
+
 options = Trollop::options do
     
   version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
@@ -18,7 +27,7 @@ Usage:
   
   opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
   opt :password, "Encrypt a password entered on the terminal", :short => 'p'
-  opt :file, "Encrypt a file instead of a string", :short => 'f', :type => :string
+  opt :file, "Encrypt a file instead of a string", :short => 'f', :type => :string 
   opt :private_key, "Filename of the private_key", :type => :string
   opt :public_key, "Filename of the public_key", :type => :string
   opt :encrypt, "Encrypt something"
@@ -28,8 +37,8 @@ end
 Trollop::die "You cannot specify --encrypt and --decrypt" if options[:encrypt] and options[:decrypt]
 
 # Defaults
-options[:private_key_filename] ||= "keys/private_key.pem"
-options[:public_key_filename] ||= "keys/public_key.pem"
+options[:private_key_filename] ||= "/etc/hiera/keys/private_key.pem"
+options[:public_key_filename] ||= "/etc/hiera/keys/public_key.pem"
 options[:string] = ARGV.join(' ')
 
 if options[:password]
@@ -41,6 +50,9 @@ if options[:createkeys]
 
   # Try to do equivalent of:
   # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
+
+  ensureKeyDirExists(options[:private_key_filename])
+  ensureKeyDirExists(options[:public_key_filename])
 
   key = OpenSSL::PKey::RSA.new(2048)
   open( options[:private_key_filename], "w" ) do |io|
