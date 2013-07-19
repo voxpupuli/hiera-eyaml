@@ -41,7 +41,7 @@ The first step is to create a pair of keys on the Puppet master
 
     $ eyaml -c
 
-This creates a public and private key with default names in the default location. (keys/ directory)
+This creates a public and private key with default names in the default location. (/etc/hiera/keys directory)
 
 ### Encryption
 
@@ -133,3 +133,9 @@ things:
     -   - nested thing 2.0
         - nested thing 2.1
 </pre>
+
+Authors
+=======
+
+- [Tom Poulton](http://github.com/TomPoulton) - Initial author. eyaml backend.
+- [Geoff Meakin](http://github.com/gtmtech) - Major contributor. eyaml command.
