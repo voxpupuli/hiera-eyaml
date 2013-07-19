@@ -109,21 +109,32 @@ if options[:decrypt]
   ciphertext = options[:string] if options[:string]
   ciphertext = File.read( options[:file] ) if options[:file]
 
-  if ciphertext.nil?
-    puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
+  if ciphertext.start_with? "ENC["
+
+    ciphertext = ciphertext[4..-2]
+    ciphertext_decoded = Base64.decode64(ciphertext)
+
+    if ciphertext.nil?
+      puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
+      exit
+    end
+
+    private_key_pem = File.read( options[:private_key_filename] )
+    private_key = OpenSSL::PKey::RSA.new( private_key_pem )
+
+    public_key_pem = File.read( options[:public_key_filename] )
+    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+    pkcs7 = OpenSSL::PKCS7.new( ciphertext_decoded )
+
+    plaintext = pkcs7.decrypt(private_key, public_key)
+    puts "#{plaintext}"
     exit
+
+  else
+
+    puts "Ciphertext is not an eyaml encrypted string (Does not start with ENC[...])"
+
   end
-
-  private_key_pem = File.read( options[:private_key_filename] )
-  private_key = OpenSSL::PKey::RSA.new( private_key_pem )
-
-  public_key_pem = File.read( options[:public_key_filename] )
-  public_key = OpenSSL::X509::Certificate.new( public_key_pem )
-
-  pkcs7 = OpenSSL::PKCS7.new( ciphertext )
-
-  plaintext = pkcs7.decrypt(private_key, public_key)
-  puts "#{plaintext}"
-  exit
 
 end

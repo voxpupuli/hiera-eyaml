@@ -81,6 +81,7 @@ class Hiera
 
                     # remove enclosing 'ENC[]'
                     ciphertext = value[4..-2]
+                    ciphertext_decoded = Base64.decode64(ciphertext)
 
                     debug("Decrypting value")
 
@@ -93,12 +94,12 @@ class Hiera
                     public_key_pem = File.read( public_key_path )
                     public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
-                    pkcs7 = OpenSSL::PKCS7.new( ciphertext )
+                    pkcs7 = OpenSSL::PKCS7.new( ciphertext_decoded )
 
                     begin
                       plaintext = pkcs7.decrypt(private_key, public_key)
                     rescue
-                      raise Exception, "Hiera eyaml backend: Unable to decrypt hiera data. Are the keys the same as those used to encrypt?"
+                      raise Exception, "Hiera eyaml backend: Unable to decrypt hiera data. Do the keys match and are they the same as those used to encrypt?"
                     end
         
                     return plaintext
