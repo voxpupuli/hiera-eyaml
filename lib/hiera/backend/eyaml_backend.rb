@@ -76,22 +76,33 @@ class Hiera
             end
 
             def decrypt(value, scope)
+
                 if is_encrypted(value)
-                    debug("Decrypting value")
-                    private_key_path = Backend.parse_string(Config[:eyaml][:private_key], scope) || '/etc/hiera/keys/private_key.pem'
-                    
+
                     # remove enclosing 'ENC[]'
-                    cipher_text = value[4..-2]
-    
-                    private_key = OpenSSL::PKey::RSA.new(File.read( private_key_path ))
-    
+                    ciphertext = value[4..-2]
+
+                    debug("Decrypting value")
+
+                    private_key_path = Backend.parse_string(Config[:eyaml][:private_key], scope) || '/etc/hiera/keys/private_key.pem'
+                    public_key_path = Backend.parse_string(Config[:eyaml][:public_key], scope) || '/etc/hiera/keys/public_key.pem'
+
+                    private_key_pem = File.read( private_key_path )
+                    private_key = OpenSSL::PKey::RSA.new( private_key_pem )
+
+                    public_key_pem = File.read( public_key_path )
+                    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+                    pkcs7 = OpenSSL::PKCS7.new( ciphertext )
+
                     begin
-                      plain_text = private_key.private_decrypt( Base64.decode64(cipher_text) )
+                      plaintext = pkcs7.decrypt(private_key, public_key)
                     rescue
-                      raise Exception, "Hiera eyaml backend: Unable to decrypt hiera data. Private key mismatch?"
+                      raise Exception, "Hiera eyaml backend: Unable to decrypt hiera data. Are the keys the same as those used to encrypt?"
                     end
-                    
-                    return plain_text
+        
+                    return plaintext
+    
                 else
                     return value
                 end
