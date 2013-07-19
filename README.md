@@ -48,11 +48,26 @@ Setup
 
 The first step is to create a pair of keys on the Puppet master
 
-    $ sudo mkdir -p /etc/hiera/keys
-    $ sudo openssl genrsa -out /etc/hiera/keys/private_key.pem 2048
-    $ sudo openssl rsa -in /etc/hiera/keys/private_key.pem -pubout -out /etc/hiera/keys/public_key.pem
+    $ eyaml -c
 
-This creates a public and private key with default names in the default location.
+This creates a public and private key with default names in the default location. (keys/ directory)
+
+### Encryption
+
+    To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
+
+    $ eyaml -e text                   # Encrypt some text
+    $ eyaml -e -p                     # Encrypt a password (prompt for it)
+    $ eyaml -e -f filename            # Encrypt a file
+
+### Decryption
+
+    To decrypt something, you need the public_key and the private_key on the puppet master.
+
+    To test decryption you can also use the eyaml tool if you have both keys
+
+    $ eyaml -d SOME-ENCRYPTED-TEXT    # Decrypt some text
+    $ eyaml -d -f filename            # Decrypt a file (PEM format)
 
 eYaml doesn't support keys with a passphrase yet, but as Craig Dunn explains in his
 [post about hiera-gpg](http://www.craigdunn.org/2011/10/secret-variables-in-puppet-with-hiera-and-gpg)
@@ -82,27 +97,15 @@ Next configure hiera.yaml to use the eyaml backend
     :datadir: '/etc/puppet/hieradata'
 
     # Optional. Default is /etc/hiera/keys/private_key.pem
-    :private_key: /new/path/to/key/my_key.pem
+    :private_key: /new/path/to/key/private_key.pem
+
+    # Optional. Default is /etc/hiera/keys/public_key.pem
+    :public_key:  /new/path/to/key/public_key.pem
 </pre>
 
-### Encrypt value
+### YAML files
 
-Copy the public_key.pem created earlier to the keys subdirectory of this git repository.
-
-There is a very basic helper file bin/encrypt_value.rb which will encrypt values for you 
-based on the public_key.pem. Run:
-
-    $ bin/encrypt_value.rb "my secret thing"
-
-The encrypted value is printed to STDOUT
-
-If you wish to rename your key or keep it in another directory run
-
-    $ encrypt_value.rb "my secret thing" /path/to/key/my_key.pem
-
-### Insert encrypted value
-
-As above, once the value is encrypted, wrap it with ENC[] and place it in the .eyaml file.
+  Once the value is encrypted, wrap it with ENC[] and place it in the .eyaml file.
 
 Usages:
 <pre>
