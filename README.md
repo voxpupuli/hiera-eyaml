@@ -63,16 +63,6 @@ This creates a public and private key with default names in the default location
 Change the permissions so that the private key is only readable by the user that hiera (puppet) is
 running as.
 
-### Install eYaml backend
-
-I'm new to ruby and tight on deadlines so I will create a gem thing when I get a chance,
-but for now just copy eyaml_backend.rb to the same directory as the existing backends e.g.
-/usr/lib/ruby/site_ruby/1.8/hiera/backend
-
-You can find the directory with:
-
-    $ sudo find / -name yaml_backend.rb
-
 ### Configure Hiera
 
 Next configure hiera.yaml to use the eyaml backend
