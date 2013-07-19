@@ -92,9 +92,13 @@ if options[:encrypt]
   public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
   cipher = OpenSSL::Cipher::AES.new(256, :CBC)
-  ciphertext = OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_pem
+  ciphertext_binary = OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
+  ciphertext_as_block = Base64.encode64(ciphertext_binary).strip
+  ciphertext_as_string = ciphertext_as_block.split("\n").join('')
 
-  puts "#{ciphertext}"
+  puts "string: ENC[#{ciphertext_as_string}]\n\nOR\n\n"
+  puts "block: >"
+  puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]"
   exit
 
 end
