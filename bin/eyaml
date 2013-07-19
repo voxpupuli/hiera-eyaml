@@ -1,0 +1,140 @@
+#!/usr/bin/env ruby
+
+require 'openssl'
+require 'base64'
+require 'trollop'
+require 'highline/import'
+require 'hiera/backend/version'
+
+options = Trollop::options do
+    
+  version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
+  banner <<-EOS
+Hiera-eyaml is a backend for Hiera which provides OpenSSL encryption/decryption for Hiera properties
+
+Usage:
+  eyaml [options] [string-to-encrypt]
+  EOS
+  
+  opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
+  opt :password, "Encrypt a password entered on the terminal", :short => 'p'
+  opt :file, "Encrypt a file instead of a string", :short => 'f', :type => :string
+  opt :private_key, "Filename of the private_key", :type => :string
+  opt :public_key, "Filename of the public_key", :type => :string
+  opt :encrypt, "Encrypt something"
+  opt :decrypt, "Decrypt something"
+end
+
+Trollop::die "You cannot specify --encrypt and --decrypt" if options[:encrypt] and options[:decrypt]
+
+# Defaults
+options[:private_key_filename] ||= "keys/private_key.pem"
+options[:public_key_filename] ||= "keys/public_key.pem"
+options[:string] = ARGV.join(' ')
+
+if options[:password]
+  password = ask("Enter password: ") {|q| q.echo = "*" }
+  options[:string] = password
+end
+
+if options[:createkeys]
+
+  # Try to do equivalent of:
+  # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
+
+  key = OpenSSL::PKey::RSA.new(2048)
+  open( options[:private_key_filename], "w" ) do |io|
+    io.write(key.to_pem)
+  end
+
+  puts "#{options[:private_key_filename]} created."
+
+  name = OpenSSL::X509::Name.parse("/")
+  cert = OpenSSL::X509::Certificate.new()
+  cert.serial = 0
+  cert.version = 2
+  cert.not_before = Time.now
+  cert.not_after = Time.now + 50 * 365 * 24 * 60 * 60
+  cert.public_key = key.public_key
+
+  ef = OpenSSL::X509::ExtensionFactory.new
+  ef.subject_certificate = cert
+  ef.issuer_certificate = cert
+  cert.extensions = [
+    ef.create_extension("basicConstraints","CA:TRUE", true),
+    ef.create_extension("subjectKeyIdentifier", "hash"),
+    # ef.create_extension("keyUsage", "cRLSign,keyCertSign", true),
+  ]
+  cert.add_extension ef.create_extension("authorityKeyIdentifier",
+                                         "keyid:always,issuer:always")
+
+  cert.sign key, OpenSSL::Digest::SHA1.new
+
+  open( options[:public_key_filename], "w" ) do |io|
+    io.write(cert.to_pem)
+  end
+  puts "#{options[:public_key_filename]} created."
+  exit
+end
+
+if options[:encrypt]
+
+  plaintext = nil
+  plaintext = options[:string] if options[:string]
+  plaintext = File.read( options[:file] ) if options[:file]
+
+  if plaintext.nil?
+    puts "Specify a string or --file to encrypt something. See --help for more usage instructions."
+    exit
+  end
+
+  public_key_pem = File.read( options[:public_key_filename] )
+  public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+  cipher = OpenSSL::Cipher::AES.new(256, :CBC)
+  ciphertext_binary = OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
+  ciphertext_as_block = Base64.encode64(ciphertext_binary).strip
+  ciphertext_as_string = ciphertext_as_block.split("\n").join('')
+
+  puts "string: ENC[#{ciphertext_as_string}]\n\nOR\n\n"
+  puts "block: >"
+  puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]"
+  exit
+
+end
+
+if options[:decrypt]
+
+  ciphertext = nil
+  ciphertext = options[:string] if options[:string]
+  ciphertext = File.read( options[:file] ) if options[:file]
+
+  if ciphertext.start_with? "ENC["
+
+    ciphertext = ciphertext[4..-2]
+    ciphertext_decoded = Base64.decode64(ciphertext)
+
+    if ciphertext.nil?
+      puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
+      exit
+    end
+
+    private_key_pem = File.read( options[:private_key_filename] )
+    private_key = OpenSSL::PKey::RSA.new( private_key_pem )
+
+    public_key_pem = File.read( options[:public_key_filename] )
+    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+    pkcs7 = OpenSSL::PKCS7.new( ciphertext_decoded )
+
+    plaintext = pkcs7.decrypt(private_key, public_key)
+    puts "#{plaintext}"
+    exit
+
+  else
+
+    puts "Ciphertext is not an eyaml encrypted string (Does not start with ENC[...])"
+
+  end
+
+end

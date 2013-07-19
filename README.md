@@ -31,22 +31,42 @@ N.B. when using the multi-line string syntax (i.e. >) **don't wrap encrypted str
 Setup
 =====
 
+### Installing hiera-eyaml
+
+    $ gem install hiera-eyaml
+
 ### Generate keys
 
 The first step is to create a pair of keys on the Puppet master
 
-    $ sudo mkdir -p /etc/hiera/keys
-    $ sudo openssl genrsa -out /etc/hiera/keys/private_key.pem 2048
-    $ sudo openssl rsa -in /etc/hiera/keys/private_key.pem -pubout -out /etc/hiera/keys/public_key.pem
+    $ eyaml -c
 
-This creates a public and private key with default names in the default location.
+This creates a public and private key with default names in the default location. (keys/ directory)
+
+### Encryption
+
+    To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
+
+    $ eyaml -e text                   # Encrypt some text
+    $ eyaml -e -p                     # Encrypt a password (prompt for it)
+    $ eyaml -e -f filename            # Encrypt a file
+
+### Decryption
+
+    To decrypt something, you need the public_key and the private_key on the puppet master.
+
+    To test decryption you can also use the eyaml tool if you have both keys
+
+    $ eyaml -d SOME-ENCRYPTED-TEXT    # Decrypt some text
+    $ eyaml -d -f filename            # Decrypt a file (PEM format)
 
 Change the permissions so that the private key is only readable by the user that hiera (puppet) is
 running as.
 
 ### Install eYaml backend
 
-Gem coming soon, for now just copy eyaml_backend.rb to the same directory as the existing backends e.g.
+I'm new to ruby and tight on deadlines so I will create a gem thing when I get a chance,
+but for now just copy eyaml_backend.rb to the same directory as the existing backends e.g.
 /usr/lib/ruby/site_ruby/1.8/hiera/backend
 
 You can find the directory with:
@@ -73,29 +93,15 @@ Next configure hiera.yaml to use the eyaml backend
     :datadir: '/etc/puppet/hieradata'
 
     # Optional. Default is /etc/hiera/keys/private_key.pem
-    :private_key: /new/path/to/key/my_key.pem
+    :private_key: /new/path/to/key/private_key.pem
+
+    # Optional. Default is /etc/hiera/keys/public_key.pem
+    :public_key:  /new/path/to/key/public_key.pem
 </pre>
 
-### Encrypt value
+### YAML files
 
-Copy public_key.pem created earlier to any machine where values will be encrypted and
-use openssl to encrypt sensitive data.
-
-There is a very basic helper file encrypt_value.rb which will do this for you. Just copy the
-public key to the same directory as encrypt_value.rb (or vice versa), navigate to that
-directory and run
-
-    $ ruby encrypt_value.rb "my secret thing"
-
-The encrypted value is printed to the command line
-
-If you wish to rename your key or keep it in another directory run
-
-    $ ruby encrypt_value.rb "my secret thing" /path/to/key/my_key.pem
-
-### Insert encrypted value
-
-As above, once the value is encrypted, wrap it with ENC[] and place it in the .eyaml file.
+  Once the value is encrypted, wrap it with ENC[] and place it in the .eyaml file.
 
 Usages:
 <pre>
