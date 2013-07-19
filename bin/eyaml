@@ -1,0 +1,95 @@
+#!/usr/bin/env ruby
+
+require 'openssl'
+require 'base64'
+require 'trollop'
+require 'highline'
+
+options = Trollop::options do
+    
+  version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
+  banner <<-EOS
+Hiera-eyaml is a backend for Hiera which provides OpenSSL encryption/decryption for Hiera properties
+
+Usage:
+  hiera-eyaml [options] [string-to-encrypt]
+  EOS
+  
+  opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
+  opt :password, "Encrypt a password entered on the terminal", :short => 'p'
+  opt :file, "Encrypt a file instead of a string", :short => 'f', :type => :string
+  opt :private_key, "Filename of the private_key", :type => :string
+  opt :public_key, "Filename of the public_key", :type => :string
+  opt :encrypt, "Encrypt something", :short => 'e'
+  opt :decrypt, "Decrypt something", :short => 'e'
+end
+
+Trollop::die "You cannot specify --encrypt and --decrypt" if options[:encrypt] and options[:decrypt]
+
+# Defaults
+options[:private_key_filename] ||= "keys/private_key.pem"
+options[:public_key_filename] ||= "keys/public_key.pem"
+options[:string] = ARGV.join(' ')
+
+if options[:password]
+  password = ask("Enter password: ") {|q| q.echo = "*" }
+  options[:string] = password
+end
+
+if options[:createkeys]
+  key = OpenSSL::Pkey::RSA.new(2048)
+  open( private_key_filename, "w" ) do |io|
+    io.write(key.to_pem)
+  end
+  puts "#{private_key_filename} created."
+  open( public_key_filename, "w" ) do |io|
+    io.write(key.public_key.to_pem)
+  end
+  puts "#{public_key_filename} created."
+  exit
+end
+
+if options[:encrypt]
+
+  plaintext = nil
+  plaintext = options[:string] if options[:string]
+  plaintext = File.read( options[:file] ) if options[:file]
+
+  if plaintext.nil?
+    puts "Specify a string or --file to encrypt something. See --help for more usage instructions."
+    exit
+  end
+
+  public_key_pem = File.read( public_key_filename )
+  public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+  cipher = OpenSSL::Cipher::AES.new(256, :CBC)
+  ciphertext = OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_pem
+
+  puts "#{ciphertext}"
+  exit
+
+end
+
+if options[:decrypt]
+
+  ciphertext = nil
+  ciphertext = options[:string] if options[:string]
+  ciphertext = File.read( options[:file] ) if options[:file]
+
+  if ciphertext.nil?
+    puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
+    exit
+  end
+
+  private_key_path = "./privatekey.pem"
+  private_key_pem = File.read( private_key_path )
+  private_key = OpenSSL::PKey::RSA.new( private_key_pem )
+
+  pkcs7 = OpenSSL::PKCS7.new( ciphertext )
+
+  plaintext = pkcs7.decrypt(private_key, public_key)
+  puts "#{plaintext}"
+  exit
+
+end
