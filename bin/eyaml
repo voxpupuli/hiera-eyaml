@@ -15,6 +15,14 @@ def ensureKeyDirExists(key_file)
   end
 end
 
+def getFileInput(options)
+  if options[:file]
+    return File.read( options[:file] )
+  else
+    return STDIN.read
+  end
+end
+
 def getInput(options)
   return options[:string] if options[:string]
 
@@ -23,12 +31,21 @@ def getInput(options)
     return password
   end
 
-  if options[:file]
-    return File.read( options[:file] )
-  else
-    return STDIN.read
-  end
+  getFileInput(options)
 end
+
+def encrypt(public_key, plaintext)
+  cipher = OpenSSL::Cipher::AES.new(256, :CBC)
+  ciphertext_binary = OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
+  Base64.encode64(ciphertext_binary).strip
+end
+
+def decrypt(public_key, private_key, ciphertext)
+    ciphertext_decoded = Base64.decode64(ciphertext)
+    pkcs7 = OpenSSL::PKCS7.new( ciphertext_decoded )
+    pkcs7.decrypt(private_key, public_key)
+end
+
 
 options = Trollop::options do
     
@@ -41,16 +58,23 @@ Usage:
   EOS
   
   opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
+  opt :encrypt, "Encrypt something"
+  opt :decrypt, "Decrypt something"
+  opt :eyaml, "Assume input is eyaml format"
   opt :password, "Encrypt a password entered on the terminal", :short => 'p'
   opt :string, "Encrypt a string provided on the command line", :short => 's', :type => :string 
   opt :private_key, "Filename of the private_key", :type => :string, :default => "/etc/hiera/keys/private_key.pem"
   opt :public_key, "Filename of the public_key", :type => :string, :default => "/etc/hiera/keys/public_key.pem"
-  opt :encrypt, "Encrypt something"
-  opt :decrypt, "Decrypt something"
   opt :output, "Output mode to use when encrypting (examples, block or string)", :type => :string, :default => "examples"
 end
 
-Trollop::die "You cannot specify --encrypt and --decrypt" if options[:encrypt] and options[:decrypt]
+main_option_count = 0
+main_option_count += 1 if options[:createkeys]
+main_option_count += 1 if options[:encrypt]
+main_option_count += 1 if options[:decrypt]
+main_option_count += 1 if options[:edit]
+
+Trollop::die "You can only specify one main action" if main_option_count > 1
 Trollop::die "You cannot specify --password and --string" if options[:password] and options[:string]
 
 options[:file] = ARGV[0]
@@ -101,70 +125,125 @@ if options[:createkeys]
   exit
 end
 
-if options[:encrypt]
+if not options[:eyaml]
+  if options[:encrypt]
 
-  plaintext = getInput(options)
+    plaintext = getInput(options)
 
-  if plaintext.nil? or plaintext.length == 0
-    $stderr.puts "Specify a string or --file to encrypt something. See --help for more usage instructions."
+    if plaintext.nil? or plaintext.length == 0
+      $stderr.puts "Specify a string or --file to encrypt something. See --help for more usage instructions."
+      exit
+    end
+
+    public_key_pem = File.read( options[:public_key] )
+    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+    
+    ciphertext_as_block = encrypt(public_key, plaintext)
+    ciphertext_as_string = ciphertext_as_block.split("\n").join('')
+
+    case options[:output]
+    when "examples"
+      puts "string: ENC[#{ciphertext_as_string}]\n\nOR\n\n"
+      puts "block: >"
+      puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]"
+    when "block"
+      puts "ENC[" + ciphertext_as_block + "]"
+    when "string"
+      puts "ENC[#{ciphertext_as_string}]"
+    else
+      $stderr.puts "Unknown output option: " + options[:output]
+      exit 1
+    end
     exit
+
   end
 
-  public_key_pem = File.read( options[:public_key] )
-  public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+  if options[:decrypt]
 
-  cipher = OpenSSL::Cipher::AES.new(256, :CBC)
-  ciphertext_binary = OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
-  ciphertext_as_block = Base64.encode64(ciphertext_binary).strip
-  ciphertext_as_string = ciphertext_as_block.split("\n").join('')
+    ciphertext = getInput(options)
+    if ciphertext.nil? or ciphertext.length == 0
+      $stderr.puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
+      exit 1
+    end
 
-  case options[:output]
-  when "examples"
-    puts "string: ENC[#{ciphertext_as_string}]\n\nOR\n\n"
-    puts "block: >"
-    puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]"
-  when "block"
-    puts "ENC[" + ciphertext_as_block.gsub(/\n/, "\n") + "]"
-  when "string"
-    puts "ENC[#{ciphertext_as_string}]"
-  else
-    $stderr.puts "Unknown output option: " + options[:output]
-    exit 1
+    if ciphertext.start_with? "ENC["
+
+      ciphertext = ciphertext[4..-2]
+
+      private_key_pem = File.read( options[:private_key] )
+      private_key = OpenSSL::PKey::RSA.new( private_key_pem )
+
+      public_key_pem = File.read( options[:public_key] )
+      public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+      plaintext = decrypt(public_key, private_key, ciphertext)
+      puts "#{plaintext}"
+      exit
+
+    else
+
+      $stderr.puts "Ciphertext is not an eyaml encrypted string (Does not start with ENC[...])"
+      exit 1
+
+    end
+
+    exit
+
   end
-  exit
-
 end
 
-if options[:decrypt]
+if options[:eyaml]
+  if options[:decrypt]
+    encrypted_regex = /ENC\[([a-zA-Z0-9+\/ \n]+)\]/
+    encrypted_string_regex = /ENC\[([a-zA-Z0-9+\/]+)\]/
 
-  ciphertext = getInput(options)
-  if ciphertext.nil? or ciphertext.length == 0
-    $stderr.puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
-    exit 1
-  end
-
-  if ciphertext.start_with? "ENC["
-
-    ciphertext = ciphertext[4..-2]
-    ciphertext_decoded = Base64.decode64(ciphertext)
-
+    # prepare to decrypt blocks
     private_key_pem = File.read( options[:private_key] )
     private_key = OpenSSL::PKey::RSA.new( private_key_pem )
 
     public_key_pem = File.read( options[:public_key] )
     public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
-    pkcs7 = OpenSSL::PKCS7.new( ciphertext_decoded )
+    eyaml = getFileInput(options)
 
-    plaintext = pkcs7.decrypt(private_key, public_key)
-    puts "#{plaintext}"
+    # decrypt strings first
+    eyaml = eyaml.gsub(encrypted_string_regex) { |match|
+      plaintext = decrypt(public_key, private_key, $1)
+      "ENC![" + plaintext + "]!STRING"
+    }
+    # now decrypt blocks that span lines
+    eyaml = eyaml.gsub(encrypted_regex) { |match|
+      ciphertext = $1.gsub(/[ \n]/, '')
+      plaintext = decrypt(public_key, private_key, ciphertext)
+      "ENC![" + plaintext + "]!BLOCK"
+    }
+
+    puts eyaml
     exit
-
-  else
-
-    $stderr.puts "Ciphertext is not an eyaml encrypted string (Does not start with ENC[...])"
-    exit 1
-
   end
 
+  if options[:encrypt]
+    decrypted_string = /ENC!\[(.+)\]!STRING/
+    decrypted_block = /^( *)ENC!\[(.+)\]!BLOCK/
+
+    # prepare to encrypt blocks
+    public_key_pem = File.read( options[:public_key] )
+    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+    eyaml = getFileInput(options)
+
+    # encrypt strings
+    eyaml = eyaml.gsub(decrypted_string) { |match|
+      ciphertext = encrypt(public_key, $1).gsub(/\n/,'')
+      "ENC[" + ciphertext + "]"
+    }
+    # encrypt blocks
+    eyaml = eyaml.gsub(decrypted_block) { |match|
+      indentation = $1
+      ciphertext = encrypt(public_key, $2).gsub(/\n/,"\n"+indentation)
+      indentation + "ENC[" + ciphertext + "]"
+    }
+    puts eyaml
+    exit
+  end
 end
