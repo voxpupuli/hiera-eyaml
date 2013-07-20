@@ -47,9 +47,9 @@ This creates a public and private key with default names in the default location
 
     To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
 
-    $ eyaml -e text                   # Encrypt some text
+    $ eyaml -e filename               # Encrypt a file
+    $ eyaml -e -s text                # Encrypt some text
     $ eyaml -e -p                     # Encrypt a password (prompt for it)
-    $ eyaml -e -f filename            # Encrypt a file
 
 ### Decryption
 
@@ -57,8 +57,8 @@ This creates a public and private key with default names in the default location
 
     To test decryption you can also use the eyaml tool if you have both keys
 
-    $ eyaml -d SOME-ENCRYPTED-TEXT    # Decrypt some text
-    $ eyaml -d -f filename            # Decrypt a file (PEM format)
+    $ eyaml -d filename                  # Decrypt a file (PEM format)
+    $ eyaml -d -s SOME-ENCRYPTED-TEXT    # Decrypt some text
 
 Change the permissions so that the private key is only readable by the user that hiera (puppet) is
 running as.

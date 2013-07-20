@@ -15,6 +15,21 @@ def ensureKeyDirExists(key_file)
   end
 end
 
+def getInput(options)
+  return options[:string] if options[:string]
+
+  if options[:password]
+    password = ask("Enter password: ") {|q| q.echo = "*" }
+    return password
+  end
+
+  if options[:file]
+    return File.read( options[:file] )
+  else
+    return STDIN.read
+  end
+end
+
 options = Trollop::options do
     
   version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
@@ -27,23 +42,20 @@ Usage:
   
   opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
   opt :password, "Encrypt a password entered on the terminal", :short => 'p'
-  opt :file, "Encrypt a file instead of a string", :short => 'f', :type => :string 
-  opt :private_key, "Filename of the private_key", :type => :string
-  opt :public_key, "Filename of the public_key", :type => :string
+  opt :string, "Encrypt a string provided on the command line", :short => 's', :type => :string 
+  opt :private_key, "Filename of the private_key", :type => :string, :default => "/etc/hiera/keys/private_key.pem"
+  opt :public_key, "Filename of the public_key", :type => :string, :default => "/etc/hiera/keys/public_key.pem"
   opt :encrypt, "Encrypt something"
   opt :decrypt, "Decrypt something"
+  opt :output, "Output mode to use when encrypting (examples, block or string)", :type => :string, :default => "examples"
 end
 
 Trollop::die "You cannot specify --encrypt and --decrypt" if options[:encrypt] and options[:decrypt]
+Trollop::die "You cannot specify --password and --string" if options[:password] and options[:string]
 
-# Defaults
-options[:private_key] ||= "/etc/hiera/keys/private_key.pem"
-options[:public_key] ||= "/etc/hiera/keys/public_key.pem"
-options[:string] = ARGV.join(' ')
-
-if options[:password]
-  password = ask("Enter password: ") {|q| q.echo = "*" }
-  options[:string] = password
+options[:file] = ARGV[0]
+if options[:file] and (options[:password] or options[:string])
+  $stderr.puts "WARN: file supplied but will be shadowed by string or password"
 end
 
 if options[:createkeys]
@@ -59,7 +71,7 @@ if options[:createkeys]
     io.write(key.to_pem)
   end
 
-  puts "#{options[:private_key]} created."
+  $stderr.puts "#{options[:private_key]} created."
 
   name = OpenSSL::X509::Name.parse("/")
   cert = OpenSSL::X509::Certificate.new()
@@ -85,18 +97,16 @@ if options[:createkeys]
   open( options[:public_key], "w" ) do |io|
     io.write(cert.to_pem)
   end
-  puts "#{options[:public_key]} created."
+  $stderr.puts "#{options[:public_key]} created."
   exit
 end
 
 if options[:encrypt]
 
-  plaintext = nil
-  plaintext = options[:string] if options[:string]
-  plaintext = File.read( options[:file] ) if options[:file]
+  plaintext = getInput(options)
 
-  if plaintext.nil?
-    puts "Specify a string or --file to encrypt something. See --help for more usage instructions."
+  if plaintext.nil? or plaintext.length == 0
+    $stderr.puts "Specify a string or --file to encrypt something. See --help for more usage instructions."
     exit
   end
 
@@ -108,28 +118,35 @@ if options[:encrypt]
   ciphertext_as_block = Base64.encode64(ciphertext_binary).strip
   ciphertext_as_string = ciphertext_as_block.split("\n").join('')
 
-  puts "string: ENC[#{ciphertext_as_string}]\n\nOR\n\n"
-  puts "block: >"
-  puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]"
+  case options[:output]
+  when "examples"
+    puts "string: ENC[#{ciphertext_as_string}]\n\nOR\n\n"
+    puts "block: >"
+    puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]"
+  when "block"
+    puts "ENC[" + ciphertext_as_block.gsub(/\n/, "\n") + "]"
+  when "string"
+    puts "ENC[#{ciphertext_as_string}]"
+  else
+    $stderr.puts "Unknown output option: " + options[:output]
+    exit 1
+  end
   exit
 
 end
 
 if options[:decrypt]
 
-  ciphertext = nil
-  ciphertext = options[:string] if options[:string]
-  ciphertext = File.read( options[:file] ) if options[:file]
+  ciphertext = getInput(options)
+  if ciphertext.nil? or ciphertext.length == 0
+    $stderr.puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
+    exit 1
+  end
 
   if ciphertext.start_with? "ENC["
 
     ciphertext = ciphertext[4..-2]
     ciphertext_decoded = Base64.decode64(ciphertext)
-
-    if ciphertext.nil?
-      puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
-      exit
-    end
 
     private_key_pem = File.read( options[:private_key] )
     private_key = OpenSSL::PKey::RSA.new( private_key_pem )
@@ -145,7 +162,8 @@ if options[:decrypt]
 
   else
 
-    puts "Ciphertext is not an eyaml encrypted string (Does not start with ENC[...])"
+    $stderr.puts "Ciphertext is not an eyaml encrypted string (Does not start with ENC[...])"
+    exit 1
 
   end
 
