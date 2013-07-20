@@ -37,8 +37,8 @@ end
 Trollop::die "You cannot specify --encrypt and --decrypt" if options[:encrypt] and options[:decrypt]
 
 # Defaults
-options[:private_key_filename] ||= "/etc/hiera/keys/private_key.pem"
-options[:public_key_filename] ||= "/etc/hiera/keys/public_key.pem"
+options[:private_key] ||= "/etc/hiera/keys/private_key.pem"
+options[:public_key] ||= "/etc/hiera/keys/public_key.pem"
 options[:string] = ARGV.join(' ')
 
 if options[:password]
@@ -51,15 +51,15 @@ if options[:createkeys]
   # Try to do equivalent of:
   # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
 
-  ensureKeyDirExists(options[:private_key_filename])
-  ensureKeyDirExists(options[:public_key_filename])
+  ensureKeyDirExists(options[:private_key])
+  ensureKeyDirExists(options[:public_key])
 
   key = OpenSSL::PKey::RSA.new(2048)
-  open( options[:private_key_filename], "w" ) do |io|
+  open( options[:private_key], "w" ) do |io|
     io.write(key.to_pem)
   end
 
-  puts "#{options[:private_key_filename]} created."
+  puts "#{options[:private_key]} created."
 
   name = OpenSSL::X509::Name.parse("/")
   cert = OpenSSL::X509::Certificate.new()
@@ -82,10 +82,10 @@ if options[:createkeys]
 
   cert.sign key, OpenSSL::Digest::SHA1.new
 
-  open( options[:public_key_filename], "w" ) do |io|
+  open( options[:public_key], "w" ) do |io|
     io.write(cert.to_pem)
   end
-  puts "#{options[:public_key_filename]} created."
+  puts "#{options[:public_key]} created."
   exit
 end
 
@@ -100,7 +100,7 @@ if options[:encrypt]
     exit
   end
 
-  public_key_pem = File.read( options[:public_key_filename] )
+  public_key_pem = File.read( options[:public_key] )
   public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
   cipher = OpenSSL::Cipher::AES.new(256, :CBC)
@@ -131,10 +131,10 @@ if options[:decrypt]
       exit
     end
 
-    private_key_pem = File.read( options[:private_key_filename] )
+    private_key_pem = File.read( options[:private_key] )
     private_key = OpenSSL::PKey::RSA.new( private_key_pem )
 
-    public_key_pem = File.read( options[:public_key_filename] )
+    public_key_pem = File.read( options[:public_key] )
     public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
     pkcs7 = OpenSSL::PKCS7.new( ciphertext_decoded )
