@@ -9,6 +9,7 @@ Gem::Specification.new do |gem|
   gem.description   = "Hiera backend for decrypting encrypted yaml properties"
   gem.summary       = "OpenSSL Encryption backend for Hiera"
   gem.author        = "Tom Poulton"
+  gem.license       = "MIT"
 
   gem.homepage      = "http://github.com/TomPoulton/hiera-eyaml"
   gem.files         = `git ls-files`.split($/)
