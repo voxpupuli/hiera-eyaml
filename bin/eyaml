@@ -194,7 +194,7 @@ end
 
 if options[:eyaml]
   if options[:decrypt]
-    encrypted_regex = /ENC\[([a-zA-Z0-9+\/ \n]+)\]/
+    encrypted_block_regex = />\n( *)ENC\[([a-zA-Z0-9+\/ \n]+)\]/
     encrypted_string_regex = /ENC\[([a-zA-Z0-9+\/]+)\]/
 
     # prepare to decrypt blocks
@@ -206,16 +206,18 @@ if options[:eyaml]
 
     eyaml = getFileInput(options)
 
-    # decrypt strings first
+    # decrypt blocks first
+    eyaml = eyaml.gsub(encrypted_block_regex) { |match|
+      indentation = $1
+      ciphertext = $2.gsub(/[ \n]/, '')
+      plaintext = decrypt(public_key, private_key, ciphertext)
+      ">\n"+indentation+"ENC![" + plaintext + "]!ENC"
+    }
+
+    # then decrypt strings
     eyaml = eyaml.gsub(encrypted_string_regex) { |match|
       plaintext = decrypt(public_key, private_key, $1)
-      "ENC![" + plaintext + "]!STRING"
-    }
-    # now decrypt blocks that span lines
-    eyaml = eyaml.gsub(encrypted_regex) { |match|
-      ciphertext = $1.gsub(/[ \n]/, '')
-      plaintext = decrypt(public_key, private_key, ciphertext)
-      "ENC![" + plaintext + "]!BLOCK"
+      "ENC![" + plaintext + "]!ENC"
     }
 
     puts eyaml
@@ -223,8 +225,8 @@ if options[:eyaml]
   end
 
   if options[:encrypt]
-    decrypted_string = /ENC!\[(.+)\]!STRING/
-    decrypted_block = /^( *)ENC!\[(.+)\]!BLOCK/
+    decrypted_block = />\n( *)ENC!\[(.+)\]!ENC/
+    decrypted_string = /ENC!\[(.+)\]!ENC/
 
     # prepare to encrypt blocks
     public_key_pem = File.read( options[:public_key] )
@@ -232,17 +234,18 @@ if options[:eyaml]
 
     eyaml = getFileInput(options)
 
+    # encrypt blocks
+    eyaml = eyaml.gsub(decrypted_block) { |match|
+      indentation = $1
+      ciphertext = encrypt(public_key, $2).gsub(/\n/,"\n"+indentation)
+      ">\n" + indentation + "ENC[" + ciphertext + "]"
+    }
     # encrypt strings
     eyaml = eyaml.gsub(decrypted_string) { |match|
       ciphertext = encrypt(public_key, $1).gsub(/\n/,'')
       "ENC[" + ciphertext + "]"
     }
-    # encrypt blocks
-    eyaml = eyaml.gsub(decrypted_block) { |match|
-      indentation = $1
-      ciphertext = encrypt(public_key, $2).gsub(/\n/,"\n"+indentation)
-      indentation + "ENC[" + ciphertext + "]"
-    }
+    
     puts eyaml
     exit
   end
