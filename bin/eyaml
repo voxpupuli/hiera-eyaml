@@ -7,12 +7,12 @@ require 'highline/import'
 require 'hiera/backend/version'
 require 'tempfile'
 
-Encrypted_block = />\n( *)ENC\[([a-zA-Z0-9+\/ \n]+)\]/
-Encrypted_string = /ENC\[([a-zA-Z0-9+\/]+)\]/
-Decrypted_block = />\n( *)ENC!\[(.+)\]!ENC/
-Decrypted_string = /ENC!\[(.+)\]!ENC/
+ENCRYPTED_BLOCK = />\n( *)ENC\[([a-zA-Z0-9+\/ \n]+)\]/
+ENCRYPTED_STRING = /ENC\[([a-zA-Z0-9+\/]+)\]/
+DECRYPTED_BLOCK = />\n( *)ENC!\[(.+)\]!ENC/
+DECRYPTED_STRING = /ENC!\[(.+)\]!ENC/
 
-def ensureKeyDirExists(key_file)
+def ensure_key_dir_exists(key_file)
   key_dir = File.dirname(key_file)
 
   if !File.directory?(key_dir)
@@ -21,23 +21,22 @@ def ensureKeyDirExists(key_file)
   end
 end
 
-def getFileInput(options)
+def get_file_input(options)
   if options[:file]
-    return File.read( options[:file] )
+    File.read options[:file]
   else
-    return STDIN.read
+    STDIN.read
   end
 end
 
-def getInput(options)
+def get_input(options)
   return options[:string] if options[:string]
 
   if options[:password]
-    password = ask("Enter password: ") {|q| q.echo = "*" }
-    return password
+    ask("Enter password: ") {|q| q.echo = "*" }
   end
 
-  getFileInput(options)
+  get_file_input(options)
 end
 
 def encrypt(public_key, plaintext)
@@ -54,14 +53,14 @@ end
 
 def decrypt_eyaml(public_key, private_key, cipher_eyaml)
   # decrypt blocks first
-  plain_block_eyaml = cipher_eyaml.gsub(Encrypted_block) { |match|
+  plain_block_eyaml = cipher_eyaml.gsub(ENCRYPTED_BLOCK) { |match|
     indentation = $1
     ciphertext = $2.gsub(/[ \n]/, '')
     plaintext = decrypt(public_key, private_key, ciphertext)
     ">\n"+indentation+"ENC![" + plaintext + "]!ENC"
   }
   # then decrypt strings
-  plain_block_eyaml.gsub(Encrypted_string) { |match|
+  plain_block_eyaml.gsub(ENCRYPTED_STRING) { |match|
     plaintext = decrypt(public_key, private_key, $1)
     "ENC![" + plaintext + "]!ENC"
   }
@@ -69,13 +68,13 @@ end
 
 def encrypt_eyaml(public_key, plain_eyaml)
   # encrypt blocks
-  cipher_block_eyaml = plain_eyaml.gsub(Decrypted_block) { |match|
+  cipher_block_eyaml = plain_eyaml.gsub(DECRYPTED_BLOCK) { |match|
     indentation = $1
     ciphertext = encrypt(public_key, $2).gsub(/\n/,"\n"+indentation)
     ">\n" + indentation + "ENC[" + ciphertext + "]"
   }
   # encrypt strings
-  cipher_block_eyaml.gsub(Decrypted_string) { |match|
+  cipher_block_eyaml.gsub(DECRYPTED_STRING) { |match|
     ciphertext = encrypt(public_key, $1).gsub(/\n/,'')
     "ENC[" + ciphertext + "]"
   }
@@ -130,8 +129,8 @@ if options[:createkeys]
   # Try to do equivalent of:
   # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
 
-  ensureKeyDirExists(options[:private_key])
-  ensureKeyDirExists(options[:public_key])
+  ensure_key_dir_exists(options[:private_key])
+  ensure_key_dir_exists(options[:public_key])
 
   key = OpenSSL::PKey::RSA.new(2048)
   open( options[:private_key], "w" ) do |io|
@@ -168,10 +167,39 @@ if options[:createkeys]
   exit
 end
 
-if not options[:eyaml]
-  if options[:encrypt]
+if options[:eyaml]
 
-    plaintext = getInput(options)
+  if options[:decrypt]
+    # prepare to decrypt blocks
+    private_key_pem = File.read( options[:private_key] )
+    private_key = OpenSSL::PKey::RSA.new( private_key_pem )
+
+    public_key_pem = File.read( options[:public_key] )
+    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+    eyaml = get_file_input options
+    plain_eyaml = decrypt_eyaml(public_key, private_key, eyaml)
+
+    puts plain_eyaml
+    exit
+  end
+
+  if options[:encrypt]
+    # prepare to encrypt blocks
+    public_key_pem = File.read( options[:public_key] )
+    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
+
+    eyaml = get_file_input options
+    cipher_eyaml = encrypt_yaml(public_key, eyaml)
+    
+    puts eyaml
+    exit
+  end
+
+else
+
+  if options[:encrypt]
+    plaintext = get_input options
 
     if plaintext.nil? or plaintext.length == 0
       $stderr.puts "Specify a string or --file to encrypt something. See --help for more usage instructions."
@@ -203,7 +231,7 @@ if not options[:eyaml]
 
   if options[:decrypt]
 
-    ciphertext = getInput(options)
+    ciphertext = get_input options
     if ciphertext.nil? or ciphertext.length == 0
       $stderr.puts "Specify a string or --file to decrypt something. See --help for more usage instructions."
       exit 1
@@ -235,35 +263,6 @@ if not options[:eyaml]
   end
 end
 
-if options[:eyaml]
-
-  if options[:decrypt]
-    # prepare to decrypt blocks
-    private_key_pem = File.read( options[:private_key] )
-    private_key = OpenSSL::PKey::RSA.new( private_key_pem )
-
-    public_key_pem = File.read( options[:public_key] )
-    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
-
-    eyaml = getFileInput(options)
-    plain_eyaml = decrypt_eyaml(public_key, private_key, eyaml)
-
-    puts plain_eyaml
-    exit
-  end
-
-  if options[:encrypt]
-    # prepare to encrypt blocks
-    public_key_pem = File.read( options[:public_key] )
-    public_key = OpenSSL::X509::Certificate.new( public_key_pem )
-
-    eyaml = getFileInput(options)
-    cipher_eyaml = encrypt_yaml(public_key, eyaml)
-    
-    puts eyaml
-    exit
-  end
-end
 
 if options[:edit]
   $stderr.puts "Launching edit mode"
@@ -319,7 +318,7 @@ if options[:edit]
   old_size = plain_eyaml.length
   clear_size = (new_size > old_size) ? new_size : old_size
   shred(plain_file, clear_size)
-  plain_file.close(true)
+  plain_file.close true
   shred(reopened_plain_file, clear_size)
   reopened_plain_file.close
 
@@ -336,8 +335,8 @@ if options[:edit]
   # re-encrypt the file again, currently we re-encrypt indiscriminately
   cipher_eyaml = encrypt_eyaml(public_key, new_eyaml)
 
-  File.open( options[:file], 'w') { |file| 
+  File.open(options[:file], 'w') { |file| 
     file.write(cipher_eyaml)
   }
-  exit 0
+  exit
 end
