@@ -54,12 +54,12 @@ options = Trollop::options do
 Hiera-eyaml is a backend for Hiera which provides OpenSSL encryption/decryption for Hiera properties
 
 Usage:
-  eyaml [options] [string-to-encrypt]
+  eyaml [options] [file-to-encrypt]
   EOS
   
   opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
-  opt :encrypt, "Encrypt something"
-  opt :decrypt, "Decrypt something"
+  opt :encrypt, "Encrypt a string, password, file or stdin"
+  opt :decrypt, "Decrypt a string, file or stdin"
   opt :eyaml, "Assume input is eyaml format"
   opt :password, "Encrypt a password entered on the terminal", :short => 'p'
   opt :string, "Encrypt a string provided on the command line", :short => 's', :type => :string 
