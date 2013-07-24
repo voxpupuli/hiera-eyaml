@@ -108,6 +108,7 @@ Usage:
   opt :private_key, "Filename of the private_key", :type => :string, :default => "/etc/hiera/keys/private_key.pem"
   opt :public_key, "Filename of the public_key", :type => :string, :default => "/etc/hiera/keys/public_key.pem"
   opt :output, "Output mode to use when encrypting (examples, block or string)", :type => :string, :default => "examples"
+  opt :name, "Add the name for the eyaml key (example, myvar: )", :type => :string
 end
 
 main_option_count = 0
@@ -191,7 +192,7 @@ if options[:eyaml]
 
     eyaml = get_file_input options
     cipher_eyaml = encrypt_yaml(public_key, eyaml)
-    
+
     puts eyaml
     exit
   end
@@ -214,13 +215,31 @@ else
 
     case options[:output]
     when "examples"
+      if options[:name].nil?
       puts "string: ENC[#{ciphertext_as_string}]\n\nOR\n\n"
       puts "block: >"
       puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]"
+      else
+      puts options[:name] + ": ENC[#{ciphertext_as_string}]\n\nOR\n\n"
+      puts options[:name] +": >"
+      puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]" 
+      puts
+      end
     when "block"
+      if options[:name].nil?
       puts "ENC[" + ciphertext_as_block + "]"
+      else
+      puts options[:name] + ": >"
+      puts "    ENC[" + ciphertext_as_block.gsub(/\n/, "\n    ") + "]"
+      puts
+      end
     when "string"
+      if options[:name].nil?
       puts "ENC[#{ciphertext_as_string}]"
+      else
+      puts options[:name] + ": ENC[#{ciphertext_as_string}]"
+      puts
+      end
     else
       $stderr.puts "Unknown output option: " + options[:output]
       exit 1
