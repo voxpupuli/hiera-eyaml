@@ -5,7 +5,7 @@ module Hiera
     module Eyaml
       module Actions
   
-        class Edit
+        class EditAction
 
           def self.execute options
             decrypted_input = encryptor.decrypt

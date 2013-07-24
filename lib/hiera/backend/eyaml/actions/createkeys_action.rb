@@ -5,12 +5,14 @@ module Hiera
     module Eyaml
       module Actions
 
-        class CreateKeys
+        class CreatekeysAction
 
           def self.execute options
             encryptor.create_keys
             exit 0
           end
+
+        end
 
       end
     end
