@@ -95,7 +95,7 @@ class Hiera
             encryptor_class = nil
             begin
               require "hiera/backend/eyaml/encryptors/#{cipherscheme}"
-              encryptor_class = module.const_get('hiera').const_get('backend').const_get('eyaml').const_get('encryptors').const_get(cipherscheme)
+              encryptor_class = Module.const_get('hiera').const_get('backend').const_get('eyaml').const_get('encryptors').const_get(cipherscheme)
             rescue
               raise StandardError, "Encryption method #{cipherscheme} not available. Gem install hiera-eyaml-#{cipherscheme} ?"
             end

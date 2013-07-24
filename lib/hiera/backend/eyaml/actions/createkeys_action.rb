@@ -8,8 +8,12 @@ module Hiera
         class CreatekeysAction
 
           def self.execute options
-            encryptor.create_keys
-            exit 0
+            encryptions = options[:encryptions]
+            encryptions.each do |encryption_method, encryption_class|
+              encryptor = encryption_class.new :data => "", :options => options
+              encryptor.create_keys
+            end
+            nil            
           end
 
         end

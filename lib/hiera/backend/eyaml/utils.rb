@@ -20,13 +20,30 @@ module Hiera
 
         end
 
-        def self.ask_for_password
+        def self.read_password
           ask("Enter password: ") {|q| q.echo = "*" }
         end
 
         def self.format args
           data = args[:data]
+          data_as_block = data.split("\n").join("\n    ")
+          data_as_string = data.split("\n").join("")
           structure = args[:structure]
+
+          case structure
+          when "examples"
+            puts "string: #{data_as_string}\n\n"
+            puts "OR\n\n"
+            puts "block: >"
+            puts "    #{data_as_block}"
+          when "block"
+            puts "    #{data_as_block}" 
+          when "string"
+            puts "#{data_as_string}"
+          else
+            puts "raw output:"
+            puts data.to_s
+          end
 
         end
 
@@ -56,6 +73,31 @@ module Hiera
           file.close
 
           path
+        end
+
+        def self.find_closest_class parent_class, classname
+          constants = parent_class.constants
+          candidates = []
+          constants.each do | candidate |
+            candidates << candidate.to_s if candidate.to_s.downcase == classname.downcase
+          end
+          if candidates.count > 0
+            parent_class.const_get candidates.first
+          else
+            nil
+          end
+        end
+
+        def self.camelcase string
+          return string if string !~ /_/ && string =~ /[A-Z]+.*/
+          string.split('_').map{|e| e.capitalize}.join
+        end
+
+        def self.find_encryptor encryptor_name
+          encryptor_module = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Encryptors')
+          encryptor_class = self.find_closest_class encryptor_module, encryptor_name
+          raise StandardError, "Could not find encryptor: #{encryptor_name}. Try gem install hiera-eyaml-#{encryptor_name} ?" if encryptor_class.nil?
+          encryptor_class
         end
 
       end

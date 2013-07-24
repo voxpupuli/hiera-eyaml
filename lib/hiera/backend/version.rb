@@ -1,7 +1,7 @@
 module Hiera
   module Backend
     module Eyaml
-      VERSION = "0.2"
+      VERSION = "1.2.0"
     end
   end
 end

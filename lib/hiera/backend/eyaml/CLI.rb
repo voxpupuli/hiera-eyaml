@@ -1,15 +1,17 @@
 require 'trollop'
 require 'hiera/backend/version'
 require 'hiera/backend/eyaml/utils'
-require 'hiera/backend/eyaml/actions/createkeys'
-require 'hiera/backend/eyaml/actions/decrypt'
-require 'hiera/backend/eyaml/actions/encrypt'
-require 'hiera/backend/eyaml/actions/edit'
+require 'hiera/backend/eyaml/actions/createkeys_action'
+require 'hiera/backend/eyaml/actions/decrypt_action'
+require 'hiera/backend/eyaml/actions/encrypt_action'
+require 'hiera/backend/eyaml/actions/edit_action'
 
 module Hiera
   module Backend
     module Eyaml
       class CLI
+
+        DEFAULT_ENCRYPTION = "pkcs7"
 
         def self.parse
 
@@ -27,12 +29,12 @@ Usage:
             opt :decrypt, "Decrypt something"
             opt :encrypt, "Encrypt something"
             opt :edit, "Decrypt, Edit, and Reencrypt"
-            opt :eyaml, "Source input is an eyaml file", type => :string
+            opt :eyaml, "Source input is an eyaml file", :type => :string
             opt :password, "Source input is a password entered on the terminal", :short => 'p'
             opt :string, "Source input is a string provided as an argument", :short => 's', :type => :string
             opt :file, "Source input is a file", :short => 'f', :type => :string
-            opt :private_key_dir, "Directory containing private_keys", :type => :string, :default => "/etc/hiera/keys"
-            opt :public_key_dir, "Directory containing public keys", :type => :string, :default => "/etc/hiera/keys"
+            opt :private_key_dir, "Directory containing private_keys", :type => :string, :default => "./keys"
+            opt :public_key_dir, "Directory containing public keys", :type => :string, :default => "./keys"
             opt :encrypt_method, "Encryption method (only if encrypting a password, string or regular file)", :default => "pkcs7"
             opt :output, "Output format of final result (examples, block, string)", :type => :string, :default => "examples"
           end
@@ -40,9 +42,9 @@ Usage:
           actions = [:createkeys, :decrypt, :encrypt, :edit].collect {|x| x if options[x]}.compact
           sources = [:eyaml, :password, :string, :file].collect {|x| x if options[x]}.compact
 
-          Trollop::die "You can only specify one of #{actions.join(',')}" if actions.count > 1
-          Trollop::die "You can only specify one of #{sources.join(',')}" if sources.count > 1
-          Trollop::die "Creating keys does not require a source to encrypt/decrypt" if actions.first = :createkeys and sources.count > 0
+          Trollop::die "You can only specify one of (#{actions.join(', ')})" if actions.count > 1
+          Trollop::die "You can only specify one of (#{sources.join(', ')})" if sources.count > 1
+          Trollop::die "Creating keys does not require a source to encrypt/decrypt" if actions.first == :createkeys and sources.count > 0
 
           source = sources.first
           action = actions.first
@@ -62,13 +64,15 @@ Usage:
 
           encryptions = {}
 
-          if [:password, :string, :file].contains source and action == :encrypt
+          if [:password, :string, :file].include? source and action == :encrypt
             encryptions[ options[:encrypt_method] ] = nil
           elsif action == :createkeys
             encryptions[ options[:encrypt_method] ] = nil
-          else            
-            options[:input_data].gsub( /ENC\!?\[([A-Za-z0-9_]*),/ ) { |match|
-              encryptions[ $1 ] = nil
+          else
+            options[:input_data].gsub( /ENC\[([^\]]+,)?([^\]]*)\]/ ) { |match|
+              encryption_method = $1
+              encryption_method = DEFAULT_ENCRYPTION if encryption_method.nil?
+              encryptions[ encryption_method ] = nil
             }
           end
 
@@ -76,12 +80,11 @@ Usage:
             encryptor = nil
             encryptor_class = nil
             begin
-              require "hiera/backend/eyaml/encryptors/#{options[:method]}"
-              encryptor_class = module.const_get('hiera').const_get('backend').const_get('eyaml').const_get('encryptors').const_get(options[:method])
-              encryptions[ encryption_method ] = encryptor_class
-            rescue
-              $stderr.puts "Encryption method #{options[:method]} not available. Have you tried gem install hiera-eyaml-#{options[:method]} ?"
+              require "hiera/backend/eyaml/encryptors/#{encryption_method}"
+            rescue LoadError
+              raise StandardError, "Encryption method #{encryption_method} not available. Have you tried gem install hiera-eyaml-#{encryption_method} ?"
             end
+            encryptions[ encryption_method ] = Utils.find_encryptor encryption_method
           end
 
           options[:encryptions] = encryptions
@@ -94,7 +97,7 @@ Usage:
 
           action = args[:action]
 
-          action_class = module.const_get('hiera').const_get('backend').const_get('eyaml').const_get('actions').const_get(action)
+          action_class = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Actions').const_get("#{Utils.camelcase action.to_s}Action")
           puts action_class.execute args[:options]
 
         end          

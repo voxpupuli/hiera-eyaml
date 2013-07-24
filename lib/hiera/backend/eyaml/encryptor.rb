@@ -2,16 +2,18 @@ module Hiera
   module Backend
     module Eyaml
 
-      ENCRYPTED_BLOCK = />\n( *)ENC\[(${ENCRYPT_TAG},)?([a-zA-Z0-9+\/ \n]+)\]/
-      ENCRYPTED_STRING = /ENC\[(${ENCRYPT_TAG},)?[a-zA-Z0-9+\/]+)\]/
-      DECRYPTED_BLOCK = />\n( *)ENC!\[(${ENCRYPT_TAG},)?(.+)\]!ENC/
+      ENCRYPTED_BLOCK = />\n(\s*)ENC\[(${ENCRYPT_TAG},)?([a-zA-Z0-9+\/ \n]+)\]/
+      ENCRYPTED_STRING = /ENC\[(${ENCRYPT_TAG},)?([a-zA-Z0-9+\/]+)\]/
+      DECRYPTED_BLOCK = />\n(\s*)ENC!\[(${ENCRYPT_TAG},)?(.+)\]!ENC/
       DECRYPTED_STRING = /ENC!\[(${ENCRYPT_TAG},)?(.+)\]!ENC/
 
       class Encryptor
 
-        def initialize input_data, options
-          @input_data = input_data
-          @options = options
+        attr_accessor :options
+
+        def initialize args
+          @input_data = args[:data]
+          @options = args[:options]
         end
 
         def encrypt
@@ -21,18 +23,18 @@ module Hiera
             # blocks
             output = input_data.gsub( DECRYPTED_BLOCK ) { |match|
               indentation = $1
-              ciphertext = encrypt($2).gsub(/\n/, "\n" + indentation)
+              ciphertext = encrypt_string($2).gsub(/\n/, "\n" + indentation)
               ">\n" + indentation + "ENC[" + ciphertext + "]"
             }
 
             # strings
             output.gsub( DECRYPTED_STRING ) { |match|
-              ciphertext = encrypt($1).gsub(/\n/, "")
+              ciphertext = encrypt_string($1).gsub(/\n/, "")
               "ENC[" + ciphertext + "]"
             }
 
           else
-            "ENC[" + encrypt( input_data ) + "]"
+            "ENC[" + encrypt_string( @input_data ) + "]"
           end
         end
 
@@ -41,20 +43,27 @@ module Hiera
           when :eyaml_file
 
             # blocks
-            output = input_data.gsub( ENCRYPTED_BLOCK ) { |match|
+            output = @input_data.gsub( ENCRYPTED_BLOCK ) { |match|
               indentation = $1
-              ciphertext = $2.gsub(/[ \n]/, '')
-              plaintext = decrypt(ciphertext)
-              ">\n" + indentation + "ENC![" + plaintext + "]!ENC"
+              ciphertext = $3.gsub(/[ \n]/, '')
+              plaintext = decrypt_string(ciphertext)
+              ">\n" + indentation + "ENC![#{ENCRYPT_TAG}," + plaintext + "]!ENC"
             }
 
             # strings
             output.gsub( ENCRYPTED_STRING ) { |match|
-              plaintext = decrypt($1)
-              "ENC![" + plaintext + "]!ENC"
+              plaintext = decrypt_string($2)
+              "ENC![#{ENCRYPT_TAG}," + plaintext + "]!ENC"
             }
+
+            output
           else
-            decrypt input_data 
+
+            output = @input_data.gsub( ENCRYPTED_STRING ) { |match|
+              decrypt_string($2)
+            } 
+
+            output
           end
         end
 

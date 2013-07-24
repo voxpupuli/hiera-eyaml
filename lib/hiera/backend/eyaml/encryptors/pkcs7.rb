@@ -19,10 +19,9 @@ module Hiera
             cipher = OpenSSL::Cipher::AES.new(256, :CBC)
             ciphertext_binary = OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
             ciphertext_as_block = Base64.encode64(ciphertext_binary).strip
-            ciphertext_as_string = ciphertext_as_block.split("\n").join('')
 
-            ciphertext_as_string
-
+            ciphertext_as_block
+            
           end
 
           def decrypt_string ciphertext
@@ -49,7 +48,7 @@ module Hiera
             # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
 
             key = OpenSSL::PKey::RSA.new(2048)
-            open( options[:private_key_dir]/private_key.pkcs7.pem, "w" ) do |io|
+            open( "#{options[:private_key_dir]}/private_key.pkcs7.pem", "w" ) do |io|
               io.write(key.to_pem)
             end
 
