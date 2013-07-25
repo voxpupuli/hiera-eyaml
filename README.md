@@ -45,18 +45,18 @@ This creates a public and private key with default names in the default location
 
 ### Encryption
 
-    To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
+To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
 
     $ eyaml -e filename               # Encrypt a file
     $ eyaml -e -s text                # Encrypt some text
     $ eyaml -e -p                     # Encrypt a password (prompt for it)
 
-    You can also specify the name of the value and the output style (block or string) so that you can
-    redirect the output directly to a file:
+You can also specify the name of the value and the output style (block or string) so that you can
+redirect the output directly to a file:
 
     $ eyaml -e -n my-secret -s "Secret Text" -o block
 
-    returns:
+returns:
 
     $ my-secret: >
     $   ENC[...
@@ -65,9 +65,9 @@ This creates a public and private key with default names in the default location
 
 ### Decryption
 
-    To decrypt something, you need the public_key and the private_key on the puppet master.
+To decrypt something, you need the public_key and the private_key on the puppet master.
 
-    To test decryption you can also use the eyaml tool if you have both keys
+To test decryption you can also use the eyaml tool if you have both keys
 
     $ eyaml -d filename                  # Decrypt a file (PEM format)
     $ eyaml -d -s SOME-ENCRYPTED-TEXT    # Decrypt some text
