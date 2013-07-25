@@ -51,6 +51,18 @@ This creates a public and private key with default names in the default location
     $ eyaml -e -s text                # Encrypt some text
     $ eyaml -e -p                     # Encrypt a password (prompt for it)
 
+    You can also specify the name of the value and the output style (block or string) so that you can
+    redirect the output directly to a file:
+
+    $ eyaml -e -n my-secret -s "Secret Text" -o block
+
+    returns:
+
+    $ my-secret: >
+    $   ENC[...
+    $   .......
+    $   ......]
+
 ### Decryption
 
     To decrypt something, you need the public_key and the private_key on the puppet master.
