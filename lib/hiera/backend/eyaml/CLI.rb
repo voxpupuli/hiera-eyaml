@@ -11,8 +11,6 @@ module Hiera
     module Eyaml
       class CLI
 
-        DEFAULT_ENCRYPTION = "pkcs7"
-
         def self.parse
 
           options = Trollop::options do
@@ -28,7 +26,7 @@ Usage:
             opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
             opt :decrypt, "Decrypt something"
             opt :encrypt, "Encrypt something"
-            opt :edit, "Decrypt, Edit, and Reencrypt"
+            opt :edit, "Decrypt, Edit, and Reencrypt", :type => :string
             opt :eyaml, "Source input is an eyaml file", :type => :string
             opt :password, "Source input is a password entered on the terminal", :short => 'p'
             opt :string, "Source input is a string provided as an argument", :short => 's', :type => :string
@@ -40,16 +38,18 @@ Usage:
           end
 
           actions = [:createkeys, :decrypt, :encrypt, :edit].collect {|x| x if options[x]}.compact
-          sources = [:eyaml, :password, :string, :file].collect {|x| x if options[x]}.compact
+          sources = [:edit, :eyaml, :password, :string, :file].collect {|x| x if options[x]}.compact
 
           Trollop::die "You can only specify one of (#{actions.join(', ')})" if actions.count > 1
           Trollop::die "You can only specify one of (#{sources.join(', ')})" if sources.count > 1
           Trollop::die "Creating keys does not require a source to encrypt/decrypt" if actions.first == :createkeys and sources.count > 0
 
-          source = sources.first
-          action = actions.first
+          options[:source] = sources.first
+          options[:action] = actions.first
 
-          options[:input_data] = case source
+          Trollop::die "Nothing to do" if options[:source].nil? or options[:action].nil?
+
+          options[:input_data] = case options[:source]
           when :password
             Utils.read_password
           when :string
@@ -59,46 +59,43 @@ Usage:
           when :eyaml
             File.read options[:eyaml]
           else
-            nil
+            if options[:edit]
+              options[:eyaml] = options[:edit]
+              options[:source] = :eyaml
+              File.read options[:edit] 
+            else
+              nil
+            end
           end
 
           encryptions = {}
 
-          if [:password, :string, :file].include? source and action == :encrypt
+          if [:password, :string, :file].include? options[:source] and options[:action] == :encrypt
             encryptions[ options[:encrypt_method] ] = nil
-          elsif action == :createkeys
+          elsif options[:action] == :createkeys
             encryptions[ options[:encrypt_method] ] = nil
           else
             options[:input_data].gsub( /ENC\[([^\]]+,)?([^\]]*)\]/ ) { |match|
               encryption_method = $1
-              encryption_method = DEFAULT_ENCRYPTION if encryption_method.nil?
+              encryption_method = Utils.default_encryption if encryption_method.nil?
               encryptions[ encryption_method ] = nil
             }
           end
 
-          encryptions.keys.each do |encryption_method|
-            encryptor = nil
-            encryptor_class = nil
-            begin
-              require "hiera/backend/eyaml/encryptors/#{encryption_method}"
-            rescue LoadError
-              raise StandardError, "Encryption method #{encryption_method} not available. Have you tried gem install hiera-eyaml-#{encryption_method} ?"
-            end
-            encryptions[ encryption_method ] = Utils.find_encryptor encryption_method
-          end
+          encryptions = Utils.get_encryptors encryptions
 
           options[:encryptions] = encryptions
 
-          { :action => action, :options => options }
+          options 
 
         end
 
-        def self.execute args
+        def self.execute options
 
-          action = args[:action]
+          action = options[:action]
 
           action_class = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Actions').const_get("#{Utils.camelcase action.to_s}Action")
-          puts action_class.execute args[:options]
+          puts action_class.execute options
 
         end          
 

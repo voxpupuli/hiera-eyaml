@@ -1,13 +1,12 @@
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/decrypt'
+require 'hiera/backend/eyaml/utils'
 require 'yaml'
 
 class Hiera
   module Backend
     class Eyaml_backend
-
-      DEFAULT_ENCRYPTION_TYPE='pkcs7'
-
+      
       def initialize
       end
 
@@ -87,7 +86,7 @@ class Hiera
 
           plaintext = value.gsub( /ENC\[(^\])*\]/ ) { |match|
             encoded_parts = $1.gsub(/[ \n]/, '').split(',')
-            encoded_parts.unshift DEFAULT_ENCRYPTION_TYPE if encoded_parts.length == 1
+            encoded_parts.unshift Utils.default_encryption if encoded_parts.length == 1
 
             ciphertext_part = cipher_parts.last
             cipherscheme = cipher_parts.first

@@ -6,6 +6,10 @@ module Hiera
     module Eyaml
       class Utils
 
+        def self.default_encryption
+          "PKCS7"
+        end
+
         def self.ensure_key_dir_exists key_file
           key_dir = File.dirname key_file
 
@@ -32,17 +36,16 @@ module Hiera
 
           case structure
           when "examples"
-            puts "string: #{data_as_string}\n\n"
-            puts "OR\n\n"
-            puts "block: >"
-            puts "    #{data_as_block}"
+            "string: #{data_as_string}\n\n" +
+            "OR\n\n" +
+            "block: >\n" +
+            "    #{data_as_block}" 
           when "block"
-            puts "    #{data_as_block}" 
+            "    #{data_as_block}" 
           when "string"
-            puts "#{data_as_string}"
+            "#{data_as_string}"
           else
-            puts "raw output:"
-            puts data.to_s
+            data.to_s
           end
 
         end
@@ -55,7 +58,7 @@ module Hiera
         end
 
         def self.secure_file_delete args
-          file = args[:file]
+          file = File.open(args[:file], 'r+')
           num_bytes = args[:num_bytes]
           [0xff, 0x55, 0xaa, 0x00].each do |byte|
             file.seek(0, IO::SEEK_SET)
@@ -99,6 +102,21 @@ module Hiera
           raise StandardError, "Could not find encryptor: #{encryptor_name}. Try gem install hiera-eyaml-#{encryptor_name} ?" if encryptor_class.nil?
           encryptor_class
         end
+
+        def self.get_encryptors encryptions
+          encryptions.keys.each do |encryption_method|
+            encryptor = nil
+            encryptor_class = nil
+            begin
+              require "hiera/backend/eyaml/encryptors/#{encryption_method}"
+            rescue LoadError
+              raise StandardError, "Encryption method #{encryption_method} not available. Have you tried gem install hiera-eyaml-#{encryption_method} ?"
+            end
+            encryptions[ encryption_method ] = Utils.find_encryptor encryption_method
+          end
+          encryptions
+        end
+
 
       end
     end

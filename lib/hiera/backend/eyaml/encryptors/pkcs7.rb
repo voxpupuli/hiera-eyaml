@@ -7,9 +7,9 @@ module Hiera
     module Eyaml
       module Encryptors
 
-        ENCRYPT_TAG = "PKCS7"
-
         class Pkcs7 < Encryptor
+
+          ENCRYPT_TAG = "PKCS7"
 
           def encrypt_string plaintext
 

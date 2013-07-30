@@ -2,11 +2,6 @@ module Hiera
   module Backend
     module Eyaml
 
-      ENCRYPTED_BLOCK = />\n(\s*)ENC\[(${ENCRYPT_TAG},)?([a-zA-Z0-9+\/ \n]+)\]/
-      ENCRYPTED_STRING = /ENC\[(${ENCRYPT_TAG},)?([a-zA-Z0-9+\/]+)\]/
-      DECRYPTED_BLOCK = />\n(\s*)ENC!\[(${ENCRYPT_TAG},)?(.+)\]!ENC/
-      DECRYPTED_STRING = /ENC!\[(${ENCRYPT_TAG},)?(.+)\]!ENC/
-
       class Encryptor
 
         attr_accessor :options
@@ -17,19 +12,29 @@ module Hiera
         end
 
         def encrypt
-          case @options[:data_type]
-          when :eyaml_file
+
+          regex_decrypted_block = />\n(\s*)DEC(::#{self.class::ENCRYPT_TAG})\[(.+)\]/
+          regex_decrypted_string = /DEC(::#{self.class::ENCRYPT_TAG})\[(.+)\]/
+          if self.class.name.split('::').last.upcase == Utils.default_encryption
+            regex_decrypted_block = />\n(\s*)DEC(::#{self.class::ENCRYPT_TAG})?\[(.+)\]/
+            regex_decrypted_string = /DEC(::#{self.class::ENCRYPT_TAG})?\[(.+)\]/
+          end
+
+          case @options[:source]
+          when :eyaml
 
             # blocks
-            output = input_data.gsub( DECRYPTED_BLOCK ) { |match|
+            output = @input_data.gsub( regex_decrypted_block ) { |match|
               indentation = $1
-              ciphertext = encrypt_string($2).gsub(/\n/, "\n" + indentation)
+              encryption_method = $2
+              ciphertext = encrypt_string($3).gsub(/\n/, "\n" + indentation)
               ">\n" + indentation + "ENC[" + ciphertext + "]"
             }
 
             # strings
-            output.gsub( DECRYPTED_STRING ) { |match|
-              ciphertext = encrypt_string($1).gsub(/\n/, "")
+            output.gsub( regex_decrypted_string ) { |match|
+              encryption_method = $1
+              ciphertext = encrypt_string($2).gsub(/\n/, "")
               "ENC[" + ciphertext + "]"
             }
 
@@ -39,27 +44,37 @@ module Hiera
         end
 
         def decrypt
-          case @options[:data_type]
-          when :eyaml_file
+
+          regex_encrypted_block = />\n(\s*)ENC\[(#{self.class::ENCRYPT_TAG},)([a-zA-Z0-9\+\/ \n]+)\]/
+          regex_encrypted_string = /ENC\[(#{self.class::ENCRYPT_TAG},)([a-zA-Z0-9\+\/]+)\]/
+          if self.class.name.split('::').last.upcase == Utils.default_encryption
+            regex_encrypted_block = />\n(\s*)ENC\[(#{self.class::ENCRYPT_TAG},)?([a-zA-Z0-9\+\/ \n]+)\]/
+            regex_encrypted_string = /ENC\[(#{self.class::ENCRYPT_TAG},)?([a-zA-Z0-9\+\/]+)\]/
+          end
+
+          case @options[:source]
+          when :eyaml
 
             # blocks
-            output = @input_data.gsub( ENCRYPTED_BLOCK ) { |match|
+            output = @input_data.gsub( regex_encrypted_block ) { |match|
               indentation = $1
+              encryption_method = $2
               ciphertext = $3.gsub(/[ \n]/, '')
               plaintext = decrypt_string(ciphertext)
-              ">\n" + indentation + "ENC![#{ENCRYPT_TAG}," + plaintext + "]!ENC"
+              ">\n" + indentation + "DEC::#{self.class::ENCRYPT_TAG}[" + plaintext + "]"
             }
 
             # strings
-            output.gsub( ENCRYPTED_STRING ) { |match|
+            output.gsub!( regex_encrypted_string ) { |match|
+              encryption_method = $1
               plaintext = decrypt_string($2)
-              "ENC![#{ENCRYPT_TAG}," + plaintext + "]!ENC"
+              "DEC::#{self.class::ENCRYPT_TAG}[" + plaintext + "]"
             }
 
             output
           else
 
-            output = @input_data.gsub( ENCRYPTED_STRING ) { |match|
+            output = @input_data.gsub( regex_encrypted_string ) { |match|
               decrypt_string($2)
             } 
 
