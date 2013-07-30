@@ -46,6 +46,7 @@ Usage:
 
           options[:source] = sources.first
           options[:action] = actions.first
+          options[:source] = :not_applicable if options[:action] == :createkeys
 
           Trollop::die "Nothing to do" if options[:source].nil? or options[:action].nil?
 
