@@ -28,18 +28,18 @@ module Hiera
               indentation = $1
               encryption_method = $2
               ciphertext = encrypt_string($3).gsub(/\n/, "\n" + indentation)
-              ">\n" + indentation + "ENC[" + ciphertext + "]"
+              ">\n" + indentation + "ENC[#{self.class::ENCRYPT_TAG},#{ciphertext}]"
             }
 
             # strings
             output.gsub( regex_decrypted_string ) { |match|
               encryption_method = $1
               ciphertext = encrypt_string($2).gsub(/\n/, "")
-              "ENC[" + ciphertext + "]"
+              "ENC[#{self.class::ENCRYPT_TAG},#{ciphertext}]"
             }
 
           else
-            "ENC[" + encrypt_string( @input_data ) + "]"
+            "ENC[#{self.class::ENCRYPT_TAG}," + encrypt_string( @input_data ) + "]"
           end
         end
 
