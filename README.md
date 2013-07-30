@@ -6,16 +6,17 @@ within yaml type files to be used by Puppet.
 
 More info can be found [in this corresponding post](http://themettlemonkey.wordpress.com/2013/07/15/hiera-eyaml-per-value-encrypted-backend-for-hiera-and-puppet/).
 
-The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. Simply wrap your
-encrypted string with ENC[] and place it in an eyaml file. You can mix your plain values
-in as well or separate them into different files.
+The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. Simply prefix your
+encrypted string with the encryption method (PKCS7,) wrap it with ENC[] and place it in an eyaml file. You can mix your plain values in as well or separate them into different files.
+
+Example:
 
 <pre>
 ---
 plain-property: You can see me
 
 encrypted-property: >
-    ENC[Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
+    ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
     NBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDh
     jJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4y
     l5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd
@@ -55,7 +56,7 @@ This creates a public and private key with default names in the default location
     To test decryption you can also use the eyaml tool if you have both keys
 
     $ eyaml -d -f filename               # Decrypt a file
-    $ eyaml -d -s 'ENC[.....]'           # Decrypt a string
+    $ eyaml -d -s 'ENC[PKCS7,.....]'     # Decrypt a string
 
 ### EYaml files
 
@@ -71,12 +72,12 @@ hiera-eyaml backend is pluggable, so that further encryption types can be added 
 Other encryption types (if the gems for them have been loaded) can be specified using the following formats:
 
 <pre>
-    ENC[pkcs7,SOME_ENCRYPTED_VALUE]         # a PKCS7 encrypted value
-    ENC[gpg,SOME_ENCRYPTED_VALUE]           # a GPG encrypted value (hiera-eyaml-gpg)
+    ENC[PKCS7,SOME_ENCRYPTED_VALUE]         # a PKCS7 encrypted value
+    ENC[GPG,SOME_ENCRYPTED_VALUE]           # a GPG encrypted value (hiera-eyaml-gpg)
     ... etc ...
 </pre>
 
-When editing eyaml files, you will see that the plaintext placeholder also contains the encryption method:
+When editing eyaml files, you will see that the unencrypted plaintext is marked in such a way as to identify the encryption method. This is so that the eyaml tool knows to encrypt it back using the correct method afterwards:
 
 <pre>
 some_key: DEC::PKCS7[very secret password]!
@@ -104,9 +105,9 @@ To use eyaml with hiera and puppet, first configure hiera.yaml to use the eyaml 
 
     # Optional. Default is /etc/hiera/keys/
     :private_key_dir: /new/path/to/key/private_key.pem
-
     # Optional. Default is /etc/hiera/keys/
     :public_key_dir:  /new/path/to/key/public_key.pem
+
 </pre>
 
 Then, edit your hiera yaml files (renaming them with the .eyaml extension), and insert your encrypted values:
@@ -116,7 +117,7 @@ Then, edit your hiera yaml files (renaming them with the .eyaml extension), and 
 plain-property: You can see me
 
 cipher-property : >
-    ENC[Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
+    ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
     NBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDh
     jJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4y
     l5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd
@@ -141,7 +142,7 @@ things:
     - thing 1
     -   - nested thing 1.0
         - >
-            ENC[Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
+            ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
             NBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDh
             jJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4y
             l5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd
@@ -150,6 +151,11 @@ things:
     -   - nested thing 2.0
         - nested thing 2.1
 </pre>
+
+Notes
+=====
+
+If you do not specify an encryption method within ENC[] tags, it will be assumed to be PKCS7
 
 Authors
 =======
