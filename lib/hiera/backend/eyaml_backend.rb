@@ -79,37 +79,43 @@ class Hiera
 
       def decrypt(value, scope)
 
+        # debug "Attempting to decrypt: #{value}"
         if encrypted? value
 
           private_key_dir = Backend.parse_string(Config[:eyaml][:private_key_dir], scope) || '/etc/hiera/keys'
           public_key_dir = Backend.parse_string(Config[:eyaml][:public_key_dir], scope) || '/etc/hiera/keys'
 
-          plaintext = value.gsub( /ENC\[(^\])*\]/ ) { |match|
-            encoded_parts = $1.gsub(/[ \n]/, '').split(',')
-            encoded_parts.unshift Utils.default_encryption if encoded_parts.length == 1
 
-            ciphertext_part = cipher_parts.last
-            cipherscheme = cipher_parts.first
+          plaintext = value.gsub( /ENC\[([^\]]*)\]/ ) { |match|
+            encrypted_value = match.to_s
+            encrypted_info = $1.gsub(/[ \n]/, '').split(',')
+            encrypted_info.unshift Hiera::Backend::Eyaml::Utils.default_encryption if encrypted_info.length == 1
+
+            encryption_method = encrypted_info.first.downcase
 
             encryptor_class = nil
             begin
-              require "hiera/backend/eyaml/encryptors/#{cipherscheme}"
-              encryptor_class = Module.const_get('hiera').const_get('backend').const_get('eyaml').const_get('encryptors').const_get(cipherscheme)
+              require "hiera/backend/eyaml/encryptors/#{encryption_method}"
+              cipher_class = Hiera::Backend::Eyaml::Utils.camelcase( encryption_method )
+              encryptor_class = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Encryptors').const_get(cipher_class)
             rescue
-              raise StandardError, "Encryption method #{cipherscheme} not available. Gem install hiera-eyaml-#{cipherscheme} ?"
+              raise StandardError, "Encryption method #{encryption_method} not available. Try gem install hiera-eyaml-#{cipherscheme} ?"
             end
 
-            options = {:input_data => ciphertext_part, 
-                       :encryptions => { cipherscheme => encryptor_class }, 
-                       :private_key_dir => private_key_path, 
-                       :public_key_dir => public_key_path }
+            options = {:input_data => encrypted_value, 
+                       :encryptions => { encryption_method => encryptor_class }, 
+                       :private_key_dir => private_key_dir, 
+                       :public_key_dir => public_key_dir,
+                       :output => "raw" }
 
-            debug("Decrypting value: #{ciphertext}, using method: #{cipherscheme}")
+            debug("Decrypting value: #{encrypted_value}, using method: #{encryption_method}")
             begin
-              plaintext_part = Hiera::Backend::Eyaml::Actions::Decrypt.execute options
+              plaintext_part = Hiera::Backend::Eyaml::Actions::DecryptAction.execute options
             rescue
               raise Exception, "Hiera eyaml backend: Unable to decrypt hiera data. Do the keys match and are they the same as those used to encrypt?"
             end
+
+            # debug "plaintext: #{plaintext_part}"
 
             plaintext_part
           }
@@ -117,12 +123,13 @@ class Hiera
           plaintext
 
         else
+          debug "value was not encrypted"
           value
         end
       end
 
       def encrypted?(value)
-        if value.match('/ENC\[.*?\]')
+        if value.match(/.*ENC\[.*?\]/)
           true
         else
           false
