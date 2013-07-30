@@ -1,7 +1,7 @@
 require 'highline/import'
 require 'tempfile'
 
-module Hiera
+class Hiera
   module Backend
     module Eyaml
       class Utils

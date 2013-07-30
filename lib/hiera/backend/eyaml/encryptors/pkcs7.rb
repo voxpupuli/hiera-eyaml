@@ -2,7 +2,7 @@ require 'openssl'
 require 'base64'
 require 'hiera/backend/eyaml/encryptor'
 
-module Hiera
+class Hiera
   module Backend
     module Eyaml
       module Encryptors

@@ -1,4 +1,4 @@
-module Hiera
+class Hiera
   module Backend
     module Eyaml
 

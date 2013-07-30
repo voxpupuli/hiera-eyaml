@@ -6,7 +6,7 @@ require 'hiera/backend/eyaml/actions/decrypt_action'
 require 'hiera/backend/eyaml/actions/encrypt_action'
 require 'hiera/backend/eyaml/actions/edit_action'
 
-module Hiera
+class Hiera
   module Backend
     module Eyaml
       class CLI

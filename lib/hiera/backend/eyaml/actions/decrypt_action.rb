@@ -1,6 +1,6 @@
 require 'hiera/backend/eyaml/utils'
 
-module Hiera
+class Hiera
   module Backend
     module Eyaml
       module Actions

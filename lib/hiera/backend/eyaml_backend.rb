@@ -1,5 +1,5 @@
 require 'hiera/backend/eyaml/encryptor'
-require 'hiera/backend/eyaml/decrypt'
+require 'hiera/backend/eyaml/actions/decrypt_action'
 require 'hiera/backend/eyaml/utils'
 require 'yaml'
 
