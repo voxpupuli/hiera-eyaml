@@ -33,7 +33,7 @@ def get_input(options)
   return options[:string] if options[:string]
 
   if options[:password]
-    ask("Enter password: ") {|q| q.echo = "*" }
+    return ask("Enter password: ") {|q| q.echo = "*" }
   end
 
   get_file_input(options)
