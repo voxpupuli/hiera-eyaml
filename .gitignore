@@ -3,3 +3,4 @@
 *.gradle
 keys/*.pem
 pkg/
+tmp/
