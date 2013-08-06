@@ -40,7 +40,7 @@ class Hiera
 
             encrypted_output = EncryptAction.execute encrypt_options
 
-            File.open("#{options[:eyaml]}.new", 'w') { |file| 
+            File.open("#{options[:eyaml]}", 'w') { |file| 
               file.write encrypted_output
             }
 

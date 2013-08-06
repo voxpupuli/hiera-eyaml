@@ -108,9 +108,9 @@ class Hiera
             encryptor = nil
             encryptor_class = nil
             begin
-              require "hiera/backend/eyaml/encryptors/#{encryption_method}"
+              require "hiera/backend/eyaml/encryptors/#{encryption_method.downcase}"
             rescue LoadError
-              raise StandardError, "Encryption method #{encryption_method} not available. Have you tried gem install hiera-eyaml-#{encryption_method} ?"
+              raise StandardError, "Encryption method #{encryption_method} not available. Have you tried gem install hiera-eyaml-#{encryption_method.downcase} ?"
             end
             encryptions[ encryption_method ] = Utils.find_encryptor encryption_method
           end

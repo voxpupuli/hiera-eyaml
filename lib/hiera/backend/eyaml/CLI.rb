@@ -20,7 +20,12 @@ class Hiera
 Hiera-eyaml is a backend for Hiera which provides OpenSSL encryption/decryption for Hiera properties
 
 Usage:
-  eyaml [options] [string-to-encrypt]
+  eyaml [options] 
+  eyaml -i file.eyaml       # edit a file
+  eyaml -e -s some-string   # encrypt a string
+  eyaml -e -p               # encrypt a password 
+  eyaml -e -f file.txt      # encrypt a file
+  cat file.txt | eyaml -e   # encrypt a file on a pipe
   EOS
           
             opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
@@ -31,14 +36,15 @@ Usage:
             opt :password, "Source input is a password entered on the terminal", :short => 'p'
             opt :string, "Source input is a string provided as an argument", :short => 's', :type => :string
             opt :file, "Source input is a file", :short => 'f', :type => :string
-            opt :private_key_dir, "Directory containing private_keys", :type => :string, :default => "./keys"
-            opt :public_key_dir, "Directory containing public keys", :type => :string, :default => "./keys"
             opt :encrypt_method, "Encryption method (only if encrypting a password, string or regular file)", :default => "pkcs7"
             opt :output, "Output format of final result (examples, block, string)", :type => :string, :default => "examples"
+            opt :private_key_dir, "Keydir", :type => :string, :default => "./keys"
+            opt :public_key_dir, "Keydir", :type => :string, :default => "./keys"
           end
 
           actions = [:createkeys, :decrypt, :encrypt, :edit].collect {|x| x if options[x]}.compact
           sources = [:edit, :eyaml, :password, :string, :file].collect {|x| x if options[x]}.compact
+          # sources << :stdin if STDIN
 
           Trollop::die "You can only specify one of (#{actions.join(', ')})" if actions.count > 1
           Trollop::die "You can only specify one of (#{sources.join(', ')})" if sources.count > 1
@@ -59,6 +65,8 @@ Usage:
             File.read options[:file]
           when :eyaml
             File.read options[:eyaml]
+          when :stdin
+            STDIN.read
           else
             if options[:edit]
               options[:eyaml] = options[:edit]
@@ -77,7 +85,7 @@ Usage:
             encryptions[ options[:encrypt_method] ] = nil
           else
             options[:input_data].gsub( /ENC\[([^\]]+,)?([^\]]*)\]/ ) { |match|
-              encryption_method = $1
+              encryption_method = $1.split(",").first if $1
               encryption_method = Utils.default_encryption if encryption_method.nil?
               encryptions[ encryption_method ] = nil
             }

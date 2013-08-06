@@ -13,11 +13,11 @@ class Hiera
 
         def encrypt
 
-          regex_decrypted_block = />\n(\s*)DEC(::#{self.class::ENCRYPT_TAG})\[(.+)\]/
-          regex_decrypted_string = /DEC(::#{self.class::ENCRYPT_TAG})\[(.+)\]/
+          regex_decrypted_block = />\n(\s*)DEC(::#{self.class::ENCRYPT_TAG})\[(.+)\]\!/
+          regex_decrypted_string = /DEC(::#{self.class::ENCRYPT_TAG})\[(.+)\]\!/
           if self.class.name.split('::').last.upcase == Utils.default_encryption
-            regex_decrypted_block = />\n(\s*)DEC(::#{self.class::ENCRYPT_TAG})?\[(.+)\]/
-            regex_decrypted_string = /DEC(::#{self.class::ENCRYPT_TAG})?\[(.+)\]/
+            regex_decrypted_block = />\n(\s*)DEC(::#{self.class::ENCRYPT_TAG})?\[(.+)\]\!/
+            regex_decrypted_string = /DEC(::#{self.class::ENCRYPT_TAG})?\[(.+)\]\!/
           end
 
           case @options[:source]
@@ -45,11 +45,11 @@ class Hiera
 
         def decrypt
 
-          regex_encrypted_block = />\n(\s*)ENC\[(#{self.class::ENCRYPT_TAG},)([a-zA-Z0-9\+\/ \n]+)\]/
-          regex_encrypted_string = /ENC\[(#{self.class::ENCRYPT_TAG},)([a-zA-Z0-9\+\/]+)\]/
+          regex_encrypted_block = />\n(\s*)ENC\[(#{self.class::ENCRYPT_TAG},)([a-zA-Z0-9\+\/ =\n]+)\]/
+          regex_encrypted_string = /ENC\[(#{self.class::ENCRYPT_TAG},)([a-zA-Z0-9\+\/=]+)\]/
           if self.class.name.split('::').last.upcase == Utils.default_encryption
-            regex_encrypted_block = />\n(\s*)ENC\[(#{self.class::ENCRYPT_TAG},)?([a-zA-Z0-9\+\/ \n]+)\]/
-            regex_encrypted_string = /ENC\[(#{self.class::ENCRYPT_TAG},)?([a-zA-Z0-9\+\/]+)\]/
+            regex_encrypted_block = />\n(\s*)ENC\[(#{self.class::ENCRYPT_TAG},)?([a-zA-Z0-9\+\/ =\n]+)\]/
+            regex_encrypted_string = /ENC\[(#{self.class::ENCRYPT_TAG},)?([a-zA-Z0-9\+\/=]+)\]/
           end
 
           case @options[:source]
@@ -58,17 +58,19 @@ class Hiera
             # blocks
             output = @input_data.gsub( regex_encrypted_block ) { |match|
               indentation = $1
-              encryption_method = $2
+              encryption_method = $2.split(',').first
+              encryption_method = Utils.default_encryption if encryption_method.nil?
               ciphertext = $3.gsub(/[ \n]/, '')
               plaintext = decrypt_string(ciphertext)
-              ">\n" + indentation + "DEC::#{self.class::ENCRYPT_TAG}[" + plaintext + "]"
+              ">\n" + indentation + "DEC::#{self.class::ENCRYPT_TAG}[" + plaintext + "]!"
             }
 
             # strings
             output.gsub!( regex_encrypted_string ) { |match|
-              encryption_method = $1
+              encryption_method = $1.split(',').first
+              encryption_method = Utils.default_encryption if encryption_method.nil?
               plaintext = decrypt_string($2)
-              "DEC::#{self.class::ENCRYPT_TAG}[" + plaintext + "]"
+              "DEC::#{self.class::ENCRYPT_TAG}[" + plaintext + "]!"
             }
 
             output
