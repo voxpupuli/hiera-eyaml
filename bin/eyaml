@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
 require 'hiera/backend/eyaml/CLI'
 
 configuration = Hiera::Backend::Eyaml::CLI.parse

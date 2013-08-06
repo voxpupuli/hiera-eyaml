@@ -17,5 +17,5 @@ Feature: eyaml encrypting
     Then the output should match /ENC\[PKCS7,(.*?)\]$/
 
   Scenario: encrypt a password
-    When I run `./with_password eyaml -e -o string -p`
+    When I run `./supply_password.sh eyaml -e -o string -p`
     Then the file "password.output" should match /ENC\[PKCS7,(.*?)\]/
