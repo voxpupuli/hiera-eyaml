@@ -1,6 +1,7 @@
 require 'openssl'
 require 'base64'
 require 'hiera/backend/eyaml/encryptor'
+require 'hiera/backend/eyaml/utils'
 
 class Hiera
   module Backend
@@ -46,6 +47,11 @@ class Hiera
 
             # Try to do equivalent of:
             # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
+
+            if File.file? "#{options[:private_key_dir]}/private_key.pkcs7.pem" or
+               File.file? "#{options[:public_key_dir]}/public_key.pkcs7.pem"
+               return unless Utils::confirm? "Are you sure you want to overwrite your existing keys? (#{options[:private_key_dir]}/private_key.pkcs7.pem, #{options[:public_key_dir]}/public_key.pkcs7.pem)"
+            end
 
             key = OpenSSL::PKey::RSA.new(2048)
             open( "#{options[:private_key_dir]}/private_key.pkcs7.pem", "w" ) do |io|
