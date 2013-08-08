@@ -10,6 +10,13 @@ class Hiera
 
         class Pkcs7 < Encryptor
 
+          def self.register
+            Hiera::Backend::Eyaml::Plugins.register_options([
+              { :name => :private_key_dir, :desc => "Private key directory", :type => :string, :default => "./keys" },
+              { :name => :public_key_dir, :desc => "Public key directory", :type => :string, :default => "./keys" }
+            ])
+          end
+
           ENCRYPT_TAG = "PKCS7"
 
           def encrypt_string plaintext

@@ -2,6 +2,12 @@
 
 require 'rubygems'
 require 'hiera/backend/eyaml/CLI'
+require 'hiera/backend/eyaml/plugins'
+require 'hiera/backend/eyaml/encryptors/pkcs7'
+
+# Register all plugins
+Hiera::Backend::Eyaml::Encryptors::Pkcs7.register
+Hiera::Backend::Eyaml::Plugins.find
 
 configuration = Hiera::Backend::Eyaml::CLI.parse
 Hiera::Backend::Eyaml::CLI.execute configuration

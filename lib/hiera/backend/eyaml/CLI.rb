@@ -5,6 +5,7 @@ require 'hiera/backend/eyaml/actions/createkeys_action'
 require 'hiera/backend/eyaml/actions/decrypt_action'
 require 'hiera/backend/eyaml/actions/encrypt_action'
 require 'hiera/backend/eyaml/actions/edit_action'
+require 'hiera/backend/eyaml/plugins'
 
 class Hiera
   module Backend
@@ -39,8 +40,11 @@ Usage:
             opt :stdin, "Source input it taken from stdin", :short => 'z'
             opt :encrypt_method, "Override default encryption and decryption method (default is PKCS7)", :short => 'n', :default => "pkcs7"
             opt :output, "Output format of final result (examples, block, string)", :type => :string, :default => "examples"
-            opt :private_key_dir, "Keydir", :type => :string, :default => "./keys"
-            opt :public_key_dir, "Keydir", :type => :string, :default => "./keys"
+
+            Hiera::Backend::Eyaml::Plugins.options.each do |option|
+              opt option[:name], option[:desc], :type => option[:type], :short => option[:short], :default => option[:default]
+            end
+
           end
 
           actions = [:createkeys, :decrypt, :encrypt, :edit].collect {|x| x if options[x]}.compact
