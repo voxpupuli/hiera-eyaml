@@ -6,8 +6,13 @@ class Hiera
     module Eyaml
       class Utils
 
+        def self.override_default_encryption new_encryption
+          @@default_encryption_method = new_encryption
+        end
+
         def self.default_encryption
-          "PKCS7"
+          @@default_encryption_method ||= "PKCS7"
+          @@default_encryption_method
         end
 
         def self.ensure_key_dir_exists key_file

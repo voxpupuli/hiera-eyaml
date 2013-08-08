@@ -29,6 +29,7 @@ Feature: eyaml editing
     And the output should match /\s+DEC::PKCS7\[key4\]\!: value4/
     And the output should match /\s+key5: DEC::PKCS7\[value5\]\!/
     And the output should match /\s+key6: DEC::PKCS7\[value6\]\!/
+    And the output should match /multi_encryption: DEC::PLAINTEXT\[jammy\]\! DEC::PKCS7\[dodger\]!/
 
   Scenario: decrypt and reencrypt an eyaml file
     Given my EDITOR is set to "./convert_decrypted_values_to_uppercase.sh"
@@ -54,3 +55,4 @@ Feature: eyaml editing
     And the output should match /\s+DEC::PKCS7\[KEY4\]\!: value4/
     And the output should match /\s+key5: DEC::PKCS7\[VALUE5\]\!/
     And the output should match /\s+key6: DEC::PKCS7\[VALUE6\]\!/
+    And the output should match /multi_encryption: DEC::PLAINTEXT\[JAMMY\]\! DEC::PKCS7\[DODGER\]\!/

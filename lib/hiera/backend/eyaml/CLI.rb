@@ -37,7 +37,7 @@ Usage:
             opt :string, "Source input is a string provided as an argument", :short => 's', :type => :string
             opt :file, "Source input is a file", :short => 'f', :type => :string
             opt :stdin, "Source input it taken from stdin", :short => 'z'
-            opt :encrypt_method, "Encryption method (only if encrypting a password, string or regular file)", :default => "pkcs7"
+            opt :encrypt_method, "Override default encryption and decryption method (default is PKCS7)", :short => 'n', :default => "pkcs7"
             opt :output, "Output format of final result (examples, block, string)", :type => :string, :default => "examples"
             opt :private_key_dir, "Keydir", :type => :string, :default => "./keys"
             opt :public_key_dir, "Keydir", :type => :string, :default => "./keys"
@@ -80,6 +80,7 @@ Usage:
             end
           end
 
+          Utils.override_default_encryption options[:encrypt_method].upcase if options[:encrypt_method]
           encryptions = {}
 
           if [:password, :string, :file, :stdin].include? options[:source] and options[:action] == :encrypt
