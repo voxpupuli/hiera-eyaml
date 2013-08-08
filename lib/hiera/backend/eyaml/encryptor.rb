@@ -58,6 +58,7 @@ class Hiera
             # blocks
             output = @input_data.gsub( regex_encrypted_block ) { |match|
               indentation = $1
+              next if $2.nil? and self.class.name.split('::').last.upcase != Utils.default_encryption
               encryption_method = if $2.nil? then Utils.default_encryption else $2.split(',').first end
               ciphertext = $3.gsub(/[ \n]/, '')
               plaintext = decrypt_string(ciphertext)
@@ -66,6 +67,7 @@ class Hiera
 
             # strings
             output.gsub!( regex_encrypted_string ) { |match|
+              next if $1.nil? and self.class.name.split('::').last.upcase != Utils.default_encryption
               encryption_method = if $1.nil? then Utils.default_encryption else $1.split(',').first end
               plaintext = decrypt_string($2)
               "DEC::#{self.class::ENCRYPT_TAG}[" + plaintext + "]!"

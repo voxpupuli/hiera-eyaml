@@ -22,5 +22,5 @@ Feature: eyaml encrypting
 
   Scenario: encrypt using STDIN
     When I run `./pipe_string.sh encrypt_me eyaml -e -o string --stdin`
-    Then the output should match /ENC\[PKCS7,(.*?)/]$/
+    Then the output should match /ENC\[PKCS7,(.*?)\]$/
   
