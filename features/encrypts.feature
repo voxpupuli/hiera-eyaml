@@ -19,3 +19,8 @@ Feature: eyaml encrypting
   Scenario: encrypt a password
     When I run `./supply_password.sh eyaml -e -o string -p`
     Then the file "password.output" should match /ENC\[PKCS7,(.*?)\]/
+
+  Scenario: encrypt using STDIN
+    When I run `./pipe_string.sh encrypt_me eyaml -e -o string --stdin`
+    Then the output should match /ENC\[PKCS7,(.*?)/]$/
+  

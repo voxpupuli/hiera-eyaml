@@ -38,4 +38,9 @@ Feature: eyaml decrypting
     And the output should match /\s+key5: DEC::PKCS7\[value5\]\!/
     And the output should match /\s+key6: DEC::PKCS7\[value6\]\!/
 
+  Scenario: decrypt using STDIN
+    When I run `./pipe_string.sh ENC[MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAwDQYJKoZIhvcNAQEBBQAEggEAJsIbL+DE4b5mbT4ozzsGximhweXkJakBXRNqi/TOBV5RnMjlAhik2NQGyZdrg4fmQynyQvI7lKPos5bmqT6Ltk0XxfL0l1x8MIdVLDu7JG72a+5bbU7EK/PlhwaeJ0QpnA0M34koNykSmcvdVUoIDag71lqw4Hmk8JQuXmo95gP0sXHvlahgxR522Z8MTEitfimtZPnHJVMjQEnBHIwXLkEfqUHH3RciED3AkeU+En63Ou7Nq1SqoC4ln0oL1L2gRqsyEKWF/cigcZfAggh9rva6wlthh+Fj7yJy7ALVG/AXwrF1sJfTR31+RMbzPbgOHXES8P4yQvQnx6LNUSKAgDBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBCSuNScp5k8F0RKt63fkoPrgCBYbnl44Wdv5mtaJmJcc0WIUcLTpixl1IY2uQ7IiI358w==] eyaml -d --stdin`
+    Then the output should match /^one flew over the cuckoos nest$/
+
+
 

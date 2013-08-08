@@ -36,6 +36,7 @@ Usage:
             opt :password, "Source input is a password entered on the terminal", :short => 'p'
             opt :string, "Source input is a string provided as an argument", :short => 's', :type => :string
             opt :file, "Source input is a file", :short => 'f', :type => :string
+            opt :stdin, "Source input it taken from stdin", :short => 'z'
             opt :encrypt_method, "Encryption method (only if encrypting a password, string or regular file)", :default => "pkcs7"
             opt :output, "Output format of final result (examples, block, string)", :type => :string, :default => "examples"
             opt :private_key_dir, "Keydir", :type => :string, :default => "./keys"
@@ -43,7 +44,7 @@ Usage:
           end
 
           actions = [:createkeys, :decrypt, :encrypt, :edit].collect {|x| x if options[x]}.compact
-          sources = [:edit, :eyaml, :password, :string, :file].collect {|x| x if options[x]}.compact
+          sources = [:edit, :eyaml, :password, :string, :file, :stdin].collect {|x| x if options[x]}.compact
           # sources << :stdin if STDIN
 
           Trollop::die "You can only specify one of (#{actions.join(', ')})" if actions.count > 1
@@ -57,6 +58,8 @@ Usage:
           Trollop::die "Nothing to do" if options[:source].nil? or options[:action].nil?
 
           options[:input_data] = case options[:source]
+          when :stdin
+            STDIN.read
           when :password
             Utils.read_password
           when :string
@@ -79,7 +82,7 @@ Usage:
 
           encryptions = {}
 
-          if [:password, :string, :file].include? options[:source] and options[:action] == :encrypt
+          if [:password, :string, :file, :stdin].include? options[:source] and options[:action] == :encrypt
             encryptions[ options[:encrypt_method] ] = nil
           elsif options[:action] == :createkeys
             encryptions[ options[:encrypt_method] ] = nil
