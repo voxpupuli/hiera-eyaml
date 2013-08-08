@@ -9,7 +9,9 @@ Feature: eyaml editing
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml -i test_input.eyaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/
+    And the output should match /encrypted_default_encryption_string: DEC::PKCS7\[planet of the apes\]\!/
     And the output should match /encrypted_block: >\n\s+DEC::PKCS7\[gangs of new york\]\!/
+    And the output should match /encrypted_default_encryption_block: >\n\s+DEC::PKCS7\[gangs of new york\]\!/
     And the output should match /\- DEC::PKCS7\[apocalypse now\]\!/
     And the output should match /\- DEC::PKCS7\[the count of monte cristo\]\!/
     And the output should match /\- array4/
