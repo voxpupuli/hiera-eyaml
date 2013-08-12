@@ -27,6 +27,8 @@ Usage:
   eyaml -e -p               # encrypt a password 
   eyaml -e -f file.txt      # encrypt a file
   cat file.txt | eyaml -e   # encrypt a file on a pipe
+
+Options:  
   EOS
           
             opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
@@ -84,24 +86,7 @@ Usage:
             end
           end
 
-          Utils.override_default_encryption options[:encrypt_method].upcase if options[:encrypt_method]
-          encryptions = {}
-
-          if [:password, :string, :file, :stdin].include? options[:source] and options[:action] == :encrypt
-            encryptions[ options[:encrypt_method] ] = nil
-          elsif options[:action] == :createkeys
-            encryptions[ options[:encrypt_method] ] = nil
-          else
-            options[:input_data].gsub( /ENC\[([^\]]+,)?([^\]]*)\]/ ) { |match|
-              encryption_method = $1.split(",").first if $1
-              encryption_method = Utils.default_encryption if encryption_method.nil?
-              encryptions[ encryption_method ] = nil
-            }
-          end
-
-          encryptions = Utils.get_encryptors encryptions
-
-          options[:encryptions] = encryptions
+          Eyaml.default_encryption = options[:encrypt_method].upcase if options[:encrypt_method]
 
           options 
 

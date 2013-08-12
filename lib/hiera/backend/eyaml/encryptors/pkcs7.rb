@@ -1,5 +1,4 @@
 require 'openssl'
-require 'base64'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/utils'
 
@@ -10,31 +9,24 @@ class Hiera
 
         class Pkcs7 < Encryptor
 
-          def self.register
-            Hiera::Backend::Eyaml::Plugins.register_options([
-              { :name => :private_key_dir, :desc => "Private key directory", :type => :string, :default => "./keys" },
-              { :name => :public_key_dir, :desc => "Public key directory", :type => :string, :default => "./keys" }
-            ])
-          end
+          @@encryptor_options = [
+            { :name => :private_key_dir, :desc => "Private key directory", :type => :string, :default => "./keys" },
+            { :name => :public_key_dir,  :desc => "Public key directory",  :type => :string, :default => "./keys" }
+          ]
 
-          ENCRYPT_TAG = "PKCS7"
+          @@encryptor_tag = "PKCS7"
 
-          def encrypt_string plaintext
+          def encrypt plaintext
 
             public_key_pem = File.read( "#{options[:public_key_dir]}/public_key.pkcs7.pem" )
             public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
             cipher = OpenSSL::Cipher::AES.new(256, :CBC)
-            ciphertext_binary = OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
-            ciphertext_as_block = Base64.encode64(ciphertext_binary).strip
-
-            ciphertext_as_block
+            OpenSSL::PKCS7::encrypt([public_key], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
             
           end
 
-          def decrypt_string ciphertext
-
-            ciphertext_decoded = Base64.decode64(ciphertext)
+          def decrypt ciphertext
 
             private_key_pem = File.read( "#{options[:private_key_dir]}/private_key.pkcs7.pem" )
             private_key = OpenSSL::PKey::RSA.new( private_key_pem )
@@ -42,11 +34,8 @@ class Hiera
             public_key_pem = File.read( "#{options[:public_key_dir]}/public_key.pkcs7.pem" )
             public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
-            pkcs7 = OpenSSL::PKCS7.new( ciphertext_decoded )
-
-            plaintext = pkcs7.decrypt(private_key, public_key)
-
-            plaintext
+            pkcs7 = OpenSSL::PKCS7.new( ciphertext )
+            pkcs7.decrypt(private_key, public_key)
 
           end
 
@@ -55,17 +44,8 @@ class Hiera
             # Try to do equivalent of:
             # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
 
-            if File.file? "#{options[:private_key_dir]}/private_key.pkcs7.pem" or
-               File.file? "#{options[:public_key_dir]}/public_key.pkcs7.pem"
-               return unless Utils::confirm? "Are you sure you want to overwrite your existing keys? (#{options[:private_key_dir]}/private_key.pkcs7.pem, #{options[:public_key_dir]}/public_key.pkcs7.pem)"
-            end
-
             key = OpenSSL::PKey::RSA.new(2048)
-            open( "#{options[:private_key_dir]}/private_key.pkcs7.pem", "w" ) do |io|
-              io.write(key.to_pem)
-            end
-
-            puts "#{options[:private_key_dir]}/private_key.pkcs7.pem created."
+            Utils.write_important_file :filename => "#{options[:private_key_dir]}/private_key.pkcs7.pem", :content => key.to_pem
 
             name = OpenSSL::X509::Name.parse("/")
             cert = OpenSSL::X509::Certificate.new()
@@ -81,18 +61,14 @@ class Hiera
             cert.extensions = [
               ef.create_extension("basicConstraints","CA:TRUE", true),
               ef.create_extension("subjectKeyIdentifier", "hash"),
-              # ef.create_extension("keyUsage", "cRLSign,keyCertSign", true),
             ]
             cert.add_extension ef.create_extension("authorityKeyIdentifier",
                                                    "keyid:always,issuer:always")
 
             cert.sign key, OpenSSL::Digest::SHA1.new
 
-            open( "#{options[:public_key_dir]}/public_key.pkcs7.pem", "w" ) do |io|
-              io.write(cert.to_pem)
-            end
-
-            puts "#{options[:public_key_dir]}/public_key.pkcs7.pem created."
+            Utils.write_important_file :filename => "#{options[:private_key_dir]}/public_key.pkcs7.pem", :content => cert.to_pem
+            puts "Keys created"
 
           end
 

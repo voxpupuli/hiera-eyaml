@@ -22,6 +22,7 @@ class Hiera
           index = Gem::VERSION >= "1.8.0" ? Gem::Specification : Gem.source_index
 
           [index].flatten.each do |source|
+            specs = Gem::VERSION >= "1.6.0" ? source.latest_specs(true) : source.latest_specs
 
             specs.each do |spec|
               next if @@plugins.include? spec
@@ -29,7 +30,7 @@ class Hiera
               # If this gem depends on Vagrant, verify this is a valid release of
               # Vagrant for this gem to load into.
               dependency = spec.dependencies.find { |d| d.name == "hiera-eyaml" }
-              next if dependency && !dependency.requirement.satisfied_by? this_version
+              next if dependency && !dependency.requirement.satisfied_by?( this_version )
 
               file = nil
               if Gem::VERSION >= "1.8.0"

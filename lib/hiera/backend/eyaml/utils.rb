@@ -6,29 +6,6 @@ class Hiera
     module Eyaml
       class Utils
 
-        def self.override_default_encryption new_encryption
-          @@default_encryption_method = new_encryption
-        end
-
-        def self.default_encryption
-          @@default_encryption_method ||= "PKCS7"
-          @@default_encryption_method
-        end
-
-        def self.ensure_key_dir_exists key_file
-          key_dir = File.dirname key_file
-
-          unless File.directory? key_dir
-            begin
-              Dir.mkdir key_dir
-              puts "Created key directory: #{key_dir}"
-            rescue
-              raise StandardError, "Cannot create key directory: #{key_dir}"
-            end
-          end
-
-        end
-
         def self.read_password
           ask("Enter password: ") {|q| q.echo = "*" }
         end
@@ -42,26 +19,9 @@ class Hiera
           end
         end
 
-        def self.format args
-          data = args[:data]
-          data_as_block = data.split("\n").join("\n    ")
-          data_as_string = data.split("\n").join("")
-          structure = args[:structure]
-
-          case structure
-          when "examples"
-            "string: #{data_as_string}\n\n" +
-            "OR\n\n" +
-            "block: >\n" +
-            "    #{data_as_block}" 
-          when "block"
-            "    #{data_as_block}" 
-          when "string"
-            "#{data_as_string}"
-          else
-            data.to_s
-          end
-
+        def self.camelcase string
+          return string if string !~ /_/ && string =~ /[A-Z]+.*/
+          string.split('_').map{|e| e.capitalize}.join
         end
 
         def self.find_editor
@@ -92,45 +52,28 @@ class Hiera
           path
         end
 
-        def self.find_closest_class parent_class, classname
-          constants = parent_class.constants
-          candidates = []
-          constants.each do | candidate |
-            candidates << candidate.to_s if candidate.to_s.downcase == classname.downcase
+        def self.write_imporant_file filename, content
+          if File.file? "#{filename}"
+             raise StandardError, "User aborted" unless Utils::confirm? "Are you sure you want to overwrite \"#{filename}\"? (y/N): "
           end
-          if candidates.count > 0
-            parent_class.const_get candidates.first
-          else
-            nil
+          open( "#{filename}", "w" ) do |io|
+            io.write(content)
           end
         end
 
-        def self.camelcase string
-          return string if string !~ /_/ && string =~ /[A-Z]+.*/
-          string.split('_').map{|e| e.capitalize}.join
-        end
+        def self.ensure_key_dir_exists key_file
+          key_dir = File.dirname key_file
 
-        def self.find_encryptor encryptor_name
-          encryptor_module = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Encryptors')
-          encryptor_class = self.find_closest_class encryptor_module, encryptor_name
-          raise StandardError, "Could not find encryptor: #{encryptor_name}. Try gem install hiera-eyaml-#{encryptor_name} ?" if encryptor_class.nil?
-          encryptor_class
-        end
-
-        def self.get_encryptors encryptions
-          encryptions.keys.each do |encryption_method|
-            encryptor = nil
-            encryptor_class = nil
+          unless File.directory? key_dir
             begin
-              require "hiera/backend/eyaml/encryptors/#{encryption_method.downcase}"
-            rescue LoadError
-              raise StandardError, "Encryption method #{encryption_method} not available. Have you tried gem install hiera-eyaml-#{encryption_method.downcase} ?"
+              Dir.mkdir key_dir
+              puts "Created key directory: #{key_dir}"
+            rescue
+              raise StandardError, "Cannot create key directory: #{key_dir}"
             end
-            encryptions[ encryption_method ] = Utils.find_encryptor encryption_method
           end
-          encryptions
-        end
 
+        end
 
       end
     end
