@@ -1,6 +1,7 @@
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/actions/decrypt_action'
 require 'hiera/backend/eyaml/actions/encrypt_action'
+require 'hiera/backend/eyaml/options'
 
 class Hiera
   module Backend
@@ -9,9 +10,9 @@ class Hiera
   
         class EditAction
 
-          def self.execute options
+          def self.execute 
 
-            decrypted_input = DecryptAction.execute options
+            decrypted_input = DecryptAction.execute 
             decrypted_file = Utils.write_tempfile decrypted_input
             editor = Utils.find_editor
             system editor, decrypted_file
@@ -29,7 +30,7 @@ class Hiera
             encryptions = {}
             edited_file.gsub( /DEC(::[^\[]+)\[/ ) { |match|
               encryption_method = $1.slice(2, $1.length)
-              encryption_method = Utils.default_encryption if encryption_method.nil?
+              encryption_method = Utils.default_encryption_scheme if encryption_method.nil?
               encryptions[ encryption_method ] = nil
             }
             encryptions = Utils.get_encryptors encryptions

@@ -1,6 +1,7 @@
 require 'openssl'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/utils'
+require 'hiera/backend/eyaml/options'
 
 class Hiera
   module Backend
@@ -16,9 +17,11 @@ class Hiera
 
           @@encryptor_tag = "PKCS7"
 
-          def encrypt plaintext
+          def self.encrypt plaintext
 
-            public_key_pem = File.read( "#{options[:public_key_dir]}/public_key.pkcs7.pem" )
+            public_key_dir = Eyaml::Options[:public_key_dir]
+
+            public_key_pem = File.read( "#{public_key_dir}/public_key.pkcs7.pem" )
             public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
             cipher = OpenSSL::Cipher::AES.new(256, :CBC)
@@ -26,12 +29,15 @@ class Hiera
             
           end
 
-          def decrypt ciphertext
+          def self.decrypt ciphertext
 
-            private_key_pem = File.read( "#{options[:private_key_dir]}/private_key.pkcs7.pem" )
+            public_key_dir = Eyaml::Options[:public_key_dir]
+            private_key_dir = Eyaml::Options[:private_key_dir]
+
+            private_key_pem = File.read( "#{private_key_dir]}/private_key.pkcs7.pem" )
             private_key = OpenSSL::PKey::RSA.new( private_key_pem )
 
-            public_key_pem = File.read( "#{options[:public_key_dir]}/public_key.pkcs7.pem" )
+            public_key_pem = File.read( "#{public_key_dir]}/public_key.pkcs7.pem" )
             public_key = OpenSSL::X509::Certificate.new( public_key_pem )
 
             pkcs7 = OpenSSL::PKCS7.new( ciphertext )
@@ -39,13 +45,16 @@ class Hiera
 
           end
 
-          def create_keys
+          def self.create_keys
 
             # Try to do equivalent of:
             # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
 
+            public_key_dir = Eyaml::Options[:public_key_dir]
+            private_key_dir = Eyaml::Options[:private_key_dir]
+
             key = OpenSSL::PKey::RSA.new(2048)
-            Utils.write_important_file :filename => "#{options[:private_key_dir]}/private_key.pkcs7.pem", :content => key.to_pem
+            Utils.write_important_file :filename => "#{private_key_dir}/private_key.pkcs7.pem", :content => key.to_pem
 
             name = OpenSSL::X509::Name.parse("/")
             cert = OpenSSL::X509::Certificate.new()
@@ -67,9 +76,13 @@ class Hiera
 
             cert.sign key, OpenSSL::Digest::SHA1.new
 
-            Utils.write_important_file :filename => "#{options[:private_key_dir]}/public_key.pkcs7.pem", :content => cert.to_pem
+            Utils.write_important_file :filename => "#{private_key_dir}/public_key.pkcs7.pem", :content => cert.to_pem
             puts "Keys created"
 
+          end
+
+          def self.register
+            Hiera::Backend::Eyaml::Plugins.register_options @@encryptor_options
           end
 
         end

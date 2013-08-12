@@ -1,11 +1,12 @@
 require 'trollop'
-require 'hiera/backend/version'
+require 'hiera/backend/eyaml'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/actions/createkeys_action'
 require 'hiera/backend/eyaml/actions/decrypt_action'
 require 'hiera/backend/eyaml/actions/encrypt_action'
 require 'hiera/backend/eyaml/actions/edit_action'
 require 'hiera/backend/eyaml/plugins'
+require 'hiera/backend/eyaml/options'
 
 class Hiera
   module Backend
@@ -86,18 +87,17 @@ Options:
             end
           end
 
-          Eyaml.default_encryption = options[:encrypt_method].upcase if options[:encrypt_method]
-
-          options 
+          Eyaml.default_encryption_scheme = options[:encrypt_method].upcase if options[:encrypt_method]
+          Eyaml::Options.set options
 
         end
 
-        def self.execute options
+        def self.execute
 
-          action = options[:action]
-
+          action = Eyaml::Options[:action]
           action_class = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Actions').const_get("#{Utils.camelcase action.to_s}Action")
-          puts action_class.execute options
+
+          puts action_class.execute
 
         end          
 

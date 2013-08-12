@@ -1,4 +1,5 @@
 require 'hiera/backend/eyaml/utils'
+require 'hiera/backend/eyaml/options'
 
 class Hiera
   module Backend
@@ -7,41 +8,42 @@ class Hiera
 
         class DecryptAction
 
-          REGEX_ENCRYPTED_BLOCK = />\n(\s*)ENC\[(#{self.encryptor_tag},)?([a-zA-Z0-9\+\/ =\n]+)\]/
-          REGEX_ENCRYPTED_STRING = /ENC\[(#{self.encryptor_tag},)?([a-zA-Z0-9\+\/=]+)\]/
+          REGEX_ENCRYPTED_BLOCK = />\n(\s*)ENC\[(\w+,)?([a-zA-Z0-9\+\/ =\n]+)\]/
+          REGEX_ENCRYPTED_STRING = /ENC\[(\w+,)?([a-zA-Z0-9\+\/=]+)\]/
 
-          def self.execute options
+          def self.execute 
 
-            output_data = case options[:source]
+            output_data = case Eyaml::Options[:source]
             when :eyaml
               encryptions = []
 
               # blocks
-              output = options[:input_data].gsub( regex_encrypted_block ) { |match|
+              output = Eyaml::Options[:input_data].gsub( REGEX_ENCRYPTED_BLOCK ) { |match|
                 indentation = $1
                 encryption_scheme = parse_encryption_scheme( $2 )
                 decryptor = Encryptor.find encryption_scheme
                 ciphertext = $3.gsub(/[ \n]/, '')
-                plaintext = decryptor.decrypt( self.decode ciphertext )
-                ">\n" + indentation + "DEC::#{self.encryptor_tag}[" + plaintext + "]!"
+                plaintext = decryptor.decrypt( decryptor.decode ciphertext )
+                ">\n" + indentation + "DEC::#{decryptor.encryptor_tag}[" + plaintext + "]!"
               }
 
               # strings
-              output.gsub!( regex_encrypted_string ) { |match|
+              output.gsub!( REGEX_ENCRYPTED_STRING ) { |match|
                 encryption_scheme = parse_encryption_scheme( $1 )
                 decryptor = Encryptor.find encryption_scheme
 
-                plaintext = self.decrypt( self.decode $2 )
-                "DEC::#{self.encryptor_tag}[" + plaintext + "]!"
+                plaintext = decryptor.decrypt( decryptor.decode $2 )
+                "DEC::#{decryptor.encryptor_tag}[" + plaintext + "]!"
               }
 
               output
             else
 
-              output = options[:input_data].gsub( regex_encrypted_string ) { |match|
+              output = Eyaml::Options[:input_data].gsub( REGEX_ENCRYPTED_STRING ) { |match|
                 encryption_scheme = parse_encryption_scheme( $1 )
                 decryptor = Encryptor.find encryption_scheme
-                decryptor.decrypt( decode $2 )
+                puts "DECRYPTOR.CLASSNAME = #{decryptor.class.name}, METHODS = #{decryptor.class.methods}"
+                decryptor.decrypt( decryptor.decode $2 )
               } 
 
               output
@@ -54,7 +56,7 @@ class Hiera
           protected
 
             def self.parse_encryption_scheme regex_result
-              regex_result = Utils.default_encryption + "," if regex_result.nil?
+              regex_result = Eyaml.default_encryption_scheme + "," if regex_result.nil?
               regex_result.split(",").first
             end
 

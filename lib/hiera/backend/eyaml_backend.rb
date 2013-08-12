@@ -89,11 +89,24 @@ class Hiera
           plaintext = value.gsub( /ENC\[([^\]]*)\]/ ) { |match|
             encrypted_value = match.to_s
             encrypted_info = $1.gsub(/[ \n]/, '').split(',')
-            encrypted_info.unshift Hiera::Backend::Eyaml::Utils.default_encryption if encrypted_info.length == 1
+            encrypted_info.unshift Hiera::Backend::Eyaml::Utils.default_encryption_scheme if encrypted_info.length == 1
 
             encryption_method = encrypted_info.first.downcase
 
             encryptor_class = nil
+            encryptor_class = Hiera::Backend::Eyaml::Utils.get_encryptor encryption_method
+
+            options = {:input_data => encrypted_value, 
+                       :encryptions => { encryption_method => encryptor_class }, 
+                       :output => "raw" }
+
+            encryptor_class.encryptor_options.each do | encryptor_option |
+              name = encryptor_option[:name]
+              default = encryptor_option[:default]
+              options[ name ] = Backend.parse_string(Config[:eyaml][name], scope) || default
+            end
+
+
             begin
               require "hiera/backend/eyaml/encryptors/#{encryption_method}"
               cipher_class = Hiera::Backend::Eyaml::Utils.camelcase( encryption_method )
@@ -102,11 +115,6 @@ class Hiera
               raise StandardError, "Encryption method #{encryption_method} not available. Try gem install hiera-eyaml-#{cipherscheme} ?"
             end
 
-            options = {:input_data => encrypted_value, 
-                       :encryptions => { encryption_method => encryptor_class }, 
-                       :private_key_dir => private_key_dir, 
-                       :public_key_dir => public_key_dir,
-                       :output => "raw" }
 
             debug("Decrypting value: #{encrypted_value}, using method: #{encryption_method}")
             begin

@@ -9,5 +9,5 @@ require 'hiera/backend/eyaml/encryptors/pkcs7'
 Hiera::Backend::Eyaml::Encryptors::Pkcs7.register
 Hiera::Backend::Eyaml::Plugins.find
 
-configuration = Hiera::Backend::Eyaml::CLI.parse
-Hiera::Backend::Eyaml::CLI.execute configuration
+Hiera::Backend::Eyaml::CLI.parse
+Hiera::Backend::Eyaml::CLI.execute
