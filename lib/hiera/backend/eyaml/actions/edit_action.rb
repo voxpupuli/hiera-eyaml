@@ -11,7 +11,7 @@ class Hiera
         class EditAction
 
           def self.execute 
-
+  
             decrypted_input = DecryptAction.execute 
             decrypted_file = Utils.write_tempfile decrypted_input
             editor = Utils.find_editor
@@ -26,22 +26,13 @@ class Hiera
             raise StandardError, "Edited file is blank" if edited_file.empty?
             raise StandardError, "No changes" if edited_file == decrypted_input
 
-            encrypt_options = options.dup
-            encryptions = {}
-            edited_file.gsub( /DEC(::[^\[]+)\[/ ) { |match|
-              encryption_method = $1.slice(2, $1.length)
-              encryption_method = Utils.default_encryption_scheme if encryption_method.nil?
-              encryptions[ encryption_method ] = nil
-            }
-            encryptions = Utils.get_encryptors encryptions
+            Eyaml::Options[:input_data] = edited_file
+            Eyaml::Options[:output] = "raw"
 
-            encrypt_options[:input_data] = edited_file
-            encrypt_options[:encryptions] = encryptions
-            encrypt_options[:output] = "raw"
+            encrypted_output = EncryptAction.execute
 
-            encrypted_output = EncryptAction.execute encrypt_options
-
-            File.open("#{options[:eyaml]}", 'w') { |file| 
+            filename = Eyaml::Options[:eyaml]
+            File.open("#{filename}", 'w') { |file| 
               file.write encrypted_output
             }
 

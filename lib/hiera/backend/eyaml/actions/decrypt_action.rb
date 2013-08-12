@@ -24,7 +24,7 @@ class Hiera
                 decryptor = Encryptor.find encryption_scheme
                 ciphertext = $3.gsub(/[ \n]/, '')
                 plaintext = decryptor.decrypt( decryptor.decode ciphertext )
-                ">\n" + indentation + "DEC::#{decryptor.encryptor_tag}[" + plaintext + "]!"
+                ">\n" + indentation + "DEC::#{decryptor.tag}[" + plaintext + "]!"
               }
 
               # strings
@@ -33,7 +33,7 @@ class Hiera
                 decryptor = Encryptor.find encryption_scheme
 
                 plaintext = decryptor.decrypt( decryptor.decode $2 )
-                "DEC::#{decryptor.encryptor_tag}[" + plaintext + "]!"
+                "DEC::#{decryptor.tag}[" + plaintext + "]!"
               }
 
               output
@@ -42,7 +42,6 @@ class Hiera
               output = Eyaml::Options[:input_data].gsub( REGEX_ENCRYPTED_STRING ) { |match|
                 encryption_scheme = parse_encryption_scheme( $1 )
                 decryptor = Encryptor.find encryption_scheme
-                puts "DECRYPTOR.CLASSNAME = #{decryptor.class.name}, METHODS = #{decryptor.class.methods}"
                 decryptor.decrypt( decryptor.decode $2 )
               } 
 

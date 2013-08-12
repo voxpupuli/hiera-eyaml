@@ -28,7 +28,7 @@ class Hiera
           next unless data.include?(key)
           debug ("Key #{key} found in YAML document")
 
-          parsed_answer = parse_answer(data[key], scope)
+          parsed_answer = parse_answer(key, data[key], scope)
 
           begin
             case resolution_type
@@ -55,13 +55,13 @@ class Hiera
         answer
       end
 
-      def parse_answer(data, scope, extra_data={})
+      def parse_answer(key, data, scope, extra_data={})
         if data.is_a?(Numeric) or data.is_a?(TrueClass) or data.is_a?(FalseClass)
           # Can't be encrypted
           data
         elsif data.is_a?(String)
           parsed_string = Backend.parse_string(data, scope)
-          decrypt(parsed_string, scope)
+          decrypt(key, parsed_string, scope)
         elsif data.is_a?(Hash)
           answer = {}
           data.each_pair do |key, val|
@@ -77,71 +77,37 @@ class Hiera
         end
       end
 
-      def decrypt(value, scope)
+      def deblock block_string
+        block_string.gsub(/[ \n]/, '').split(',')
+      end
 
-        # debug "Attempting to decrypt: #{value}"
+      def decrypt(key, value, scope)
+
         if encrypted? value
 
-          private_key_dir = Backend.parse_string(Config[:eyaml][:private_key_dir], scope) || '/etc/hiera/keys'
-          public_key_dir = Backend.parse_string(Config[:eyaml][:public_key_dir], scope) || '/etc/hiera/keys'
+          debug "Attempting to decrypt: #{key}"
+          
+          Config[:eyaml].each do |config_key|
+            Eyaml::Options[config_key] = Backend.parse_string(Config[:eyaml][config_key], scope)
+          end
 
+          Eyaml::Options[:source] = "hiera"
 
           plaintext = value.gsub( /ENC\[([^\]]*)\]/ ) { |match|
-            encrypted_value = match.to_s
-            encrypted_info = $1.gsub(/[ \n]/, '').split(',')
-            encrypted_info.unshift Hiera::Backend::Eyaml::Utils.default_encryption_scheme if encrypted_info.length == 1
-
-            encryption_method = encrypted_info.first.downcase
-
-            encryptor_class = nil
-            encryptor_class = Hiera::Backend::Eyaml::Utils.get_encryptor encryption_method
-
-            options = {:input_data => encrypted_value, 
-                       :encryptions => { encryption_method => encryptor_class }, 
-                       :output => "raw" }
-
-            encryptor_class.encryptor_options.each do | encryptor_option |
-              name = encryptor_option[:name]
-              default = encryptor_option[:default]
-              options[ name ] = Backend.parse_string(Config[:eyaml][name], scope) || default
-            end
-
-
-            begin
-              require "hiera/backend/eyaml/encryptors/#{encryption_method}"
-              cipher_class = Hiera::Backend::Eyaml::Utils.camelcase( encryption_method )
-              encryptor_class = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Encryptors').const_get(cipher_class)
-            rescue
-              raise StandardError, "Encryption method #{encryption_method} not available. Try gem install hiera-eyaml-#{cipherscheme} ?"
-            end
-
-
-            debug("Decrypting value: #{encrypted_value}, using method: #{encryption_method}")
-            begin
-              plaintext_part = Hiera::Backend::Eyaml::Actions::DecryptAction.execute options
-            rescue
-              raise Exception, "Hiera eyaml backend: Unable to decrypt hiera data. Do the keys match and are they the same as those used to encrypt?"
-            end
-
-            # debug "plaintext: #{plaintext_part}"
-
-            plaintext_part
+            Eyaml::Options[:input_data] = remove_block_demarcations match.to_s
+            Eyaml::Options[:output] = "raw"
+            DecryptAction.execute
           }
 
           plaintext
 
         else
-          debug "value was not encrypted"
           value
         end
       end
 
       def encrypted?(value)
-        if value.match(/.*ENC\[.*?\]/)
-          true
-        else
-          false
-        end
+        if value.match(/.*ENC\[.*?\]/) then true else false end
       end
 
       def debug(msg)

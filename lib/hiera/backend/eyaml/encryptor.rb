@@ -6,9 +6,13 @@ class Hiera
 
       class Encryptor
 
-        attr_accessor :options
+        class << self
+          attr_accessor :options
+          attr_accessor :tag
+        end
 
-        def self.find encryption_scheme
+        def self.find encryption_scheme = nil
+          encryption_scheme = Eyaml.default_encryption_scheme if encryption_scheme.nil?
           require "hiera/backend/eyaml/encryptors/#{encryption_scheme}"          
           encryptor_module = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Encryptors')
           encryptor_class = self.find_closest_class :parent_class => encryptor_module, :class_name => encryption_scheme
@@ -32,15 +36,17 @@ class Hiera
           raise StandardError, "decrypt() not defined for decryptor plugin: #{self}"
         end
 
-        def self.encryptor_options
-          @@encryptor_options
-        end
-
-        def self.encryptor_tag
-          @@encryptor_tag
-        end
-
         protected
+
+          def self.register
+            plugin_classname = self.to_s.split("::").last.downcase
+            Hiera::Backend::Eyaml::Plugins.register_options :options => self.options, :plugin => plugin_classname
+          end
+
+          def self.option name
+            plugin_classname = self.to_s.split("::").last.downcase
+            Eyaml::Options[ "#{plugin_classname}-#{name}" ] || self.options[ "#{plugin_classname}-#{name}" ]
+          end
 
           def self.find_closest_class args
             parent_class = args[ :parent_class ]

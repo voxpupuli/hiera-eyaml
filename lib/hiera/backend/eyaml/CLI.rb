@@ -44,8 +44,8 @@ Options:
             opt :encrypt_method, "Override default encryption and decryption method (default is PKCS7)", :short => 'n', :default => "pkcs7"
             opt :output, "Output format of final result (examples, block, string)", :type => :string, :default => "examples"
 
-            Hiera::Backend::Eyaml::Plugins.options.each do |option|
-              opt option[:name], option[:desc], :type => option[:type], :short => option[:short], :default => option[:default]
+            Hiera::Backend::Eyaml::Plugins.options.each do |name, option|
+              opt name, option[:desc], :type => option[:type], :short => option[:short], :default => option[:default]
             end
 
           end

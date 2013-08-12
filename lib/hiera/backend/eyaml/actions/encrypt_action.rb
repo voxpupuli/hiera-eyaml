@@ -22,7 +22,7 @@ class Hiera
                 encryption_scheme = parse_encryption_scheme( $2 )
                 encryptor = Encryptor.find encryption_scheme
                 ciphertext = encryptor.encode( encryptor.encrypt($3) ).gsub(/\n/, "\n" + indentation)
-                ">\n" + indentation + "ENC[#{encryptor.encryptor_tag},#{ciphertext}]"
+                ">\n" + indentation + "ENC[#{encryptor.tag},#{ciphertext}]"
               }
 
               # strings
@@ -30,13 +30,13 @@ class Hiera
                 encryption_scheme = parse_encryption_scheme( $1 )
                 encryptor = Encryptor.find encryption_scheme
                 ciphertext = encryptor.encode( encryptor.encrypt($2) ).gsub(/\n/, "")
-                "ENC[#{encryptor.encryptor_tag},#{ciphertext}]"
+                "ENC[#{encryptor.tag},#{ciphertext}]"
               }
 
             else
               encryptor = Encryptor.find
               ciphertext = encryptor.encode( encryptor.encrypt(Eyaml::Options[:input_data]) )
-              "ENC[#{encryptor.encryptor_tag},#{ciphertext}]"
+              "ENC[#{encryptor.tag},#{ciphertext}]"
             end
 
             self.format :data => output_data, :structure => Eyaml::Options[:output]
