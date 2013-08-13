@@ -2,7 +2,7 @@ Feature: eyaml encrypting
 
   In order to encrypt data
   As a developer using hiera-eyaml
-  I want to use the eyaml tool to ecnrypt data in various ways
+  I want to use the eyaml tool to encrypt data in various ways
 
   Scenario: encrypt a simple string
     When I run `eyaml -e -o string -s some_string`

@@ -52,9 +52,11 @@ class Hiera
           path
         end
 
-        def self.write_imporant_file filename, content
+        def self.write_important_file args
+          filename = args[ :filename ]
+          content = args[ :content ]
           if File.file? "#{filename}"
-             raise StandardError, "User aborted" unless Utils::confirm? "Are you sure you want to overwrite \"#{filename}\"? (y/N): "
+             raise StandardError, "User aborted" unless Utils::confirm? "Are you sure you want to overwrite \"#{filename}\"?"
           end
           open( "#{filename}", "w" ) do |io|
             io.write(content)

@@ -78,7 +78,7 @@ class Hiera
       end
 
       def deblock block_string
-        block_string.gsub(/[ \n]/, '').split(',')
+        block_string.gsub(/[ \n]/, '')
       end
 
       def decrypt(key, value, scope)
@@ -87,16 +87,18 @@ class Hiera
 
           debug "Attempting to decrypt: #{key}"
           
-          Config[:eyaml].each do |config_key|
-            Eyaml::Options[config_key] = Backend.parse_string(Config[:eyaml][config_key], scope)
+          Config[:eyaml].each do |config_key, config_value|
+            config_value = Backend.parse_string(Config[:eyaml][config_key], scope)
+            debug "Setting: #{config_key} = #{config_value}"
+            Eyaml::Options[config_key] = config_value
           end
 
           Eyaml::Options[:source] = "hiera"
 
           plaintext = value.gsub( /ENC\[([^\]]*)\]/ ) { |match|
-            Eyaml::Options[:input_data] = remove_block_demarcations match.to_s
+            Eyaml::Options[:input_data] = deblock match.to_s
             Eyaml::Options[:output] = "raw"
-            DecryptAction.execute
+            Eyaml::Actions::DecryptAction.execute
           }
 
           plaintext

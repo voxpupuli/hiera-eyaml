@@ -33,8 +33,6 @@ Feature: eyaml decrypting
     And the output should match /\- DEC::PKCS7\[the english patient\]\!/
     And the output should match /\- >\n\s+DEC::PKCS7\[the pink panther\]\!/
     And the output should match /\- >\n\s+i wondered lonely\s*\n\s+as a cloud/
-    And the output should match /\s+DEC::PKCS7\[key3\]\!: value3/
-    And the output should match /\s+DEC::PKCS7\[key4\]\!: value4/
     And the output should match /\s+key5: DEC::PKCS7\[value5\]\!/
     And the output should match /\s+key6: DEC::PKCS7\[value6\]\!/
 

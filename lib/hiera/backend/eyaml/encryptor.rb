@@ -13,7 +13,7 @@ class Hiera
 
         def self.find encryption_scheme = nil
           encryption_scheme = Eyaml.default_encryption_scheme if encryption_scheme.nil?
-          require "hiera/backend/eyaml/encryptors/#{encryption_scheme}"          
+          require "hiera/backend/eyaml/encryptors/#{encryption_scheme.downcase}"          
           encryptor_module = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Encryptors')
           encryptor_class = self.find_closest_class :parent_class => encryptor_module, :class_name => encryption_scheme
           raise StandardError, "Could not find hiera-eyaml encryptor: #{encryption_scheme}. Try gem install hiera-eyaml-#{encryption_scheme.downcase} ?" if encryptor_class.nil?
@@ -45,7 +45,7 @@ class Hiera
 
           def self.option name
             plugin_classname = self.to_s.split("::").last.downcase
-            Eyaml::Options[ "#{plugin_classname}-#{name}" ] || self.options[ "#{plugin_classname}-#{name}" ]
+            Eyaml::Options[ "#{plugin_classname}_#{name}" ] || self.options[ "#{plugin_classname}_#{name}" ]
           end
 
           def self.find_closest_class args

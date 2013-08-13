@@ -103,10 +103,9 @@ To use eyaml with hiera and puppet, first configure hiera.yaml to use the eyaml 
 :eyaml:
     :datadir: '/etc/puppet/hieradata'
 
-    # Optional. Default is /etc/hiera/keys/
-    :pkcs7-private-key-dir: /path/to/private_key_directory
-    # Optional. Default is /etc/hiera/keys/
-    :pkcs7-public-key-dir:  /path/to/public_key_directory
+    # If using the pkcs7 encryptor (default)
+    :pkcs7_private_key: /path/to/private_key_file.pem
+    :pkcs7_public_key:  /path/to/public_key_file.pem
 
 </pre>
 

@@ -12,7 +12,7 @@ class Hiera
           options_hash = args[ :options ]
           plugin = args[ :plugin ]
           options_hash.each do |key, value|
-            @@options.merge!({ "#{plugin}-#{key}" => value })
+            @@options.merge!({ "#{plugin}_#{key}" => value })
           end
         end
 
