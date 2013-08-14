@@ -6,16 +6,17 @@ within yaml type files to be used by Puppet.
 
 More info can be found [in this corresponding post](http://themettlemonkey.wordpress.com/2013/07/15/hiera-eyaml-per-value-encrypted-backend-for-hiera-and-puppet/).
 
-The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. Simply wrap your
-encrypted string with ENC[] and place it in an eyaml file. You can mix your plain values
-in as well or separate them into different files.
+The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. Simply prefix your
+encrypted string with the encryption method (PKCS7,) wrap it with ENC[] and place it in an eyaml file. You can mix your plain values in as well or separate them into different files.
+
+Example:
 
 <pre>
 ---
 plain-property: You can see me
 
 encrypted-property: >
-    ENC[Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
+    ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
     NBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDh
     jJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4y
     l5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd
@@ -23,10 +24,7 @@ encrypted-property: >
     IZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
 </pre>
 
-eYaml also supports encrypted values within arrays, hashes, nested arrays and nested hashes 
-(see below for examples)
-
-N.B. when using the multi-line string syntax (i.e. >) **don't wrap encrypted strings with "" or ''**
+eYaml supports multiple encryption types, and encrypted values can occur within arrays, hashes, nested arrays and nested hashes 
 
 Setup
 =====
@@ -37,47 +35,58 @@ Setup
 
 ### Generate keys
 
-The first step is to create a pair of keys on the Puppet master
+The first step is to create a pair of keys:
 
     $ eyaml -c
 
-This creates a public and private key with default names in the default location. (/etc/hiera/keys directory)
+This creates a public and private key with default names in the default location. (./keys)
 
 ### Encryption
 
-To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
+    To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
 
-    $ eyaml -e filename               # Encrypt a file
-    $ eyaml -e -s text                # Encrypt some text
+    $ eyaml -e -f filename            # Encrypt a file
+    $ eyaml -e -s 'hello there'       # Encrypt a string
     $ eyaml -e -p                     # Encrypt a password (prompt for it)
-
-You can also specify the name of the value and the output style (block or string) so that you can
-redirect the output directly to a file:
-
-    $ eyaml -e -n my-secret -s "Secret Text" -o block
-
-returns:
-
-    $ my-secret: >
-    $   ENC[...
-    $   .......
-    $   ......]
 
 ### Decryption
 
-To decrypt something, you need the public_key and the private_key on the puppet master.
+    To decrypt something, you need the public_key and the private_key.
 
-To test decryption you can also use the eyaml tool if you have both keys
+    To test decryption you can also use the eyaml tool if you have both keys
 
-    $ eyaml -d filename                  # Decrypt a file (PEM format)
-    $ eyaml -d -s SOME-ENCRYPTED-TEXT    # Decrypt some text
+    $ eyaml -d -f filename               # Decrypt a file
+    $ eyaml -d -s 'ENC[PKCS7,.....]'     # Decrypt a string
 
-Change the permissions so that the private key is only readable by the user that hiera (puppet) is
-running as.
+### EYaml files
 
-### Configure Hiera
+    Once you have created a few eyaml files, with a mixture of encrypted and non-encrypted properties, you can edit the encrypted values in place, using the special edit mode of the eyaml utility
 
-Next configure hiera.yaml to use the eyaml backend
+    $ eyaml -i filename.eyaml         # Edit an eyaml file in place
+
+Multiple Encryption Types
+=========================
+
+hiera-eyaml backend is pluggable, so that further encryption types can be added as separate gems to the general mechanism which hiera-eyaml uses. Hiera-eyaml ships with one default mechanism of 'pkcs7', the encryption type widely used to sign smime email messages. 
+
+Other encryption types (if the gems for them have been loaded) can be specified using the following formats:
+
+<pre>
+    ENC[PKCS7,SOME_ENCRYPTED_VALUE]         # a PKCS7 encrypted value
+    ENC[GPG,SOME_ENCRYPTED_VALUE]           # a GPG encrypted value (hiera-eyaml-gpg)
+    ... etc ...
+</pre>
+
+When editing eyaml files, you will see that the unencrypted plaintext is marked in such a way as to identify the encryption method. This is so that the eyaml tool knows to encrypt it back using the correct method afterwards:
+
+<pre>
+some_key: DEC::PKCS7[very secret password]!
+</pre>
+
+Hiera
+=====
+
+To use eyaml with hiera and puppet, first configure hiera.yaml to use the eyaml backend
 
 <pre>
 ---
@@ -94,24 +103,20 @@ Next configure hiera.yaml to use the eyaml backend
 :eyaml:
     :datadir: '/etc/puppet/hieradata'
 
-    # Optional. Default is /etc/hiera/keys/private_key.pem
-    :private_key: /new/path/to/key/private_key.pem
+    # If using the pkcs7 encryptor (default)
+    :pkcs7_private_key: /path/to/private_key_file.pem
+    :pkcs7_public_key:  /path/to/public_key_file.pem
 
-    # Optional. Default is /etc/hiera/keys/public_key.pem
-    :public_key:  /new/path/to/key/public_key.pem
 </pre>
 
-### YAML files
+Then, edit your hiera yaml files (renaming them with the .eyaml extension), and insert your encrypted values:
 
-  Once the value is encrypted, wrap it with ENC[] and place it in the .eyaml file.
-
-Usages:
 <pre>
 ---
 plain-property: You can see me
 
 cipher-property : >
-    ENC[Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
+    ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
     NBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDh
     jJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4y
     l5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd
@@ -125,7 +130,7 @@ environments:
     production:
         host: prod.org.com
         password: >
-            ENC[Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
+            ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
             NBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDh
             jJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4y
             l5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd
@@ -136,7 +141,7 @@ things:
     - thing 1
     -   - nested thing 1.0
         - >
-            ENC[Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
+            ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefv
             NBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDh
             jJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4y
             l5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd
@@ -145,6 +150,11 @@ things:
     -   - nested thing 2.0
         - nested thing 2.1
 </pre>
+
+Notes
+=====
+
+If you do not specify an encryption method within ENC[] tags, it will be assumed to be PKCS7
 
 Authors
 =======

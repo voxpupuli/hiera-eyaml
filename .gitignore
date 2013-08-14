@@ -3,3 +3,5 @@
 *.gradle
 keys/*.pem
 pkg/
+tmp/
+.DS_Store
