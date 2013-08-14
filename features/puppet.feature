@@ -6,6 +6,10 @@ Feature: eyaml hiera integration
 
   Scenario: verify puppet3 with hiera can use hiera-eyaml to decrypt data
     When I run `rm -f /tmp/eyaml_puppettest.1 /tmp/eyaml_puppettest.2 /tmpeyaml_puppettest.3 2>/dev/null`
-    When I run `puppet apply --confdir ./puppet --debug --verbose puppet/manifests/init.pp`
+    When I run `puppet apply --confdir ./puppet --node_name_value localhost puppet/manifests/init.pp`
+    When I run `cat /tmp/eyaml_puppettest.1`
     Then the output should match /good night/
-    And the output should match /and good luck/
+    When I run `cat /tmp/eyaml_puppettest.2`
+    Then the output should match /and good luck/
+    When I run `cat /tmp/eyaml_puppettest.3`
+    Then the output should match /and good luck/

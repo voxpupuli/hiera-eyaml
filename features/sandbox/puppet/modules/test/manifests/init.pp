@@ -10,7 +10,7 @@ class test::run {
     content => hiera("encrypted_string"),
   }
 
-  file { "/tmp/eyaml_puppettest.2":
+  file { "/tmp/eyaml_puppettest.3":
     ensure => present,
     content => inline_template("<%= scope.function_hiera(['encrypted_string']) %>"),
   }
