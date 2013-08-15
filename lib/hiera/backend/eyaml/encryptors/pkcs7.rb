@@ -61,6 +61,7 @@ class Hiera
             private_key = self.option :private_key
 
             key = OpenSSL::PKey::RSA.new(2048)
+            Utils.ensure_key_dir_exists private_key
             Utils.write_important_file :filename => private_key, :content => key.to_pem
 
             name = OpenSSL::X509::Name.parse("/")
@@ -83,6 +84,7 @@ class Hiera
 
             cert.sign key, OpenSSL::Digest::SHA1.new
 
+            Utils.ensure_key_dir_exists public_key
             Utils.write_important_file :filename => public_key, :content => cert.to_pem
             puts "Keys created OK"
 
