@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.license       = "MIT"
 
   gem.homepage      = "http://github.com/TomPoulton/hiera-eyaml"
-  gem.files         = `git ls-files`.split($/)
+  gem.files         = `git ls-files`.split($/).reject { |file| file =~ /^features.*$/ }
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
