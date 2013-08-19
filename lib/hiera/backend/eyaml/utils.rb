@@ -39,7 +39,7 @@ class Hiera
             num_bytes.times { file.print(byte.chr) }
             file.fsync
           end
-          File.delete file
+          File.delete args[:file]
         end
 
         def self.write_tempfile data_to_write
