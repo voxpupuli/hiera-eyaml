@@ -55,12 +55,14 @@ class Hiera
         def self.write_important_file args
           filename = args[ :filename ]
           content = args[ :content ]
+          mode = args[ :mode ]
           if File.file? "#{filename}"
              raise StandardError, "User aborted" unless Utils::confirm? "Are you sure you want to overwrite \"#{filename}\"?"
           end
           open( "#{filename}", "w" ) do |io|
             io.write(content)
           end
+          File.chmod( mode, filename ) unless mode.nil?
         end
 
         def self.ensure_key_dir_exists key_file
