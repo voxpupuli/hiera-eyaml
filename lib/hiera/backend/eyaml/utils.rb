@@ -1,5 +1,6 @@
 require 'highline/import'
 require 'tempfile'
+require 'fileutils'
 
 class Hiera
   module Backend
@@ -70,7 +71,7 @@ class Hiera
 
           unless File.directory? key_dir
             begin
-              Dir.mkdir key_dir
+              FileUtils.mkdir_p key_dir
               puts "Created key directory: #{key_dir}"
             rescue
               raise StandardError, "Cannot create key directory: #{key_dir}"
