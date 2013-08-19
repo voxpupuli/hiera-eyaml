@@ -61,7 +61,7 @@ class Hiera
             private_key = self.option :private_key
 
             key = OpenSSL::PKey::RSA.new(2048)
-            Utils.write_important_file :filename => private_key, :content => key.to_pem
+            Utils.write_important_file :filename => private_key, :content => key.to_pem, :mode => 0600
 
             name = OpenSSL::X509::Name.parse("/")
             cert = OpenSSL::X509::Certificate.new()

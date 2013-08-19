@@ -65,13 +65,13 @@ class Hiera
         elsif data.is_a?(Hash)
           answer = {}
           data.each_pair do |key, val|
-            answer[key] = parse_answer(val, scope, extra_data)
+            answer[key] = parse_answer(key, val, scope, extra_data)
           end
           answer
         elsif data.is_a?(Array)
           answer = []
           data.each do |item|
-            answer << parse_answer(item, scope, extra_data)
+            answer << parse_answer(key, item, scope, extra_data)
           end
           answer
         end

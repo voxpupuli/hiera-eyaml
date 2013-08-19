@@ -1,5 +1,6 @@
 require 'highline/import'
 require 'tempfile'
+require 'fileutils'
 
 class Hiera
   module Backend
@@ -39,7 +40,7 @@ class Hiera
             num_bytes.times { file.print(byte.chr) }
             file.fsync
           end
-          File.delete file
+          File.delete args[:file]
         end
 
         def self.write_tempfile data_to_write
@@ -55,12 +56,14 @@ class Hiera
         def self.write_important_file args
           filename = args[ :filename ]
           content = args[ :content ]
+          mode = args[ :mode ]
           if File.file? "#{filename}"
              raise StandardError, "User aborted" unless Utils::confirm? "Are you sure you want to overwrite \"#{filename}\"?"
           end
           open( "#{filename}", "w" ) do |io|
             io.write(content)
           end
+          File.chmod( mode, filename ) unless mode.nil?
         end
 
         def self.ensure_key_dir_exists key_file
@@ -68,7 +71,7 @@ class Hiera
 
           unless File.directory? key_dir
             begin
-              Dir.mkdir key_dir
+              FileUtils.mkdir_p key_dir
               puts "Created key directory: #{key_dir}"
             rescue
               raise StandardError, "Cannot create key directory: #{key_dir}"
