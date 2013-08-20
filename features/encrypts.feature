@@ -23,4 +23,11 @@ Feature: eyaml encrypting
   Scenario: encrypt using STDIN
     When I run `./pipe_string.sh encrypt_me eyaml -e -o string --stdin`
     Then the output should match /ENC\[PKCS7,(.*?)\]$/
-  
+
+  Scenario: encrypt as string with a label
+    When I run `eyaml -e -o string -s secret_thing -l db-password`
+    Then the output should match /db-password: ENC\[PKCS7,(.*?)\]$/
+
+  Scenario: encrypt as block with a label
+    When I run `eyaml -e -o block -s secret_thing -l db-password`
+    Then the output should match /db-password: \>\s*ENC\[PKCS7,(.*?)\]$/

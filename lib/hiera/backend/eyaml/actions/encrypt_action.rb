@@ -39,7 +39,7 @@ class Hiera
               "ENC[#{encryptor.tag},#{ciphertext}]"
             end
 
-            self.format :data => output_data, :structure => Eyaml::Options[:output]
+            self.format :data => output_data, :structure => Eyaml::Options[:output], :label => Eyaml::Options[:label]
 
           end
 
@@ -50,22 +50,32 @@ class Hiera
               regex_result.split("::").last
             end
 
+            def self.format_string data, label
+              data_as_string = data.split("\n").join("")
+              prefix = label ? "#{label}: " : ''
+              prefix + data_as_string
+            end
+
+            def self.format_block data, label
+              data_as_block = data.split("\n").join("\n    ")
+              prefix = label ? "#{label}: >\n" : ''
+              prefix + "    #{data_as_block}"
+            end
+
             def self.format args
               data = args[:data]
-              data_as_block = data.split("\n").join("\n    ")
-              data_as_string = data.split("\n").join("")
               structure = args[:structure]
+              label = args[:label]
 
               case structure
               when "examples"
-                "string: #{data_as_string}\n\n" +
+                self.format_string(data, label || 'string') + "\n\n" +
                 "OR\n\n" +
-                "block: >\n" +
-                "    #{data_as_block}" 
+                self.format_block(data, label || 'block')
               when "block"
-                "    #{data_as_block}" 
+                self.format_block data, label
               when "string"
-                "#{data_as_string}"
+                self.format_string data, label
               else
                 data.to_s
               end
