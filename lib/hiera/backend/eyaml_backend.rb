@@ -101,7 +101,7 @@ class Hiera
             Eyaml::Actions::DecryptAction.execute
           }
 
-          plaintext
+          plaintext.chomp
 
         else
           value
