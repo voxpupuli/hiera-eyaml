@@ -12,6 +12,10 @@ Feature: eyaml encrypting
     When I run `eyaml -e -o string -f test_input.txt`
     Then the output should match /ENC\[PKCS7,(.*?)\]$/
 
+  Scenario: encrypt a eyaml file
+    When I run `eyaml -e --eyaml test_plain.yaml`
+    Then the output should match /key: ENC\[PKCS7,(.*?)\]$/
+
   Scenario: encrypt a binary file
     When I run `eyaml -e -o string -f test_input.bin`
     Then the output should match /ENC\[PKCS7,(.*?)\]$/

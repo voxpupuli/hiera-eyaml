@@ -12,7 +12,7 @@ class Hiera
 
           def self.execute 
 
-            output_data = case Eyaml::Options[:source]
+            case Eyaml::Options[:source]
             when :eyaml
               encryptions = []
 
@@ -26,7 +26,7 @@ class Hiera
               }
 
               # strings
-              output.gsub!( REGEX_DECRYPTED_STRING ) { |match|
+              output.gsub( REGEX_DECRYPTED_STRING ) { |match|
                 encryption_scheme = parse_encryption_scheme( $1 )
                 encryptor = Encryptor.find encryption_scheme
                 ciphertext = encryptor.encode( encryptor.encrypt($2) ).gsub(/\n/, "")
@@ -36,10 +36,8 @@ class Hiera
             else
               encryptor = Encryptor.find
               ciphertext = encryptor.encode( encryptor.encrypt(Eyaml::Options[:input_data]) )
-              "ENC[#{encryptor.tag},#{ciphertext}]"
+              self.format :data => "ENC[#{encryptor.tag},#{ciphertext}]", :structure => Eyaml::Options[:output], :label => Eyaml::Options[:label]
             end
-
-            self.format :data => output_data, :structure => Eyaml::Options[:output], :label => Eyaml::Options[:label]
 
           end
 

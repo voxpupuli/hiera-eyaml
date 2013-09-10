@@ -151,6 +151,18 @@ things:
         - nested thing 2.1
 </pre>
 
+Tests
+=====
+
+In order to run the tests, simply run `cucumber` in the top level directory of the project.
+
+You'll need to have a few requirements installed:
+
+  * `expect` (via yum/apt-get or system package)
+  * `aruba` (gem)
+  * `cucumber` (gem)
+  * `puppet` (gem)
+
 Notes
 =====
 
