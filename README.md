@@ -43,24 +43,28 @@ This creates a public and private key with default names in the default location
 
 ### Encryption
 
-    To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
+To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
 
     $ eyaml -e -f filename            # Encrypt a file
     $ eyaml -e -s 'hello there'       # Encrypt a string
     $ eyaml -e -p                     # Encrypt a password (prompt for it)
 
+Use the -l parameter to pass in a label for the encrypted value
+
+    $ eyaml -e -l 'my-secret-key' -s 'very secret stuffs'
+
 ### Decryption
 
-    To decrypt something, you need the public_key and the private_key.
+To decrypt something, you need the public_key and the private_key.
 
-    To test decryption you can also use the eyaml tool if you have both keys
+To test decryption you can also use the eyaml tool if you have both keys
 
     $ eyaml -d -f filename               # Decrypt a file
     $ eyaml -d -s 'ENC[PKCS7,.....]'     # Decrypt a string
 
-### EYaml files
+### eYaml files
 
-    Once you have created a few eyaml files, with a mixture of encrypted and non-encrypted properties, you can edit the encrypted values in place, using the special edit mode of the eyaml utility
+Once you have created a few eyaml files, with a mixture of encrypted and non-encrypted properties, you can edit the encrypted values in place, using the special edit mode of the eyaml utility
 
     $ eyaml -i filename.eyaml         # Edit an eyaml file in place
 
