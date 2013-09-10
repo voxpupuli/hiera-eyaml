@@ -38,13 +38,15 @@ class Hiera
 
         protected
 
+          def self.plugin_classname
+            self.to_s.split("::").last.downcase
+          end
+
           def self.register
-            plugin_classname = self.to_s.split("::").last.downcase
             Hiera::Backend::Eyaml::Plugins.register_options :options => self.options, :plugin => plugin_classname
           end
 
           def self.option name
-            plugin_classname = self.to_s.split("::").last.downcase
             Eyaml::Options[ "#{plugin_classname}_#{name}" ] || self.options[ "#{plugin_classname}_#{name}" ]
           end
 
@@ -60,6 +62,30 @@ class Hiera
               parent_class.const_get candidates.first
             else
               nil
+            end
+          end
+
+          def self.hiera?
+            "hiera".eql? Eyaml::Options[:source]
+          end
+
+          def self.format_message msg
+            "[eyaml_#{plugin_classname}]:  #{msg}"
+          end
+
+          def self.debug msg
+            if self.hiera?
+              Hiera.debug format_message msg
+            else
+              STDERR.puts format_message msg
+            end
+          end
+
+          def self.warn msg
+            if self.hiera?
+              Hiera.warn format_message msg
+            else
+              STDERR.puts format_message msg
             end
           end
 
