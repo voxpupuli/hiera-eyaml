@@ -21,9 +21,12 @@ class Hiera
         end
 
         def self.debug
+          Utils::debug "Dump of eyaml tool options dict:"
+          Utils::debug "--------------------------------"
           @@options.each do |k, v|
-            puts "#{k.class.name}:#{k} = #{v.class.name}:#{v}"
+            Utils::debug "#{k.class.name}:#{k} = #{v.class.name}:#{v}"
           end
+          Utils::debug ""
         end
 
       end
