@@ -72,12 +72,20 @@ class Hiera
           unless File.directory? key_dir
             begin
               FileUtils.mkdir_p key_dir
-              puts "Created key directory: #{key_dir}"
+              Utils::info "Created key directory: #{key_dir}"
             rescue
               raise StandardError, "Cannot create key directory: #{key_dir}"
             end
           end
 
+        end
+
+        def self.info message
+          STDERR.puts message unless Eyaml::Options[:quiet]
+        end
+
+        def self.debug message
+          STDERR.puts message if Eyaml::Options[:debug]
         end
 
       end

@@ -36,7 +36,7 @@ class Hiera
               file.write encrypted_output
             }
 
-            true
+            nil
           end
 
         end
