@@ -15,8 +15,6 @@ class Hiera
 
             output_data = case Eyaml::Options[:source]
             when :eyaml
-              encryptions = []
-
               # blocks
               output = Eyaml::Options[:input_data].gsub( REGEX_ENCRYPTED_BLOCK ) { |match|
                 indentation = $1
