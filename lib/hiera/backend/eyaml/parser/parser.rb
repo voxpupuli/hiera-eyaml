@@ -1,4 +1,5 @@
 require 'strscan'
+require 'hiera/backend/eyaml/parser/token'
 
 class Hiera
   module Backend
@@ -6,37 +7,51 @@ class Hiera
       module Parser
         class Parser
           attr_reader :token_types
-          def self.initialize(token_types)
+
+          def initialize(token_types)
             @token_types = token_types
           end
 
-          def self.parse text
-            # Find the first match of any regex in the text
-            # If any regex matches on 1, then return that match plus a recursive call on the remaining text
-            # If no regex matches on 1 then return the block of text to the earliest match and a recursive call on the remaining text
-            result = []
-            s = StringScanner.new(text)
-            first_match = @token_types.find { |token|
-              s.match?(token.regex)
-            }
-            unless first_match.nil?
-              match_data = s.scan(first_match.regex)
-              result << [first_match, match_data]
-            end
+          def parse text
+            parse_scanner(StringScanner.new(text)).reverse
+          end
 
-            first_index.find_index{|position| 1.eql? position }
+          def parse_scanner s
+            if s.eos?
+              []
+            else
+              # Check if the scanner currently matches a regex
+              current_match = @token_types.find { |token_type|
+                s.match?(token_type.regex)
+              }
 
-            positions = @token_types.map { |regex|
-              match = regex.match(text)
-              if match.nil?
-                [regex, nil]
-              else
-                [regex, match.begin(0)]
-              end
-            }
-            first_match = positions.find { |(regex, match)| 0.eql? match }
-            unless first_match.nil?
+              token =
+                  if current_match.nil?
+                    # No regex matches here. Find the earliest match.
+                    next_match_indexes = @token_types.map { |token_type|
+                      next_match = s.check_until(token_type.regex)
+                      if next_match.nil?
+                        nil
+                      else
+                        next_match.length - s.matched.length
+                      end
+                    }.reject { |i| i.nil? }
+                    non_match_size =
+                        if next_match_indexes.length == 0
+                          s.rest_size
+                        else
+                          next_match_indexes.min
+                        end
+                    non_match = s.peek(non_match_size)
+                    # advance scanner
+                    s.pos = s.pos + non_match_size
+                    NonMatchToken.new(non_match)
+                  else
+                    # A regex matches so create a token and do a recursive call with the advanced scanner
+                    current_match.create_token s.scan(current_match.regex)
+                  end
 
+              self.parse_scanner(s) << token
             end
           end
 
