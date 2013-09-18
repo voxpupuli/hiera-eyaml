@@ -32,7 +32,7 @@ class Hiera
             raise StandardError, "Edited file is blank" if edited_file.empty?
 
             if edited_file == decrypted_input
-              STDERR.puts "No changes detected, exiting"
+              Utils.info "No changes detected, exiting"
             else
               decrypted_parser = Parser::ParserFactory.decrypted_parser
               edited_tokens = decrypted_parser.parse(edited_file)
