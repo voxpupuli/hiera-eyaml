@@ -36,6 +36,13 @@ class Hiera
             else
               decrypted_parser = Parser::ParserFactory.decrypted_parser
               edited_tokens = decrypted_parser.parse(edited_file)
+
+              # check that the tokens haven't been copy / pasted
+              used_ids = edited_tokens.find_all{ |t| t.class.name =~ /::EncToken$/ }.map{ |t| t.id }
+              if used_ids.length != used_ids.uniq.length
+                  raise StandardError, "A duplicate DEC(ID) was found so I don't know how to proceed. This is probably because you copy and pasted a value - if you do this please delete the ID in parentheses"
+              end
+
               # replace untouched values with the source values
               edited_denoised_tokens = edited_tokens.map{ |token|
                 if token.class.name =~ /::EncToken$/ && !token.id.nil?
