@@ -21,23 +21,42 @@ class Hiera
             editor = Utils.find_editor
             system editor, decrypted_file
             status = $?
-            raise StandardError, "Editor #{editor} has not exited?" unless status.exited?
-            raise StandardError, "Editor did not exit successfully (exit code #{status.exitstatus}), aborting" unless status.exitstatus  #TODO: The file is left on the disk
-            raise StandardError, "File was moved by editor" unless File.file? decrypted_file
 
+            raise StandardError, "File was moved by editor" unless File.file? decrypted_file
             edited_file = File.read decrypted_file
             Utils.secure_file_delete :file => decrypted_file, :num_bytes => [edited_file.length, decrypted_input.length].max
+
+            raise StandardError, "Editor #{editor} has not exited?" unless status.exited?
+            raise StandardError, "Editor did not exit successfully (exit code #{status.exitstatus}), aborting" unless status.exitstatus
+
             raise StandardError, "Edited file is blank" if edited_file.empty?
-            raise StandardError, "No changes" if edited_file == decrypted_input
 
-            decrypted_parser = Parser::ParserFactory.decrypted_parser
-            edited_tokens = decrypted_parser.parse(edited_file)
-            encrypted_output = edited_tokens.map{ |t| t.to_decrypted }.join
+            if edited_file == decrypted_input
+              STDERR.puts "No changes detected, exiting"
+            else
+              decrypted_parser = Parser::ParserFactory.decrypted_parser
+              edited_tokens = decrypted_parser.parse(edited_file)
+              # replace untouched values with the source values
+              edited_denoised_tokens = edited_tokens.map{ |token|
+                if token.class.name =~ /::EncToken$/ && !token.id.nil?
+                  old_token = tokens[token.id]
+                  if old_token.plain_text.eql? token.plain_text
+                    old_token
+                  else
+                    token
+                  end
+                else
+                  token
+                end
+              }
 
-            filename = Eyaml::Options[:eyaml]
-            File.open("#{filename}", 'w') { |file|
-              file.write encrypted_output
-            }
+              encrypted_output = edited_denoised_tokens.map{ |t| t.to_encrypted }.join
+
+              filename = Eyaml::Options[:eyaml]
+              File.open("#{filename}", 'w') { |file|
+                file.write encrypted_output
+              }
+            end
 
             nil
           end
