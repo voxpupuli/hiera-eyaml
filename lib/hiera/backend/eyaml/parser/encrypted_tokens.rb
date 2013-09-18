@@ -30,25 +30,33 @@ class Hiera
             super(match)
           end
 
-          def to_encrypted
-            case @format
+          def to_encrypted(args={})
+            label = args[:label]
+            label_string = label.nil? ? '' : "#{label}: "
+            format = args[:format].nil? ? @format : args[:format]
+            case format
               when :block
                 ciphertext = @cipher.gsub(/\n/, "\n" + @indentation)
-                ">\n" + @indentation + "ENC[#{@encryptor.tag},#{ciphertext}]"
+                chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
+                "#{label_string}#{chevron}" + @indentation + "ENC[#{@encryptor.tag},#{ciphertext}]"
               when :string
                 ciphertext = @cipher.gsub(/\n/, "")
-                "ENC[#{@encryptor.tag},#{ciphertext}]"
+                "#{label_string}ENC[#{@encryptor.tag},#{ciphertext}]"
               else
                 raise "#{@format} is not a valid format"
             end
           end
 
-          def to_decrypted
-            case @format
+          def to_decrypted(args={})
+            label = args[:label]
+            label_string = label.nil? ? '' : "#{label}: "
+            format = args[:format].nil? ? @format : args[:format]
+            case format
               when :block
-                ">\n" + indentation + "DEC::#{decryptor.tag}[" + plaintext + "]!"
+                chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
+                "#{label_string}#{chevron}" + indentation + "DEC::#{decryptor.tag}[" + plaintext + "]!"
               when :string
-                "DEC::#{decryptor.tag}[" + plaintext + "]!"
+                "#{label_string}DEC::#{decryptor.tag}[" + plaintext + "]!"
               else
                 raise "#{@format} is not a valid format"
             end
@@ -58,12 +66,7 @@ class Hiera
 
         class EncTokenType < TokenType
           def create_enc_token(match, enc_comma, cipher, indentation = '')
-            encryption_scheme =
-                if enc_comma.nil?
-                  Eyaml.default_encryption_scheme
-                else
-                  enc_comma.split(",").first
-                end
+            encryption_scheme = enc_comma.nil? ? Eyaml.default_encryption_scheme : enc_comma.split(",").first
             EncToken.encrypted_value(:string, encryption_scheme, cipher, match, indentation)
           end
         end

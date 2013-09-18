@@ -3,15 +3,11 @@ Given /^I make a parser instance with no regexs$/ do
 end
 
 Given /^I make a parser instance with the ENC regexs$/ do
-  enc_string = Hiera::Backend::Eyaml::Parser::EncStringTokenType.new()
-  enc_block = Hiera::Backend::Eyaml::Parser::EncBlockTokenType.new()
-  @parser = Hiera::Backend::Eyaml::Parser::Parser.new([enc_string, enc_block])
+  @parser = Hiera::Backend::Eyaml::Parser::ParserFactory.encrypted_parser
 end
 
 Given /^I make a parser instance with the DEC regexs$/ do
-  dec_string = Hiera::Backend::Eyaml::Parser::DecStringTokenType.new()
-  dec_block = Hiera::Backend::Eyaml::Parser::DecBlockTokenType.new()
-  @parser = Hiera::Backend::Eyaml::Parser::Parser.new([dec_string, dec_block])
+  @parser = Hiera::Backend::Eyaml::Parser::ParserFactory.decrypted_parser
 end
 
 And /^I load a file called (.*)$/ do |file|

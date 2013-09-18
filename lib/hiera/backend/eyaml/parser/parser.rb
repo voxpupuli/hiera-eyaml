@@ -1,10 +1,25 @@
 require 'strscan'
 require 'hiera/backend/eyaml/parser/token'
+require 'hiera/backend/eyaml/parser/encrypted_tokens'
 
 class Hiera
   module Backend
     module Eyaml
       module Parser
+        class ParserFactory
+          def self.encrypted_parser
+            enc_string = EncStringTokenType.new()
+            enc_block = EncBlockTokenType.new()
+            Parser.new([enc_string, enc_block])
+          end
+
+          def self.decrypted_parser
+            dec_string = DecStringTokenType.new()
+            dec_block = DecBlockTokenType.new()
+            Parser.new([dec_string, dec_block])
+          end
+        end
+
         class Parser
           attr_reader :token_types
 

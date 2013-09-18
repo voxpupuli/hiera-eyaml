@@ -15,6 +15,12 @@ class Hiera
           def initialize(match)
             @match = match
           end
+          def to_encrypted(args={})
+            raise 'Abstract method called'
+          end
+          def to_decrypted(args={})
+            raise 'Abstract method called'
+          end
           def to_s
             "#{self.class.name}:#{@match}"
           end
@@ -23,6 +29,12 @@ class Hiera
         class NonMatchToken < Token
           def initialize(non_match)
             super(non_match)
+          end
+          def to_encrypted(args={})
+            @match
+          end
+          def to_decrypted(args={})
+            @match
           end
         end
       end
