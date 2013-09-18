@@ -41,3 +41,19 @@ Then /^token (\d+) should decrypt to start with "(.*)"$/ do |index, plain|
   token = @tokens[index.to_i - 1]
   token.plain_text.should =~ /^#{Regexp.escape(plain)}/
 end
+
+And /^map it to index decrypted values$/ do
+  @decrypted = @tokens.each_with_index.to_a.map{ |(t, index)|
+    t.to_decrypted :index => index
+  }
+end
+
+Then /^decryption (\d+) should be "(.*)"$/ do |index, content|
+  decrypted = @decrypted[index.to_i]
+  decrypted.should == content
+end
+
+Then(/^token (\d+) id should be (\d+)$/) do |index, token_id|
+  token = @tokens[index.to_i - 1]
+  token.id.should == token_id.to_i
+end

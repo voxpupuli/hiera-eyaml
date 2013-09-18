@@ -9,24 +9,26 @@ class Hiera
     module Eyaml
       module Parser
         class EncToken < Token
-          attr_reader :format, :cipher, :encryptor, :indentation, :plain_text
+          attr_reader :format, :cipher, :encryptor, :indentation, :plain_text, :id
           def self.encrypted_value(format, encryption_scheme, cipher, match, indentation = '')
             decryptor = Encryptor.find encryption_scheme
             plain_text = decryptor.decrypt( decryptor.decode cipher )
             EncToken.new(format, plain_text, decryptor, cipher, match, indentation)
           end
-          def self.decrypted_value(format, plain_text, encryption_scheme, match, indentation = '')
+          def self.decrypted_value(format, plain_text, encryption_scheme, match, id, indentation = '')
             encryptor = Encryptor.find encryption_scheme
             cipher = encryptor.encode( encryptor.encrypt plain_text )
-            EncToken.new(format, plain_text, encryptor, cipher, match, indentation)
+            id_number = id.nil? ? nil : id.gsub(/\(|\)/, "").to_i
+            EncToken.new(format, plain_text, encryptor, cipher, match, indentation, id_number)
           end
 
-          def initialize(format, plain_text, encryptor, cipher, match = '', indentation = '')
+          def initialize(format, plain_text, encryptor, cipher, match = '', indentation = '', id = nil)
             @format = format
             @plain_text = plain_text
             @encryptor = encryptor
             @cipher = cipher
             @indentation = indentation
+            @id = id
             super(match)
           end
 
@@ -51,12 +53,13 @@ class Hiera
             label = args[:label]
             label_string = label.nil? ? '' : "#{label}: "
             format = args[:format].nil? ? @format : args[:format]
+            index = args[:index].nil? ? '' : "(#{args[:index]})"
             case format
               when :block
                 chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
-                "#{label_string}#{chevron}" + indentation + "DEC::#{@encryptor.tag}[" + @plain_text + "]!"
+                "#{label_string}#{chevron}" + indentation + "DEC#{index}::#{@encryptor.tag}[" + @plain_text + "]!"
               when :string
-                "#{label_string}DEC::#{@encryptor.tag}[" + @plain_text + "]!"
+                "#{label_string}DEC#{index}::#{@encryptor.tag}[" + @plain_text + "]!"
               else
                 raise "#{@format} is not a valid format"
             end
@@ -73,7 +76,7 @@ class Hiera
 
         class EncStringTokenType < EncTokenType
           def initialize
-            @regex = /ENC\[(\w+,)?([a-zA-Z0-9\+\/=]+)\]/
+            @regex = /ENC\[(\w+,)?([a-zA-Z0-9\+\/=]+?)\]/
           end
           def create_token(string)
             @regex.match(string) { |m| self.create_enc_token(string, :string, $1, $2) }
@@ -82,7 +85,7 @@ class Hiera
 
         class EncBlockTokenType < EncTokenType
           def initialize
-            @regex = />\n(\s*)ENC\[(\w+,)?([a-zA-Z0-9\+\/ =\n]+)\]/
+            @regex = />\n(\s*)ENC\[(\w+,)?([a-zA-Z0-9\+\/ =\n]+?)\]/
           end
           def create_token(string)
             @regex.match(string) { |m| self.create_enc_token(string, :block, $2, $3, $1) }
@@ -91,19 +94,19 @@ class Hiera
 
         class DecStringTokenType < TokenType
           def initialize
-            @regex = /DEC::(\w+)\[(.+)\]\!/
+            @regex = /DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/
           end
           def create_token(string)
-            @regex.match(string) { |m| EncToken.decrypted_value(:string, $2, $1, string) }
+            @regex.match(string) { |m| EncToken.decrypted_value(:string, $3, $2, string, $1) }
           end
         end
 
         class DecBlockTokenType < TokenType
           def initialize
-            @regex = />\n(\s*)DEC::(\w+)\[(.+)\]\!/
+            @regex = />\n(\s*)DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/
           end
           def create_token(string)
-            @regex.match(string) { |m| EncToken.decrypted_value(:block, $3, $2, string, $1) }
+            @regex.match(string) { |m| EncToken.decrypted_value(:block, $4, $3, string, $2, $1) }
           end
         end
 

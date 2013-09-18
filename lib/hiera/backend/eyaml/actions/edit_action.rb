@@ -2,6 +2,7 @@ require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/actions/decrypt_action'
 require 'hiera/backend/eyaml/actions/encrypt_action'
 require 'hiera/backend/eyaml/options'
+require 'hiera/backend/eyaml/parser/parser'
 
 class Hiera
   module Backend
@@ -11,9 +12,12 @@ class Hiera
         class EditAction
 
           def self.execute 
-  
-            decrypted_input = DecryptAction.execute 
+
+            encrypted_parser = Parser::ParserFactory.encrypted_parser
+            tokens = encrypted_parser.parse Eyaml::Options[:input_data]
+            decrypted_input = tokens.each_with_index.to_a.map{|(t,index)| t.to_decrypted :index => index}.join
             decrypted_file = Utils.write_tempfile decrypted_input
+
             editor = Utils.find_editor
             system editor, decrypted_file
             status = $?
@@ -26,13 +30,12 @@ class Hiera
             raise StandardError, "Edited file is blank" if edited_file.empty?
             raise StandardError, "No changes" if edited_file == decrypted_input
 
-            Eyaml::Options[:input_data] = edited_file
-            Eyaml::Options[:output] = "raw"
-
-            encrypted_output = EncryptAction.execute
+            decrypted_parser = Parser::ParserFactory.decrypted_parser
+            edited_tokens = decrypted_parser.parse(edited_file)
+            encrypted_output = edited_tokens.map{ |t| t.to_decrypted }.join
 
             filename = Eyaml::Options[:eyaml]
-            File.open("#{filename}", 'w') { |file| 
+            File.open("#{filename}", 'w') { |file|
               file.write encrypted_output
             }
 

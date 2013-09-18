@@ -28,3 +28,20 @@ Feature: Parser
     Then I should have 2 tokens
     Then token 1 should be a NonMatchToken
     Then token 2 should be a EncToken
+
+  Scenario: Parse decrypted yaml with index
+    Given I make a parser instance with the DEC regexs
+    And I load a file called test_plain_with_index.yaml
+    When I parse the content
+    Then I should have 2 tokens
+    Then token 1 should be a NonMatchToken
+    Then token 2 should be a EncToken
+    Then token 2 id should be 23
+
+  Scenario: Output indexed decryption tokens
+    Given I make a parser instance with the ENC regexs
+    And I load a file called test_input.yaml
+    When I parse the content
+    And map it to index decrypted values
+    Then decryption 1 should be "DEC(1)::PKCS7[planet of the apes]!"
+    Then decryption 11 should be "DEC(11)::PKCS7[the count of monte cristo]!"
