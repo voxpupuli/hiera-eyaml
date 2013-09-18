@@ -1,7 +1,6 @@
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
-require 'hiera/backend/eyaml/parser/encrypted_tokens'
 
 class Hiera
   module Backend
@@ -9,9 +8,6 @@ class Hiera
       module Actions
 
         class DecryptAction
-
-          REGEX_ENCRYPTED_BLOCK = />\n(\s*)ENC\[(\w+,)?([a-zA-Z0-9\+\/ =\n]+)\]/
-          REGEX_ENCRYPTED_STRING = /ENC\[(\w+,)?([a-zA-Z0-9\+\/=]+)\]/
 
           def self.execute
             parser = Parser::ParserFactory.encrypted_parser
