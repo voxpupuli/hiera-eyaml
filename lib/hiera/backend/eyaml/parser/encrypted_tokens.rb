@@ -54,9 +54,9 @@ class Hiera
             case format
               when :block
                 chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
-                "#{label_string}#{chevron}" + indentation + "DEC::#{decryptor.tag}[" + plaintext + "]!"
+                "#{label_string}#{chevron}" + indentation + "DEC::#{@encryptor.tag}[" + @plain_text + "]!"
               when :string
-                "#{label_string}DEC::#{decryptor.tag}[" + plaintext + "]!"
+                "#{label_string}DEC::#{@encryptor.tag}[" + @plain_text + "]!"
               else
                 raise "#{@format} is not a valid format"
             end
@@ -65,9 +65,9 @@ class Hiera
         end
 
         class EncTokenType < TokenType
-          def create_enc_token(match, enc_comma, cipher, indentation = '')
+          def create_enc_token(match, type, enc_comma, cipher, indentation = '')
             encryption_scheme = enc_comma.nil? ? Eyaml.default_encryption_scheme : enc_comma.split(",").first
-            EncToken.encrypted_value(:string, encryption_scheme, cipher, match, indentation)
+            EncToken.encrypted_value(type, encryption_scheme, cipher, match, indentation)
           end
         end
 
@@ -76,7 +76,7 @@ class Hiera
             @regex = /ENC\[(\w+,)?([a-zA-Z0-9\+\/=]+)\]/
           end
           def create_token(string)
-            @regex.match(string) { |m| self.create_enc_token(string, $1, $2) }
+            @regex.match(string) { |m| self.create_enc_token(string, :string, $1, $2) }
           end
         end
 
@@ -85,7 +85,7 @@ class Hiera
             @regex = />\n(\s*)ENC\[(\w+,)?([a-zA-Z0-9\+\/ =\n]+)\]/
           end
           def create_token(string)
-            @regex.match(string) { |m| self.create_enc_token(string, $2, $3, $1) }
+            @regex.match(string) { |m| self.create_enc_token(string, :block, $2, $3, $1) }
           end
         end
 
