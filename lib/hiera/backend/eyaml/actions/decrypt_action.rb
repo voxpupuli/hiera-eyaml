@@ -19,7 +19,7 @@ class Hiera
               else
                 decrypted = tokens.map{ |token|
                   case token.class.name
-                    when /::EncToken$/#
+                    when /::EncToken$/
                       token.plain_text
                     else
                       token.match

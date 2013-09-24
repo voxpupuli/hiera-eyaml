@@ -79,7 +79,8 @@ class Hiera
             @regex = /ENC\[(\w+,)?([a-zA-Z0-9\+\/=]+?)\]/
           end
           def create_token(string)
-            @regex.match(string) { |m| self.create_enc_token(string, :string, $1, $2) }
+            md = @regex.match(string)
+            self.create_enc_token(string, :string, md[1], md[2])
           end
         end
 
@@ -88,7 +89,8 @@ class Hiera
             @regex = />\n(\s*)ENC\[(\w+,)?([a-zA-Z0-9\+\/ =\n]+?)\]/
           end
           def create_token(string)
-            @regex.match(string) { |m| self.create_enc_token(string, :block, $2, $3, $1) }
+            md = @regex.match(string)
+            self.create_enc_token(string, :block, md[2], md[3], md[1])
           end
         end
 
@@ -97,7 +99,8 @@ class Hiera
             @regex = /DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/
           end
           def create_token(string)
-            @regex.match(string) { |m| EncToken.decrypted_value(:string, $3, $2, string, $1) }
+            md = @regex.match(string)
+            EncToken.decrypted_value(:string, md[3], md[2], string, md[1])
           end
         end
 
@@ -106,7 +109,9 @@ class Hiera
             @regex = />\n(\s*)DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/
           end
           def create_token(string)
-            @regex.match(string) { |m| EncToken.decrypted_value(:block, $4, $3, string, $2, $1) }
+            md = @regex.match(string)
+            EncToken.decrypted_value(:block, md[4], md[3], string, md[2], md[1])
+            EncToken.decrypted_value(:block, md[4], md[3], string, md[2], md[1])
           end
         end
 
