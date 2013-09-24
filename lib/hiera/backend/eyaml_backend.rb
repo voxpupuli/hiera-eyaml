@@ -96,9 +96,9 @@ class Hiera
 
           Eyaml::Options[:source] = "hiera"
 
-          parser = Eyaml::Parser::ParserFactory.encrypted_parser
+          parser = Eyaml::Parser::ParserFactory.hiera_backend_parser
           tokens = parser.parse(value)
-          decrypted = tokens.map{ |token| token.to_decrypted }
+          decrypted = tokens.map{ |token| token.to_plain_text }
           plaintext = decrypted.join
 
           plaintext.chomp

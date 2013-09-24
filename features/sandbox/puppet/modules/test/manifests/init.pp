@@ -20,4 +20,9 @@ class test::run {
     content => hiera("default_encrypted_string"),
   }
 
+  file { "/tmp/eyaml_puppettest.5":
+    ensure => present,
+    content => hiera("encrypted_block"),
+  }
+
 }

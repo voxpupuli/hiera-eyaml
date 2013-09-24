@@ -21,6 +21,9 @@ class Hiera
           def to_decrypted(args={})
             raise 'Abstract method called'
           end
+          def to_plain_text
+            raise 'Abstract method called'
+          end
           def to_s
             "#{self.class.name}:#{@match}"
           end
@@ -34,6 +37,9 @@ class Hiera
             @match
           end
           def to_decrypted(args={})
+            @match
+          end
+          def to_plain_text
             @match
           end
         end

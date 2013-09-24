@@ -65,12 +65,26 @@ class Hiera
             end
           end
 
+          def to_plain_text
+            @plain_text
+          end
+
         end
 
         class EncTokenType < TokenType
           def create_enc_token(match, type, enc_comma, cipher, indentation = '')
             encryption_scheme = enc_comma.nil? ? Eyaml.default_encryption_scheme : enc_comma.split(",").first
             EncToken.encrypted_value(type, encryption_scheme, cipher, match, indentation)
+          end
+        end
+
+        class EncHieraTokenType < EncTokenType
+          def initialize
+            @regex = /ENC\[(\w+,)?([a-zA-Z0-9\+\/ =\n]+?)\]/
+            @string_token_type = EncStringTokenType.new()
+          end
+          def create_token(string)
+            @string_token_type.create_token(string.gsub(/[ \n]/, ''))
           end
         end
 

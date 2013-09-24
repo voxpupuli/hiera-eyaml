@@ -18,6 +18,11 @@ class Hiera
             dec_block = DecBlockTokenType.new()
             Parser.new([dec_string, dec_block])
           end
+
+          def self.hiera_backend_parser
+            enc_hiera = EncHieraTokenType.new()
+            Parser.new([enc_hiera])
+          end
         end
 
         class Parser
