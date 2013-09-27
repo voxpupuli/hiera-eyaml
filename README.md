@@ -142,10 +142,10 @@ To use eyaml with hiera and puppet, first configure hiera.yaml to use the eyaml 
 
 Then, edit your hiera yaml files (renaming them with the .eyaml extension), and insert your encrypted values:
 
+
 *Important Note:* 
 The eYaml backend will not parse internally json formatted yaml files, whereas the regular yaml backend will. 
 You'll need to ensure any existing yaml files using json format are converted to syntactically correct yaml format.
-
 
 <pre>
 ---
