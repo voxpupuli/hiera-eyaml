@@ -59,13 +59,14 @@ So for this reason, a suggested location might be to store them in:
     
 (Using a secure/keys/ subfolder is so that you can still store other secure puppet files in the secure/ folder that might not be related to this module.)
  
-The permissions for this folder should allow the puppet user (normally 'puppet') execute access to these keys and restrict everyone else:
+The permissions for this folder should allow the puppet user (normally 'puppet') execute access to the keys directory, read only access to the keys themselves and restrict everyone else:
 
     $ chown -R puppet:puppet /etc/puppet/secure/keys
-    $ chmod -R 0700 /etc/puppet/secure/keys
+    $ chmod -R 0500 /etc/puppet/secure/keys
+    $ chmod 0400 /etc/puppet/secure/keys/*.pem
     $ ls -lha /etc/puppet/secure/keys
-    -rwx------ 1 puppet puppet 1.7K Sep 24 16:24 private_key.pkcs7.pem
-	-rwx------ 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
+    -r-------- 1 puppet puppet 1.7K Sep 24 16:24 private_key.pkcs7.pem
+	-r-------- 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
 
 
 ### Encryption
@@ -208,6 +209,9 @@ Also remember that after encrypting your sensitive properties, if anyone has acc
 they will see what the property was in previous commits before you encrypted. It's recommended that you
 roll any passwords when switching from unencrypted to encrypted properties. eg, Developers having write
 access to a DEV branch will be able to read/view the contents of the PRD branch, as per the design of GIT.
+
+Github has a great guide on removing sensitive data from repos here:
+https://help.github.com/articles/remove-sensitive-data
 
 Authors
 =======
