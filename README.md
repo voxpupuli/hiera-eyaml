@@ -32,6 +32,14 @@ Setup
 ### Installing hiera-eyaml
 
     $ gem install hiera-eyaml
+    
+#### Installing from behind a corporate/application proxy
+    $ export HTTP_PROXY=http://yourcorporateproxy:3128/
+    $ export HTTPS_PROXY=http://yourcorporateproxy:3128/
+    
+then run your install
+ 
+    $ gem install hiera-eyaml
 
 ### Generate keys
 
@@ -41,6 +49,26 @@ The first step is to create a pair of keys:
 
 This creates a public and private key with default names in the default location. (./keys)
 
+#### Storing the keys securely when using Puppet
+
+Since the point of using this module is to securely store sensitive information, it's important to store these keys securely.
+If using Hiera with Puppet, Your puppetmaster will need to access these keys to perform decryption when the puppet agent runs on a remote node.
+So for this reason, a suggested location might be to store them in:
+    
+    /etc/puppet/secure/keys
+    
+(Using a secure/keys/ subfolder is so that you can still store other secure puppet files in the secure/ folder that might not be related to this module.)
+ 
+The permissions for this folder should allow the puppet user (normally 'puppet') execute access to the keys directory, read only access to the keys themselves and restrict everyone else:
+
+    $ chown -R puppet:puppet /etc/puppet/secure/keys
+    $ chmod -R 0500 /etc/puppet/secure/keys
+    $ chmod 0400 /etc/puppet/secure/keys/*.pem
+    $ ls -lha /etc/puppet/secure/keys
+    -r-------- 1 puppet puppet 1.7K Sep 24 16:24 private_key.pkcs7.pem
+	-r-------- 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
+
+
 ### Encryption
 
 To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
@@ -49,9 +77,10 @@ To encrypt something, you only need the public_key, so distribute that to people
     $ eyaml -e -s 'hello there'       # Encrypt a string
     $ eyaml -e -p                     # Encrypt a password (prompt for it)
 
-Use the -l parameter to pass in a label for the encrypted value
+Use the -l parameter to pass in a label for the encrypted value,
 
-    $ eyaml -e -l 'my-secret-key' -s 'very secret stuffs'
+    $ eyaml -e -l 'some_easy_to_use_label' -s 'yourSecretString' --pkcs7-private-key /etc/puppet/secure/keys/private_key.pkcs7.pem --pkcs7-public-key /etc/puppet/secure/keys/public_key.pkcs7.pem
+
 
 ### Decryption
 
@@ -108,12 +137,17 @@ To use eyaml with hiera and puppet, first configure hiera.yaml to use the eyaml 
     :datadir: '/etc/puppet/hieradata'
 
     # If using the pkcs7 encryptor (default)
-    :pkcs7_private_key: /path/to/private_key_file.pem
-    :pkcs7_public_key:  /path/to/public_key_file.pem
+    :pkcs7_private_key: /path/to/private_key.pkcs7.pem
+    :pkcs7_public_key:  /path/to/public_key.pkcs7.pem
 
 </pre>
 
 Then, edit your hiera yaml files (renaming them with the .eyaml extension), and insert your encrypted values:
+
+
+*Important Note:* 
+The eYaml backend will not parse internally json formatted yaml files, whereas the regular yaml backend will. 
+You'll need to ensure any existing yaml files using json format are converted to syntactically correct yaml format.
 
 <pre>
 ---
@@ -171,6 +205,14 @@ Notes
 =====
 
 If you do not specify an encryption method within ENC[] tags, it will be assumed to be PKCS7
+
+Also remember that after encrypting your sensitive properties, if anyone has access to your git source,
+they will see what the property was in previous commits before you encrypted. It's recommended that you
+roll any passwords when switching from unencrypted to encrypted properties. eg, Developers having write
+access to a DEV branch will be able to read/view the contents of the PRD branch, as per the design of GIT.
+
+Github has a great guide on removing sensitive data from repos here:
+https://help.github.com/articles/remove-sensitive-data
 
 Authors
 =======
