@@ -77,9 +77,10 @@ To encrypt something, you only need the public_key, so distribute that to people
     $ eyaml -e -s 'hello there'       # Encrypt a string
     $ eyaml -e -p                     # Encrypt a password (prompt for it)
 
-Use the -l parameter to pass in a label for the encrypted value
+Use the -l parameter to pass in a label for the encrypted value,
 
-    $ eyaml -e -l 'my-secret-key' -s 'very secret stuffs'
+    $ eyaml -e -l 'some_easy_to_use_label' -s 'yourSecretString' --pkcs7-private-key /etc/puppet/secure/keys/private_key.pkcs7.pem --pkcs7-public-key /etc/puppet/secure/keys/public_key.pkcs7.pem
+
 
 ### Decryption
 
