@@ -1,3 +1,4 @@
+require 'hiera/backend/eyaml'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
