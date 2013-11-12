@@ -41,7 +41,7 @@ class Hiera
               debug("Merging answer hash")
               raise Exception, "Hiera type mismatch: expected Hash and got #{parsed_answer.class}" unless parsed_answer.kind_of? Hash
               answer ||= {}
-              answer = parsed_answer.merge answer
+              answer = Backend.merge_answer(parsed_answer,answer)
             else
               debug("Assigning answer variable")
               answer = parsed_answer
