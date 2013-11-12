@@ -66,7 +66,7 @@ The permissions for this folder should allow the puppet user (normally 'puppet')
     $ chmod 0400 /etc/puppet/secure/keys/*.pem
     $ ls -lha /etc/puppet/secure/keys
     -r-------- 1 puppet puppet 1.7K Sep 24 16:24 private_key.pkcs7.pem
-	-r-------- 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
+    -r-------- 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
 
 
 ### Encryption
