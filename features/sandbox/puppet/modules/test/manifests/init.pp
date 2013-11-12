@@ -15,4 +15,14 @@ class test::run {
     content => inline_template("<%= scope.function_hiera(['encrypted_string']) %>"),
   }
 
+  file { "/tmp/eyaml_puppettest.4":
+    ensure => present,
+    content => hiera("default_encrypted_string"),
+  }
+
+  file { "/tmp/eyaml_puppettest.5":
+    ensure => present,
+    content => hiera("encrypted_block"),
+  }
+
 }

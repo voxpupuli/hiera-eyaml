@@ -4,6 +4,9 @@ require 'aruba/config'
 require 'aruba/cucumber'
 require 'fileutils'
 require 'rspec/expectations'
+require 'hiera/backend/eyaml/parser/parser.rb'
+require 'hiera/backend/eyaml/options'
+require 'hiera/backend/eyaml/parser/encrypted_tokens'
 
 test_files = {}
 Dir["features/sandbox/**/*"].each do |file_name|

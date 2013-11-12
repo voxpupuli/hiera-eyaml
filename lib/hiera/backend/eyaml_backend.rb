@@ -1,6 +1,7 @@
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/actions/decrypt_action'
 require 'hiera/backend/eyaml/utils'
+require 'hiera/backend/eyaml/parser/parser'
 require 'yaml'
 
 class Hiera
@@ -95,11 +96,10 @@ class Hiera
 
           Eyaml::Options[:source] = "hiera"
 
-          plaintext = value.gsub( /ENC\[([^\]]*)\]/ ) { |match|
-            Eyaml::Options[:input_data] = deblock match.to_s
-            Eyaml::Options[:output] = "raw"
-            Eyaml::Actions::DecryptAction.execute
-          }
+          parser = Eyaml::Parser::ParserFactory.hiera_backend_parser
+          tokens = parser.parse(value)
+          decrypted = tokens.map{ |token| token.to_plain_text }
+          plaintext = decrypted.join
 
           plaintext.chomp
 

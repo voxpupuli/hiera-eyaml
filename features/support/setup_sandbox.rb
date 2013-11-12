@@ -7,7 +7,7 @@ class SetupSandbox
     test_files.each do |test_file, contents|
       extension = test_file.split('.').last
       target_dir = File.dirname(test_file)
-      FileUtils.mkdir_p( target_dir ) unless Dir.exists?( target_dir )
+      FileUtils.mkdir_p( target_dir ) unless File.directory?( target_dir )
       write_mode = "w"
       write_mode = "wb" if extension == "bin"
       File.open(test_file, write_mode) {|input_file|
