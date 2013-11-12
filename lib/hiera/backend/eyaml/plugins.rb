@@ -40,7 +40,7 @@ class Hiera
               if Gem::VERSION >= "1.8.0"
                 file = spec.matches_for_glob("**/eyaml_init.rb").first
               else
-                file = Gem.searcher.matching_files(spec, "eyaml_init.rb").first
+                file = Gem.searcher.matching_files(spec, "**/eyaml_init.rb").first
               end
 
               next unless file
