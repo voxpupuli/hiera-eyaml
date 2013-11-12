@@ -33,17 +33,19 @@ Options:
   EOS
           
             opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
-            opt :decrypt, "Decrypt something"
-            opt :encrypt, "Encrypt something"
-            opt :edit, "Decrypt, Edit, and Reencrypt", :type => :string
-            opt :eyaml, "Source input is an eyaml file", :type => :string
+            opt :decrypt, "Decrypt something", :short => 'd'
+            opt :encrypt, "Encrypt something", :short => 'e'
+            opt :edit, "Decrypt, Edit, and Reencrypt", :short => 'i', :type => :string
+            opt :eyaml, "Source input is an eyaml file", :short => 'y', :type => :string
             opt :password, "Source input is a password entered on the terminal", :short => 'p'
             opt :string, "Source input is a string provided as an argument", :short => 's', :type => :string
             opt :file, "Source input is a file", :short => 'f', :type => :string
-            opt :stdin, "Source input it taken from stdin", :short => 'z'
+            opt :stdin, "Source input is taken from stdin", :short => :none
             opt :encrypt_method, "Override default encryption and decryption method (default is PKCS7)", :short => 'n', :default => "pkcs7"
-            opt :output, "Output format of final result (examples, block, string)", :type => :string, :default => "examples"
+            opt :output, "Output format of final result (examples, block, string)", :type => :string, :short => 'o', :default => "examples"
             opt :label, "Apply a label to the encrypted result", :short => 'l', :type => :string
+            opt :debug, "Be more verbose", :short => :none
+            opt :quiet, "Be less verbose", :short => :none
 
             Hiera::Backend::Eyaml::Plugins.options.each do |name, option|
               opt name, option[:desc], :type => option[:type], :short => option[:short], :default => option[:default]
@@ -90,6 +92,7 @@ Options:
 
           Eyaml.default_encryption_scheme = options[:encrypt_method].upcase if options[:encrypt_method]
           Eyaml::Options.set options
+          Eyaml::Options.debug
 
         end
 
@@ -98,7 +101,8 @@ Options:
           action = Eyaml::Options[:action]
           action_class = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Actions').const_get("#{Utils.camelcase action.to_s}Action")
 
-          puts action_class.execute
+          return_value = action_class.execute
+          puts return_value unless return_value.nil?
 
         end          
 

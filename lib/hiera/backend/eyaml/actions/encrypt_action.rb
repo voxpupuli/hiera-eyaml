@@ -1,87 +1,40 @@
 require 'hiera/backend/eyaml/options'
+require 'hiera/backend/eyaml/parser/parser'
+require 'hiera/backend/eyaml/parser/encrypted_tokens'
 
 class Hiera
   module Backend
     module Eyaml
       module Actions
-
         class EncryptAction
 
-          REGEX_DECRYPTED_BLOCK = />\n(\s*)DEC(::\w+)?\[(.+)\]\!/
-          REGEX_DECRYPTED_STRING = /DEC(::\w+)?\[(.+)\]\!/
-
           def self.execute 
-
             case Eyaml::Options[:source]
-            when :eyaml
-              encryptions = []
-
-              # blocks
-              output = Eyaml::Options[:input_data].gsub( REGEX_DECRYPTED_BLOCK ) { |match|
-                indentation = $1
-                encryption_scheme = parse_encryption_scheme( $2 )
-                encryptor = Encryptor.find encryption_scheme
-                ciphertext = encryptor.encode( encryptor.encrypt($3) ).gsub(/\n/, "\n" + indentation)
-                ">\n" + indentation + "ENC[#{encryptor.tag},#{ciphertext}]"
-              }
-
-              # strings
-              output.gsub( REGEX_DECRYPTED_STRING ) { |match|
-                encryption_scheme = parse_encryption_scheme( $1 )
-                encryptor = Encryptor.find encryption_scheme
-                ciphertext = encryptor.encode( encryptor.encrypt($2) ).gsub(/\n/, "")
-                "ENC[#{encryptor.tag},#{ciphertext}]"
-              }
-
-            else
-              encryptor = Encryptor.find
-              ciphertext = encryptor.encode( encryptor.encrypt(Eyaml::Options[:input_data]) )
-              self.format :data => "ENC[#{encryptor.tag},#{ciphertext}]", :structure => Eyaml::Options[:output], :label => Eyaml::Options[:label]
+              when :eyaml
+                parser = Parser::ParserFactory.decrypted_parser
+                tokens = parser.parse(Eyaml::Options[:input_data])
+                encrypted = tokens.map{ |token| token.to_encrypted }
+                encrypted.join
+              else
+                encryptor = Encryptor.find
+                ciphertext = encryptor.encode( encryptor.encrypt(Eyaml::Options[:input_data]) )
+                token = Parser::EncToken.new(:block, Eyaml::Options[:input_data], encryptor, ciphertext, nil, '    ')
+                case Eyaml::Options[:output]
+                  when "block"
+                    token.to_encrypted :label => Eyaml::Options[:label], :use_chevron => !Eyaml::Options[:label].nil?, :format => :block
+                  when "string"
+                    token.to_encrypted :label => Eyaml::Options[:label], :format => :string
+                  when "examples"
+                    string = token.to_encrypted :label => Eyaml::Options[:label] || 'string', :format => :string
+                    block = token.to_encrypted :label => Eyaml::Options[:label] || 'block', :format => :block
+                    "#{string}\n\nOR\n\n#{block}"
+                  else
+                    token.to_encrypted :format => :string
+                end
             end
-
           end
 
-          protected
-
-            def self.parse_encryption_scheme regex_result
-              regex_result = "::" + Eyaml.default_encryption_scheme if regex_result.nil?
-              regex_result.split("::").last
-            end
-
-            def self.format_string data, label
-              data_as_string = data.split("\n").join("")
-              prefix = label ? "#{label}: " : ''
-              prefix + data_as_string
-            end
-
-            def self.format_block data, label
-              data_as_block = data.split("\n").join("\n    ")
-              prefix = label ? "#{label}: >\n" : ''
-              prefix + "    #{data_as_block}"
-            end
-
-            def self.format args
-              data = args[:data]
-              structure = args[:structure]
-              label = args[:label]
-
-              case structure
-              when "examples"
-                self.format_string(data, label || 'string') + "\n\n" +
-                "OR\n\n" +
-                self.format_block(data, label || 'block')
-              when "block"
-                self.format_block data, label
-              when "string"
-                self.format_string data, label
-              else
-                data.to_s
-              end
-
-            end
-
         end
-
       end
     end
   end

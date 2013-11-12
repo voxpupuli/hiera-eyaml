@@ -77,7 +77,7 @@ class Hiera
             if self.hiera?
               Hiera.debug format_message msg
             else
-              STDERR.puts format_message msg
+              Utils::debug format_message msg
             end
           end
 
@@ -85,7 +85,7 @@ class Hiera
             if self.hiera?
               Hiera.warn format_message msg
             else
-              STDERR.puts format_message msg
+              Utils::info format_message msg
             end
           end
 
