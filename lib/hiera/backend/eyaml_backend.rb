@@ -7,8 +7,9 @@ require 'yaml'
 class Hiera
   module Backend
     class Eyaml_backend
-      
+
       def initialize
+        @extension = Config[:eyaml][:extension] ? Config[:eyaml][:extension] : "eyaml"
       end
 
       def lookup(key, scope, order_override, resolution_type)
@@ -17,7 +18,7 @@ class Hiera
         answer = nil
 
         Backend.datasources(scope, order_override) do |source|
-          eyaml_file = Backend.datafile(:eyaml, scope, source, "eyaml") || next
+          eyaml_file = Backend.datafile(:eyaml, scope, source, @extension) || next
 
           debug("Processing datasource: #{eyaml_file}")
 
@@ -87,7 +88,7 @@ class Hiera
         if encrypted? value
 
           debug "Attempting to decrypt: #{key}"
-          
+
           Config[:eyaml].each do |config_key, config_value|
             config_value = Backend.parse_string(Config[:eyaml][config_key], scope)
             debug "Setting: #{config_key} = #{config_value}"
