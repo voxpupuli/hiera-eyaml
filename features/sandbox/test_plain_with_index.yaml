@@ -1,2 +1,7 @@
 ---
 key: DEC(23)::PKCS7[value to encrypt]!
+
+block: >
+    DEC(24)::PKCS7[block of values
+to encrypt on multiple
+lines]!
