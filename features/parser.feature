@@ -33,10 +33,13 @@ Feature: Parser
     Given I make a parser instance with the DEC regexs
     And I load a file called test_plain_with_index.yaml
     When I parse the content
-    Then I should have 2 tokens
+    Then I should have 5 tokens
     Then token 1 should be a NonMatchToken
     Then token 2 should be a EncToken
     Then token 2 id should be 23
+    Then token 3 should be a NonMatchToken
+    Then token 4 should be a EncToken
+    Then token 4 id should be 24
 
   Scenario: Output indexed decryption tokens
     Given I make a parser instance with the ENC regexs
