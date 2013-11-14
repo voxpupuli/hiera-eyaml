@@ -120,7 +120,7 @@ class Hiera
 
         class DecBlockTokenType < TokenType
           def initialize
-            @regex = />\n(\s*)DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/
+            @regex = />\n(\s*)DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/m
           end
           def create_token(string)
             md = @regex.match(string)
