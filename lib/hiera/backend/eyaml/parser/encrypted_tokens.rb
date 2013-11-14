@@ -38,6 +38,9 @@ class Hiera
             format = args[:format].nil? ? @format : args[:format]
             case format
               when :block
+                # strip any white space
+                @cipher = @cipher.gsub(/ /m, "")
+                # normalize indentation
                 ciphertext = @cipher.gsub(/\n/, "\n" + @indentation)
                 chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
                 "#{label_string}#{chevron}" + @indentation + "ENC[#{@encryptor.tag},#{ciphertext}]"
@@ -120,7 +123,7 @@ class Hiera
 
         class DecBlockTokenType < TokenType
           def initialize
-            @regex = />\n(\s*)DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/
+            @regex = />\n(\s*)DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/m
           end
           def create_token(string)
             md = @regex.match(string)
