@@ -31,7 +31,6 @@ end
 Then /^the tokens at (\d+) should match/ do |index|
   decrypted1 = @tokens[index.to_i]
   decrypted2 = @tokens_check[index.to_i]
-  puts " ----> #{decrypted1.to_decrypted} == #{decrypted2.to_decrypted}"
   decrypted1.to_decrypted.should == decrypted2.to_decrypted
 end
 
