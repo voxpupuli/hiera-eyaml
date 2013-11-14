@@ -10,37 +10,8 @@ class Hiera
 
       def initialize
         @extension = Config[:eyaml][:extension] ? Config[:eyaml][:extension] : "eyaml"
-        begin
-          # Filecache available in hiera-1.2.1
-          mod = Module::const_get("Filecache")
-          @cache = cache || Filecache.new
-        rescue NameError
-          @cache = nil
-        end
 
         debug("Hiera EYAML backend starting, with extension #{@extension}")
-      end
-
-      # Taken from hiera-1.2.1
-      # Merges two hashes answers with the configured merge behavior.
-      #         :merge_behavior: {:native|:deep|:deeper}
-      #
-      # Deep merge options use the Hash utility function provided by [deep_merge](https://github.com/peritor/deep_mer
-      #
-      #  :native => Native Hash.merge
-      #  :deep   => Use Hash.deep_merge
-      #  :deeper => Use Hash.deep_merge!
-      #
-      def merge_answer(left,right)
-        debug("merge_behavior: #{Config[:merge_behavior]}")
-        case Config[:merge_behavior]
-        when :deeper,'deeper'
-          left.deep_merge!(right)
-        when :deep,'deep'
-          left.deep_merge(right)
-        else # Native and undefined
-          left.merge(right)
-        end
       end
 
       def lookup(key, scope, order_override, resolution_type)
@@ -84,7 +55,7 @@ class Hiera
               debug("Merging answer hash")
               raise Exception, "Hiera type mismatch: expected Hash and got #{parsed_answer.class}" unless parsed_answer.kind_of? Hash
               answer ||= {}
-              answer = merge_answer(parsed_answer,answer)
+              answer = Backend.merge_answer(parsed_answer,answer)
             else
               debug("Assigning answer variable")
               answer = parsed_answer
