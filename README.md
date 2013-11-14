@@ -24,7 +24,7 @@ encrypted-property: >
     IZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
 </pre>
 
-eYaml supports multiple encryption types, and encrypted values can occur within arrays, hashes, nested arrays and nested hashes 
+eYaml supports multiple encryption types, and encrypted values can occur within arrays, hashes, nested arrays and nested hashes
 
 Setup
 =====
@@ -32,13 +32,13 @@ Setup
 ### Installing hiera-eyaml
 
     $ gem install hiera-eyaml
-    
+
 #### Installing from behind a corporate/application proxy
     $ export HTTP_PROXY=http://yourcorporateproxy:3128/
     $ export HTTPS_PROXY=http://yourcorporateproxy:3128/
-    
+
 then run your install
- 
+
     $ gem install hiera-eyaml
 
 ### Generate keys
@@ -54,11 +54,11 @@ This creates a public and private key with default names in the default location
 Since the point of using this module is to securely store sensitive information, it's important to store these keys securely.
 If using Hiera with Puppet, Your puppetmaster will need to access these keys to perform decryption when the puppet agent runs on a remote node.
 So for this reason, a suggested location might be to store them in:
-    
+
     /etc/puppet/secure/keys
-    
+
 (Using a secure/keys/ subfolder is so that you can still store other secure puppet files in the secure/ folder that might not be related to this module.)
- 
+
 The permissions for this folder should allow the puppet user (normally 'puppet') execute access to the keys directory, read only access to the keys themselves and restrict everyone else:
 
     $ chown -R puppet:puppet /etc/puppet/secure/keys
@@ -100,7 +100,7 @@ Once you have created a few eyaml files, with a mixture of encrypted and non-enc
 Multiple Encryption Types
 =========================
 
-hiera-eyaml backend is pluggable, so that further encryption types can be added as separate gems to the general mechanism which hiera-eyaml uses. Hiera-eyaml ships with one default mechanism of 'pkcs7', the encryption type widely used to sign smime email messages. 
+hiera-eyaml backend is pluggable, so that further encryption types can be added as separate gems to the general mechanism which hiera-eyaml uses. Hiera-eyaml ships with one default mechanism of 'pkcs7', the encryption type widely used to sign smime email messages.
 
 Other encryption types (if the gems for them have been loaded) can be specified using the following formats:
 
@@ -142,11 +142,15 @@ To use eyaml with hiera and puppet, first configure hiera.yaml to use the eyaml 
 
 </pre>
 
-Then, edit your hiera yaml files (renaming them with the .eyaml extension), and insert your encrypted values:
+Then, edit your hiera yaml files, and insert your encrypted values. The default eyaml file extension is .eyaml, however this can be configured in the :eyaml block to set :extension,
 
+<pre>
+:eyaml:
+    :extension: 'yaml'
+</pre>
 
-*Important Note:* 
-The eYaml backend will not parse internally json formatted yaml files, whereas the regular yaml backend will. 
+*Important Note:*
+The eYaml backend will not parse internally json formatted yaml files, whereas the regular yaml backend will.
 You'll need to ensure any existing yaml files using json format are converted to syntactically correct yaml format.
 
 <pre>
