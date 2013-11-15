@@ -9,9 +9,6 @@ class Hiera
     class Eyaml_backend
 
       def initialize
-        @extension = Config[:eyaml][:extension] ? Config[:eyaml][:extension] : "eyaml"
-
-        debug("Hiera EYAML backend starting, with extension #{@extension}")
       end
 
       def lookup(key, scope, order_override, resolution_type)
@@ -20,21 +17,11 @@ class Hiera
         answer = nil
 
         Backend.datasources(scope, order_override) do |source|
-          eyaml_file = Backend.datafile(:eyaml, scope, source, @extension) || next
+          eyaml_file = Backend.datafile(:eyaml, scope, source, "eyaml") || next
 
           debug("Processing datasource: #{eyaml_file}")
 
-          if not @cache.nil?
-            data = @cache.read(eyaml_file, Hash, {}) do |data|
-              YAML.load(data)
-            end
-          else
-            data = YAML.load_file(eyaml_file)
-            unless data.is_a?(Hash)
-              debug("YAML wasn't a hash, #{data} so defaulting to Hash {}")
-              data = {}
-            end
-          end
+          data = YAML.load(File.read( eyaml_file ))
 
           next if data.nil? or data.empty?
           debug ("Data contains valid YAML")
