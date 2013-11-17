@@ -9,4 +9,9 @@ group :development do
   gem "puppet"
 end
 
+group :test do
+  gem "rake"
+end
+
+
 
