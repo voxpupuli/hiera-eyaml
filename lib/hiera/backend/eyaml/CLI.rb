@@ -4,6 +4,7 @@ require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/actions/createkeys_action'
 require 'hiera/backend/eyaml/actions/decrypt_action'
 require 'hiera/backend/eyaml/actions/encrypt_action'
+require 'hiera/backend/eyaml/actions/recrypt_action'
 require 'hiera/backend/eyaml/actions/edit_action'
 require 'hiera/backend/eyaml/plugins'
 require 'hiera/backend/eyaml/options'
@@ -16,25 +17,26 @@ class Hiera
         def self.parse
 
           options = Trollop::options do
-              
+
             version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
             banner <<-EOS
 Hiera-eyaml is a backend for Hiera which provides OpenSSL encryption/decryption for Hiera properties
 
 Usage:
-  eyaml [options] 
+  eyaml [options]
   eyaml -i file.eyaml       # edit a file
   eyaml -e -s some-string   # encrypt a string
-  eyaml -e -p               # encrypt a password 
+  eyaml -e -p               # encrypt a password
   eyaml -e -f file.txt      # encrypt a file
   cat file.txt | eyaml -e   # encrypt a file on a pipe
 
-Options:  
+Options:
   EOS
-          
+
             opt :createkeys, "Create public and private keys for use encrypting properties", :short => 'c'
             opt :decrypt, "Decrypt something", :short => 'd'
             opt :encrypt, "Encrypt something", :short => 'e'
+            opt :recrypt, "Recrypt something", :short => 'r', :type => :string
             opt :edit, "Decrypt, Edit, and Reencrypt", :short => 'i', :type => :string
             opt :eyaml, "Source input is an eyaml file", :short => 'y', :type => :string
             opt :password, "Source input is a password entered on the terminal", :short => 'p'
@@ -53,8 +55,8 @@ Options:
 
           end
 
-          actions = [:createkeys, :decrypt, :encrypt, :edit].collect {|x| x if options[x]}.compact
-          sources = [:edit, :eyaml, :password, :string, :file, :stdin].collect {|x| x if options[x]}.compact
+          actions = [:createkeys, :decrypt, :recrypt, :encrypt, :edit].collect {|x| x if options[x]}.compact
+          sources = [:edit, :recrypt, :eyaml, :password, :string, :file, :stdin].collect {|x| x if options[x]}.compact
           # sources << :stdin if STDIN
 
           Trollop::die "You can only specify one of (#{actions.join(', ')})" if actions.count > 1
@@ -84,7 +86,11 @@ Options:
             if options[:edit]
               options[:eyaml] = options[:edit]
               options[:source] = :eyaml
-              File.read options[:edit] 
+              File.read options[:edit]
+            elsif options[:recrypt]
+              options[:eyaml] = options[:recrypt]
+              options[:source] = :eyaml
+              File.read options[:recrypt]
             else
               nil
             end
@@ -104,7 +110,7 @@ Options:
           return_value = action_class.execute
           puts return_value unless return_value.nil?
 
-        end          
+        end
 
       end
 
