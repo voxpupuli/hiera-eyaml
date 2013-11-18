@@ -1,6 +1,8 @@
 Hiera eYaml
 ===========
 
+[![Build Status](https://travis-ci.org/TomPoulton/hiera-eyaml.png)](https://travis-ci.org/TomPoulton/hiera-eyaml)
+
 A backend for Hiera that provides per-value asymmetric encryption of sensitive data
 within yaml type files to be used by Puppet.
 
