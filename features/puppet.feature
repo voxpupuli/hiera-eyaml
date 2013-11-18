@@ -32,7 +32,6 @@ Feature: eyaml hiera integration
     When I run `puppet apply --confdir ./puppet-hiera-merge --node_name_value localhost puppet/manifests/init.pp`
     Then the file "/tmp/eyaml_puppettest.1" should match /^rise and shine$/
     Then the file "/tmp/eyaml_puppettest.2" should match /^break a leg$/
-    Then the file "/tmp/eyaml_puppettest.3" should match /good luck/
     Then the file "/tmp/eyaml_puppettest.3" should match /it'll be alright on the night/
     Then the file "/tmp/eyaml_puppettest.4" should match /"here": "be rabbits"/
     Then the file "/tmp/eyaml_puppettest.4" should match /"see": "no evil"/
