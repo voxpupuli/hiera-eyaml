@@ -7,7 +7,7 @@ require 'yaml'
 class Hiera
   module Backend
     class Eyaml_backend
-      
+
       def initialize
       end
 
@@ -42,7 +42,7 @@ class Hiera
               debug("Merging answer hash")
               raise Exception, "Hiera type mismatch: expected Hash and got #{parsed_answer.class}" unless parsed_answer.kind_of? Hash
               answer ||= {}
-              answer = parsed_answer.merge answer
+              answer = Backend.merge_answer(parsed_answer,answer)
             else
               debug("Assigning answer variable")
               answer = parsed_answer
@@ -87,7 +87,7 @@ class Hiera
         if encrypted? value
 
           debug "Attempting to decrypt: #{key}"
-          
+
           Config[:eyaml].each do |config_key, config_value|
             config_value = Backend.parse_string(Config[:eyaml][config_key], scope)
             debug "Setting: #{config_key} = #{config_value}"
