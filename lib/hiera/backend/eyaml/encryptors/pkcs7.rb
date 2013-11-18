@@ -69,7 +69,6 @@ class Hiera
             cert.serial = 0
             cert.version = 2
             cert.not_before = Time.now
-            if self.OSarch == 64
             cert.not_after = if 1.size == 8       # 64bit
               Time.now + 50 * 365 * 24 * 60 * 60
             else                                  # 32bit
