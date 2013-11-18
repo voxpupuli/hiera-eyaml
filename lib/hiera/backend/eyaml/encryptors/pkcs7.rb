@@ -69,7 +69,12 @@ class Hiera
             cert.serial = 0
             cert.version = 2
             cert.not_before = Time.now
-            cert.not_after = Time.now + 50 * 365 * 24 * 60 * 60
+            if self.OSarch == 64
+            cert.not_after = if 1.size == 8       # 64bit
+              Time.now + 50 * 365 * 24 * 60 * 60
+            else                                  # 32bit
+              Time.at(0x7fffffff)
+            end
             cert.public_key = key.public_key
 
             ef = OpenSSL::X509::ExtensionFactory.new
