@@ -3,17 +3,23 @@ Hiera eYaml
 
 [![Build Status](https://travis-ci.org/TomPoulton/hiera-eyaml.png)](https://travis-ci.org/TomPoulton/hiera-eyaml)
 
-A backend for Hiera that provides per-value asymmetric encryption of sensitive data
-within yaml type files to be used by Puppet.
+hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
+to be used by Puppet.
 
-More info can be found [in this corresponding post](http://themettlemonkey.wordpress.com/2013/07/15/hiera-eyaml-per-value-encrypted-backend-for-hiera-and-puppet/).
+Unlike hiera-gpg and hiera-yampgpg, hiera-eyaml:
 
-The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. Simply prefix your
-encrypted string with the encryption method (PKCS7,) wrap it with ENC[] and place it in an eyaml file. You can mix your plain values in as well or separate them into different files.
+ - only encrypts the values (which allows files to be swiftly reviewed without decryption)
+ - encrypts the value of each key individually (this means that `git diff` is meaningful)
+ - has a pluggable encryption framework (bundled with PKCS7 encryption, but GPG can be used if you have the need for multiple keys)
+ - includes a command line tool for encrypting, decrypting, editing and rotating keys (makes it almost as easy as using clear text files)
 
-Example:
+The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. The encrypted strings are prefixed with the encryption 
+method, wrapped with ENC[] and placed in an eyaml file. You can mix your plain values in as well or separate them into different files.
+Encrypted values can occur within arrays, hashes, nested arrays and nested hashes.
 
-<pre>
+For instance:
+
+```yaml
 ---
 plain-property: You can see me
 
@@ -24,9 +30,11 @@ encrypted-property: >
     l5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd
     /HjZFXwcXRtTlzewJLc+/gox2IfByQRhsI/AgogRfYQKocZgFb/DOZoXR7wm
     IZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
-</pre>
+```
 
-eYaml supports multiple encryption types, and encrypted values can occur within arrays, hashes, nested arrays and nested hashes
+To edit this you can use the command `eyaml -i important.eyaml` which will decrypt the file, fire up an editor with
+the decrypted values and re-encrypt any edited values when you exit the editor. This tool makes editing your encrypted
+files as simple as clear text files.
 
 Setup
 =====
