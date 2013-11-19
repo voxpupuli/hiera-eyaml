@@ -1,4 +1,4 @@
-Hiera eYaml
+Hiera eyaml
 ===========
 
 [![Build Status](https://travis-ci.org/TomPoulton/hiera-eyaml.png)](https://travis-ci.org/TomPoulton/hiera-eyaml)
@@ -6,14 +6,25 @@ Hiera eYaml
 hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
 to be used by Puppet.
 
-Unlike hiera-gpg and hiera-yampgpg, hiera-eyaml:
+What's wrong with hiera-gpg?
+============================
+
+A few people found that [hiera-gpg](https://github.com/crayfishx/hiera-gpg) just wasn't cutting it for all use cases, 
+one of the best expressed frustrations was 
+[written back in June 2013](http://slashdevslashrandom.wordpress.com/2013/06/03/my-griefs-with-hiera-gpg/). So
+[Tom created an initial version](http://themettlemonkey.wordpress.com/2013/07/15/hiera-eyaml-per-value-encrypted-backend-for-hiera-and-puppet/)
+and this has since been refined into an elegant solution over the following months.
+
+Unlike `hiera-gpg`, `hiera-eyaml`:
 
  - only encrypts the values (which allows files to be swiftly reviewed without decryption)
  - encrypts the value of each key individually (this means that `git diff` is meaningful)
- - has a pluggable encryption framework (bundled with PKCS7 encryption, but GPG can be used if you have the need for multiple keys)
  - includes a command line tool for encrypting, decrypting, editing and rotating keys (makes it almost as easy as using clear text files)
+ - uses basic asymmetric encryption (PKCS#7) by default (doesn't require any native libraries that need to be compiled but allows only the
+   pupper master to decrypt hiera values)
+ - has a pluggable encryption framework so that GPG encryption can be used if you have the need for multiple keys and easier key rotation
 
-The Hiera eYaml backend uses yaml formatted files with the .eyaml extension. The encrypted strings are prefixed with the encryption 
+The Hiera eyaml backend uses yaml formatted files with the .eyaml extension. The encrypted strings are prefixed with the encryption 
 method, wrapped with ENC[] and placed in an eyaml file. You can mix your plain values in as well or separate them into different files.
 Encrypted values can occur within arrays, hashes, nested arrays and nested hashes.
 
@@ -232,4 +243,6 @@ Authors
 =======
 
 - [Tom Poulton](http://github.com/TomPoulton) - Initial author. eyaml backend.
-- [Geoff Meakin](http://github.com/gtmtech) - Major contributor. eyaml command.
+- [Geoff Meakin](http://github.com/gtmtech) - Major contributor. eyaml command, tests, CI
+- [Simon Hildrew](http://github.com/sihil) - Contributor. eyaml edit sub command.
+- [Robert Fielding](http://github.com/rooprob) - Contributor. eyaml recrypt sub command.
