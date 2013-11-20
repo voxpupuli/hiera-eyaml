@@ -20,9 +20,10 @@ Unlike `hiera-gpg`, `hiera-eyaml`:
 
  - only encrypts the values (which allows files to be swiftly reviewed without decryption)
  - encrypts the value of each key individually (this means that `git diff` is meaningful)
- - includes a command line tool for encrypting, decrypting, editing and rotating keys (makes it almost as easy as using clear text files)
- - uses basic asymmetric encryption (PKCS#7) by default (doesn't require any native libraries that need to be compiled but allows only the
-   pupper master to decrypt hiera values)
+ - includes a command line tool for encrypting, decrypting, editing and rotating keys (makes it almost as 
+   easy as using clear text files)
+ - uses basic asymmetric encryption (PKCS#7) by default (doesn't require any native libraries that need to 
+   be compiled & allows users without the private key to encrypt values that the puppet master can decrypt)
  - has a pluggable encryption framework (e.g. GPG encryption ([hiera-eyaml-gpg](https://github.com/sihil/hiera-eyaml-gpg)) can be used 
    if you have the need for multiple keys and easier key rotation)
 
