@@ -14,7 +14,7 @@ A few people found that [hiera-gpg](https://github.com/crayfishx/hiera-gpg) just
 one of the best expressed frustrations was 
 [written back in June 2013](http://slashdevslashrandom.wordpress.com/2013/06/03/my-griefs-with-hiera-gpg/). So
 [Tom created an initial version](http://themettlemonkey.wordpress.com/2013/07/15/hiera-eyaml-per-value-encrypted-backend-for-hiera-and-puppet/)
-and this has since been refined into an elegant solution over the following months.
+and this was refined into an elegant solution over the following months.
 
 Unlike `hiera-gpg`, `hiera-eyaml`:
 
@@ -117,8 +117,8 @@ when you exit the editor.
     $ eyaml -i filename.eyaml         # Edit an eyaml file in place
 
 When editing eyaml files, you will see that the unencrypted plaintext is marked to allow the eyaml tool to 
-identify the encryption method and a number to differentiate every decrypted block. This is used to make
-sure that the block is encrypted again only if the clear text value has changed, and is encrypted using the
+identify each encrypted block, along with the encryption method. This is used to make sure that the block 
+is encrypted again only if the clear text value has changed, and is encrypted using the
 original encryption mechanism (see plugable encryption later).
 
 A decrypted file might look like this:
@@ -246,6 +246,15 @@ Other encryption types (if the gems for them have been loaded) can be specified 
 When editing eyaml files, you will see that the unencrypted plaintext is marked in such a way as to identify the encryption method. This is so that the eyaml tool knows to encrypt it back using the correct method afterwards:
 
     some_key: DEC(1)::PKCS7[very secret password]!
+
+### Encryption plugins
+
+This is a list of available plugins:
+
+ - [hiera-eyaml-gpg](https://github.com/sihil/hiera-eyaml-gpg) - Provide GPG encryption
+ - [hiera-eyaml-plaintext](https://github.com/gtmtech/hiera-eyaml-plaintext) - This is a no-op encryption plugin that 
+   simply base64 encodes the values. It exists as an example plugin to create your own and to do integration tests on 
+   hiera-eyaml. **THIS SHOULD NOT BE USED IN PRODUCTION**
 
 
 Notes
