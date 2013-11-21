@@ -7,8 +7,8 @@ hiera-eyaml is a backend for Hiera that provides per-value encryption of sensiti
 to be used by Puppet.
 
 
-Why not use hiera-gpg?
-----------------------
+Advantages over hiera-gpg
+-------------------------
 
 A few people found that [hiera-gpg](https://github.com/crayfishx/hiera-gpg) just wasn't cutting it for all use cases, 
 one of the best expressed frustrations was 
