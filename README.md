@@ -1,7 +1,7 @@
 Hiera eyaml
 ===========
 
-[![Build Status](https://travis-ci.org/TomPoulton/hiera-eyaml.png)](https://travis-ci.org/TomPoulton/hiera-eyaml)
+[![Build Status](https://travis-ci.org/TomPoulton/hiera-eyaml.png?branch=master)](https://travis-ci.org/TomPoulton/hiera-eyaml)
 
 hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
 to be used by Puppet.
