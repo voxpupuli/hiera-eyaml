@@ -1,4 +1,5 @@
 require 'base64'
+require 'hiera/backend/eyaml/utils'
 
 class Hiera
   module Backend
@@ -15,7 +16,7 @@ class Hiera
           encryption_scheme = Eyaml.default_encryption_scheme if encryption_scheme.nil?
           require "hiera/backend/eyaml/encryptors/#{encryption_scheme.downcase}"          
           encryptor_module = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Encryptors')
-          encryptor_class = self.find_closest_class :parent_class => encryptor_module, :class_name => encryption_scheme
+          encryptor_class = Utils.find_closest_class :parent_class => encryptor_module, :class_name => encryption_scheme
           raise StandardError, "Could not find hiera-eyaml encryptor: #{encryption_scheme}. Try gem install hiera-eyaml-#{encryption_scheme.downcase} ?" if encryptor_class.nil?
           encryptor_class
         end
@@ -50,43 +51,21 @@ class Hiera
             Eyaml::Options[ "#{plugin_classname}_#{name}" ] || self.options[ "#{plugin_classname}_#{name}" ]
           end
 
-          def self.find_closest_class args
-            parent_class = args[ :parent_class ]
-            class_name = args[ :class_name ]
-            constants = parent_class.constants
-            candidates = []
-            constants.each do | candidate |
-              candidates << candidate.to_s if candidate.to_s.downcase == class_name.downcase
-            end
-            if candidates.count > 0
-              parent_class.const_get candidates.first
-            else
-              nil
-            end
-          end
-
-          def self.hiera?
-            "hiera".eql? Eyaml::Options[:source]
-          end
 
           def self.format_message msg
             "[eyaml_#{plugin_classname}]:  #{msg}"
           end
 
           def self.debug msg
-            if self.hiera?
-              Hiera.debug format_message msg
-            else
-              Utils::debug format_message msg
-            end
+            Utils::debug :from => plugin_classname, :msg => msg
+          end
+
+          def self.info msg
+            Utils::info :from => plugin_classname, :msg => msg
           end
 
           def self.warn msg
-            if self.hiera?
-              Hiera.warn format_message msg
-            else
-              Utils::info format_message msg
-            end
+            Utils::warn :from => plugin_classname, :msg => msg
           end
 
       end

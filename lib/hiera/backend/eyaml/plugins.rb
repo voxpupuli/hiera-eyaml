@@ -6,6 +6,7 @@ class Hiera
       class Plugins
 
         @@plugins = []
+        @@commands = []
         @@options = {}
 
         def self.register_options args
@@ -31,8 +32,6 @@ class Hiera
             specs.each do |spec|
               next if @@plugins.include? spec
 
-              # If this gem depends on Vagrant, verify this is a valid release of
-              # Vagrant for this gem to load into.
               dependency = spec.dependencies.find { |d| d.name == "hiera-eyaml" }
               next if dependency && !dependency.requirement.satisfied_by?( this_version )
 
@@ -57,6 +56,10 @@ class Hiera
 
         def self.plugins
           @@plugins
+        end
+
+        def self.commands
+          @@commands
         end
 
       end

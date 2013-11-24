@@ -1,18 +1,24 @@
 require 'hiera/backend/eyaml/utils'
-require 'hiera/backend/eyaml/actions/decrypt_action'
-require 'hiera/backend/eyaml/actions/encrypt_action'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
+require 'hiera/backend/eyaml/subcommand'
 
 class Hiera
   module Backend
     module Eyaml
-      module Actions
-  
-        class EditAction
+      module Subcommands
 
-          def self.execute 
+        class Edit < Subcommand
 
+          def self.options
+            []
+          end
+
+          def self.description
+            "edit an eyaml file"
+          end
+
+          def self.execute
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]
             decrypted_input = tokens.each_with_index.to_a.map{|(t,index)| t.to_decrypted :index => index}.join
@@ -28,7 +34,6 @@ class Hiera
 
             raise StandardError, "Editor #{editor} has not exited?" unless status.exited?
             raise StandardError, "Editor did not exit successfully (exit code #{status.exitstatus}), aborting" unless status.exitstatus
-
             raise StandardError, "Edited file is blank" if edited_file.empty?
 
             if edited_file == decrypted_input

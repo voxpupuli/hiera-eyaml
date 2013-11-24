@@ -24,9 +24,9 @@ class Hiera
           Utils::debug "Dump of eyaml tool options dict:"
           Utils::debug "--------------------------------"
           @@options.each do |k, v|
-            Utils::debug "#{k.class.name}:#{k} = #{v.class.name}:#{v}"
+            Utils::debug sprintf "%18s %-18s = %-18s %-18s", "(#{k.class.name})", k.to_s, v.to_s, "(#{v.class.name})"
           end
-          Utils::debug ""
+          Utils::debug "--------------------------------"
         end
 
       end
