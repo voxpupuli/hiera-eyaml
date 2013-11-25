@@ -7,7 +7,7 @@ Feature: eyaml editing
   Scenario: decrypt an eyaml file
     Given my EDITOR is set to "/bin/cat"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
-    When I run `eyaml -i test_input.eyaml`
+    When I run `eyaml edit test_input.eyaml`
     Then the output should match /encrypted_string: DEC\(1\)::PKCS7\[planet of the apes\]\!/
     And the output should match /encrypted_default_encryption_string: DEC\(3\)::PKCS7\[planet of the apes\]\!/
     And the output should match /encrypted_block: >\n\s+DEC\(5\)::PKCS7\[gangs of new york\]\!/
@@ -32,8 +32,8 @@ Feature: eyaml editing
   Scenario: decrypt and reencrypt an eyaml file
     Given my EDITOR is set to "./convert_decrypted_values_to_uppercase.sh"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
-    When I run `eyaml -i test_input.eyaml`
-    When I run `eyaml -d -y test_input.eyaml`
+    When I run `eyaml edit test_input.eyaml`
+    When I run `eyaml decrypt -y test_input.eyaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[PLANET OF THE APES\]\!/
     And the output should match /encrypted_block: >\n\s+DEC::PKCS7\[GANGS OF NEW YORK\]\!/
     And the output should match /\- DEC::PKCS7\[APOCALYPSE NOW\]\!/
