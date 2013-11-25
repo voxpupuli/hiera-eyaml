@@ -29,8 +29,11 @@ class Hiera
               :short       => 'h'}
           ]
         
-        def self.options 
-          @@global_options
+        def self.all_options 
+          options = @@global_options.dup
+          options += self.options if self.options
+          options += Plugins.options
+          options
         end
 
         def self.attach_option opt
@@ -51,19 +54,22 @@ class Hiera
 
         def self.parse
 
+          me = self
+
           options = Trollop::options do
 
             version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
-            banner [Hiera::Backend::Eyaml::DESCRIPTION].join("\n\n")
+            banner [me.description].join("\n\n")
 
-            @@global_options.each do |available_option|
+            
+            me.all_options.each do |available_option|
 
               skeleton = {:description => "",
                           :short => :none}
 
               skeleton.merge! available_option
               opt skeleton[:name], 
-                  skeleton[:description], 
+                  skeleton[:desc] || skeleton[:description],  #legacy plugins 
                   :short => skeleton[:short], 
                   :default => skeleton[:default], 
                   :type => skeleton[:type]

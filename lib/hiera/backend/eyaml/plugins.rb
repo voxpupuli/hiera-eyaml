@@ -7,13 +7,15 @@ class Hiera
 
         @@plugins = []
         @@commands = []
-        @@options = {}
+        @@options = []
 
         def self.register_options args
-          options_hash = args[ :options ]
+          options = args[ :options ]
           plugin = args[ :plugin ]
-          options_hash.each do |key, value|
-            @@options.merge!({ "#{plugin}_#{key}" => value })
+          options.each do |name, option_hash|
+            new_option = {:name => "#{plugin}_#{name}"}
+            new_option.merge! option_hash
+            @@options << new_option
           end
         end
 

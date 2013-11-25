@@ -7,7 +7,7 @@ class Hiera
 
         class Createkeys < Subcommand
 
-          def self.options
+          def self.options 
             []
           end
 
