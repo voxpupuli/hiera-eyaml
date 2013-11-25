@@ -2,6 +2,9 @@ class Hiera
   module Backend
     module Eyaml
 
+      class RecoverableError < StandardError
+      end
+
       VERSION = "1.3.8"
 
       def self.default_encryption_scheme= new_encryption
