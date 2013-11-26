@@ -47,7 +47,7 @@ then run your install
 
 The first step is to create a pair of keys:
 
-    $ eyaml -c
+    $ eyaml createkeys
 
 This creates a public and private key with default names in the default location. (./keys)
 
@@ -75,13 +75,13 @@ The permissions for this folder should allow the puppet user (normally 'puppet')
 
 To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
 
-    $ eyaml -e -f filename            # Encrypt a file
-    $ eyaml -e -s 'hello there'       # Encrypt a string
-    $ eyaml -e -p                     # Encrypt a password (prompt for it)
+    $ eyaml encrypt -f filename            # Encrypt a file
+    $ eyaml encrypt -s 'hello there'       # Encrypt a string
+    $ eyaml encrypt -p                     # Encrypt a password (prompt for it)
 
 Use the -l parameter to pass in a label for the encrypted value,
 
-    $ eyaml -e -l 'some_easy_to_use_label' -s 'yourSecretString' --pkcs7-private-key /etc/puppet/secure/keys/private_key.pkcs7.pem --pkcs7-public-key /etc/puppet/secure/keys/public_key.pkcs7.pem
+    $ eyaml encrypt -l 'some_easy_to_use_label' -s 'yourSecretString'
 
 
 ### Decryption
@@ -90,14 +90,14 @@ To decrypt something, you need the public_key and the private_key.
 
 To test decryption you can also use the eyaml tool if you have both keys
 
-    $ eyaml -d -f filename               # Decrypt a file
-    $ eyaml -d -s 'ENC[PKCS7,.....]'     # Decrypt a string
+    $ eyaml decrypt -f filename               # Decrypt a file
+    $ eyaml decrypt -s 'ENC[PKCS7,.....]'     # Decrypt a string
 
 ### eYaml files
 
 Once you have created a few eyaml files, with a mixture of encrypted and non-encrypted properties, you can edit the encrypted values in place, using the special edit mode of the eyaml utility
 
-    $ eyaml -i filename.eyaml         # Edit an eyaml file in place
+    $ eyaml edit filename.eyaml         # Edit an eyaml file in place
 
 Multiple Encryption Types
 =========================
