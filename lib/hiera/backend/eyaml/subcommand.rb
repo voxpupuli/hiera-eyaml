@@ -96,8 +96,8 @@ class Hiera
 
         end
 
-        def self.validate
-          true
+        def self.validate args
+          args
         end
 
         def self.description

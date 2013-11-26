@@ -12,20 +12,21 @@ class Hiera
         class Decrypt < Subcommand
 
           def self.options
-            [{:opt => :password, 
-              :description => "Source input is a password entered on the terminal", 
-              :short => 'p'},
-             {:opt => :string,
+            [{:name => :string,
               :description => "Source input is a string provided as an argument",
               :short => 's', 
               :type => :string},
-             {:opt => :file,
+             {:name => :file,
               :description => "Source input is a regular file",
               :short => 'f',
               :type => :string},
-             {:opt => :stdin,
+             {:name => :eyaml,
+              :description => "Source input is an eyaml file",
+              :short => 'y',
+              :type => :string},
+             {:name => :stdin,
               :description => "Source input is taken from stdin",
-              :short => '-'}
+              :short => :none}
             ]
           end
 
@@ -38,6 +39,18 @@ class Hiera
             Trollop::die "You must specify a source" if sources.count.zero?
             Trollop::die "You can only specify one of (#{sources.join(', ')})" if sources.count > 1
             options[:source] = sources.first
+
+            options[:input_data] = case options[:source]
+            when :stdin
+              STDIN.read
+            when :string
+              options[:string]
+            when :file
+              File.read options[:file]
+            when :eyaml
+              File.read options[:eyaml]
+            end
+            options
           end
 
           def self.execute

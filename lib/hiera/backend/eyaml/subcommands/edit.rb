@@ -18,6 +18,20 @@ class Hiera
             "edit an eyaml file"
           end
 
+          def self.validate options
+            if ARGV.empty?
+              Trollop::die "You must specify an eyaml file" unless options[:eyaml]
+              options[:source] = :eyaml
+              options[:input_data] = File.read options[:eyaml]
+            else
+              Trollop::die "You cannot specify --eyaml, and an eyaml file as an argument" if options[:eyaml]
+              options[:source] = :eyaml
+              options[:eyaml] = ARGV.shift
+              options[:input_data] = File.read options[:eyaml]
+            end
+            options
+          end
+
           def self.execute
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]

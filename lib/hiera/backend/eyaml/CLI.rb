@@ -32,38 +32,7 @@ class Hiera
           options = command_class.parse
           options[:executor] = command_class
 
-          # options.merge! command.parse
-          # options[:action] = command.to_sym
-
-
-          # options[:source] = :not_applicable if options[:action] == :createkeys
-
-          # Trollop::die "Nothing to do" if options[:source].nil? or options[:action].nil?
-
-          # options[:input_data] = case options[:source]
-          # when :stdin
-          #   STDIN.read
-          # when :password
-          #   Utils.read_password
-          # when :string
-          #   options[:string]
-          # when :file
-          #   File.read options[:file]
-          # when :eyaml
-          #   File.read options[:eyaml]
-          # when :stdin
-          #   STDIN.read
-          # else
-          #   if options[:edit]
-          #     options[:eyaml] = options[:edit]
-          #     options[:source] = :eyaml
-          #     File.read options[:edit] 
-          #   else
-          #     nil
-          #   end
-          # end
-
-          # Eyaml.default_encryption_scheme = options[:encrypt_method].upcase if options[:encrypt_method]
+          options = command_class.validate options
           Eyaml::Options.set options
           Eyaml::Options.debug
 
