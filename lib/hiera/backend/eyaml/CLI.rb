@@ -1,14 +1,6 @@
 require 'trollop'
 require 'hiera/backend/eyaml'
 require 'hiera/backend/eyaml/utils'
-<<<<<<< HEAD
-=======
-require 'hiera/backend/eyaml/actions/createkeys_action'
-require 'hiera/backend/eyaml/actions/decrypt_action'
-require 'hiera/backend/eyaml/actions/encrypt_action'
-require 'hiera/backend/eyaml/actions/recrypt_action'
-require 'hiera/backend/eyaml/actions/edit_action'
->>>>>>> upstream/master
 require 'hiera/backend/eyaml/plugins'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/subcommand'
