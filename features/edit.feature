@@ -52,3 +52,13 @@ Feature: eyaml editing
     And the output should match /\s+key5: DEC::PKCS7\[VALUE5\]\!/
     And the output should match /\s+key6: DEC::PKCS7\[VALUE6\]\!/
     And the output should match /multi_encryption: DEC::PLAINTEXT\[JAMMY\]\! DEC::PKCS7\[DODGER\]\!/
+
+  Scenario: decrypt and reencrypt an eyaml file with multiple new values
+    Given my EDITOR is set to "./append.sh test_new_values.yaml"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml -i test_input.eyaml`
+    When I run `eyaml -d -y test_input.eyaml`
+    Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/
+    And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
+    And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
+    And the output should match /multi_encryption: DEC::PLAINTEXT\[jammy\]\! DEC::PKCS7\[dodger\]!/

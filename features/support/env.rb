@@ -27,3 +27,7 @@ Aruba.configure do |config|
     SetupSandbox.create_files test_files
   end
 end
+
+Before do
+  @aruba_timeout_seconds = 30
+end

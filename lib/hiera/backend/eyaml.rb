@@ -4,15 +4,9 @@ class Hiera
 
       VERSION = "1.4.0"
       DESCRIPTION = "Hiera-eyaml is a backend for Hiera which provides OpenSSL encryption/decryption for Hiera properties"
-      USAGE = <<-EOS
-Usage:
-  eyaml <command> [options] 
-  eyaml edit file.eyaml       # edit a file
-  eyaml encrypt -s some-string   # encrypt a string
-  eyaml encrypt --password       # encrypt a password 
-  eyaml enc-e -f file.txt      # encrypt a file
-  cat file.txt | eyaml -e   # encrypt a file on a pipe
-EOS
+
+      class RecoverableError < StandardError
+      end
 
       def self.subcommand= command
         @@subcommand = command
