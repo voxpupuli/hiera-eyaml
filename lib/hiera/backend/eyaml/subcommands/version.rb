@@ -17,17 +17,26 @@ class Hiera
           end
 
           def self.execute
+            plugin_versions = {}
 
             puts <<-EOS
 Version info
 
 hiera-eyaml (core): #{Eyaml::VERSION}
-#{Plugins.plugins.collect {|plugin| 
-  plugin.name.split("hiera-eyaml-").last
-}.collect {|plugin|
-  "    hiera-eyaml-#{plugin} (gem): " + Encryptor.find(plugin)::VERSION.to_s
-}.join("\n")}
 EOS
+
+            Plugins.plugins.each do |plugin|
+              plugin_shortname = plugin.name.split("hiera-eyaml-").last
+              plugin_version = begin
+                Encryptor.find(plugin_shortname)::VERSION.to_s
+              rescue
+                "unknown (is plugin compatible with eyaml 2.0+ ?)"
+              end
+              puts "    hiera-eyaml-#{plugin_shortname} (gem): #{plugin_version}"
+            end
+
+            nil
+            
           end
 
         end
