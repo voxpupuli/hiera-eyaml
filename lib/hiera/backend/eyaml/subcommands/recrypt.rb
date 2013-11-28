@@ -18,16 +18,10 @@ class Hiera
           end
 
           def self.validate options
-            if ARGV.empty?
-              Trollop::die "You must specify an eyaml file" unless options[:eyaml]
-              options[:source] = :eyaml
-              options[:input_data] = File.read options[:eyaml]
-            else
-              Trollop::die "You cannot specify --eyaml, and an eyaml file as an argument" if options[:eyaml]
-              options[:source] = :eyaml
-              options[:eyaml] = ARGV.shift
-              options[:input_data] = File.read options[:eyaml]
-            end
+            Trollop::die "You must specify an eyaml file" if ARGV.empty?
+            options[:source] = :eyaml
+            options[:eyaml] = ARGV.shift
+            options[:input_data] = File.read options[:eyaml]
             options
           end
 
