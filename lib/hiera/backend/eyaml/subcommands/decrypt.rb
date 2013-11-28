@@ -22,7 +22,7 @@ class Hiera
               :type => :string},
              {:name => :eyaml,
               :description => "Source input is an eyaml file",
-              :short => 'y',
+              :short => 'e',
               :type => :string},
              {:name => :stdin,
               :description => "Source input is taken from stdin",

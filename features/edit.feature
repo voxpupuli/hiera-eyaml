@@ -33,7 +33,7 @@ Feature: eyaml editing
     Given my EDITOR is set to "./convert_decrypted_values_to_uppercase.sh"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
-    When I run `eyaml decrypt -y test_input.eyaml`
+    When I run `eyaml decrypt -e test_input.eyaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[PLANET OF THE APES\]\!/
     And the output should match /encrypted_block: >\n\s+DEC::PKCS7\[GANGS OF NEW YORK\]\!/
     And the output should match /\- DEC::PKCS7\[APOCALYPSE NOW\]\!/
@@ -57,7 +57,7 @@ Feature: eyaml editing
     Given my EDITOR is set to "./append.sh test_new_values.yaml"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
-    When I run `eyaml decrypt -y test_input.eyaml`
+    When I run `eyaml decrypt -e test_input.eyaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/
     And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/

@@ -59,9 +59,8 @@ class Hiera
           options = Trollop::options do
 
             version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
-            banner [me.description].join("\n\n")
+            banner ["eyaml #{me.prettyname}: #{me.description}", me.helptext, "Options:"].compact.join("\n\n")
 
-            
             me.all_options.each do |available_option|
 
               skeleton = {:description => "",
@@ -104,8 +103,16 @@ class Hiera
           "no description"
         end
 
+        def self.helptext
+          "Usage: eyaml #{self.prettyname} [options]"
+        end
+
         def self.execute
           raise StandardError, "This command is not implemented yet (#{self.to_s.split('::').last})"
+        end
+
+        def self.prettyname
+          Utils.snakecase self.to_s.split('::').last
         end
 
         def self.hidden?

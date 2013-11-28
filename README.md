@@ -46,7 +46,7 @@ encrypted-property: >
     IZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
 ```
 
-To edit this you can use the command `eyaml -i important.eyaml` which will decrypt the file, fire up an editor with
+To edit this you can use the command `eyaml edit important.eyaml` which will decrypt the file, fire up an editor with
 the decrypted values and re-encrypt any edited values when you exit the editor. This tool makes editing your encrypted
 files as simple as clear text files.
 

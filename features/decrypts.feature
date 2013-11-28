@@ -17,7 +17,7 @@ Feature: eyaml decrypting
     Then the output should match /^danger will robinson$/
 
   Scenario: decrypt an eyaml file
-    When I run `eyaml decrypt -y test_input.yaml`
+    When I run `eyaml decrypt -e test_input.yaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/
     And the output should match /encrypted_block: >\n\s+DEC::PKCS7\[gangs of new york\]\!/
     And the output should match /\- DEC::PKCS7\[apocalypse now\]\!/

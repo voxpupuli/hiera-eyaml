@@ -27,7 +27,7 @@ class Hiera
               :short => :none},
              {:name => :eyaml,
               :description => "Source input is an eyaml file",
-              :short => 'y',
+              :short => 'e',
               :type => :string},
              {:name => :output,
               :description => "Output format of final result (examples, block, string)",

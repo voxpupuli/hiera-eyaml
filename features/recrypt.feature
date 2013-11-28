@@ -19,5 +19,5 @@ Feature: Recrypt
     And I run `eyaml recrypt test_input.yaml`
     When I run `diff -q test_input.yaml test_input.eyaml`
     Then the exit status should be 1
-    And I run `eyaml decrypt -y test_input.eyaml`
+    And I run `eyaml decrypt -e test_input.eyaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/

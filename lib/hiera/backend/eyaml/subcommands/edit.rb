@@ -19,6 +19,10 @@ class Hiera
             "edit an eyaml file"
           end
 
+          def self.helptext
+            "Usage: eyaml edit [options] <some-eyaml-file>"
+          end
+
           def self.validate options
             Trollop::die "You must specify an eyaml file" if ARGV.empty?
             options[:source] = :eyaml
