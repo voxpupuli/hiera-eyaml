@@ -32,7 +32,10 @@ Available subcommands:
 
 For more help on an individual command, use --help on that command
 
-Plugins:
+Installed Plugins:
+#{Plugins.plugins.collect {|plugin| 
+  "\t" + plugin.name.split("hiera-eyaml-").last
+}.join("\n")}
 EOS
           end
 

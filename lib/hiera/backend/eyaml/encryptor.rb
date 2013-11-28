@@ -51,6 +51,9 @@ class Hiera
             Eyaml::Options[ "#{plugin_classname}_#{name}" ] || self.options[ "#{plugin_classname}_#{name}" ]
           end
 
+          def self.hiera?
+            Utils::hiera?
+          end
 
           def self.format_message msg
             "[eyaml_#{plugin_classname}]:  #{msg}"
