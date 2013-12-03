@@ -51,7 +51,9 @@ class Hiera
         def self.write_tempfile data_to_write
           file = Tempfile.open('eyaml_edit')
           path = file.path
+          file.close!
 
+          file = File.open(path, "w")
           file.puts data_to_write
           file.close
 
