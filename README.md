@@ -6,7 +6,7 @@ Hiera eyaml
 hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
 to be used by Puppet.
 
-:new *v2.0 - commandline tool syntax has changed, see below for details*
+:new: *v2.0 - commandline tool syntax has changed, see below for details*
 
 Advantages over hiera-gpg
 -------------------------
