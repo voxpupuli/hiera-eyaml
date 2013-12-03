@@ -6,25 +6,25 @@ Feature: eyaml outputs
 
 
   Scenario: encrypt a simple string with default output
-    When I run `eyaml -e -s some_string`
+    When I run `eyaml encrypt -s some_string`
     Then the output should match /string: ENC\[PKCS7,(.*?)\]/
     And the output should match /block: >\s*\n\s*ENC\[PKCS7,(.*?)\]/
 
   Scenario: encrypt a simple string with examples output
-    When I run `eyaml -e -o examples -s some_string`
+    When I run `eyaml encrypt -o examples -s some_string`
     Then the output should match /string: ENC\[PKCS7,(.*?)\]/
     And the output should match /block: >\s*\n\s*ENC\[PKCS7,(.*?)\]/
 
   Scenario: encrypt a simple string with string output
-    When I run `eyaml -e -o string -s some_string`
+    When I run `eyaml encrypt -o string -s some_string`
     Then the output should match /^ENC\[PKCS7,(.*?)\]$/
 
   Scenario: encrypt a simple string with raw output
-    When I run `eyaml -e -o raw -s some_string`
+    When I run `eyaml encrypt -o raw -s some_string`
     Then the output should match /^ENC\[PKCS7,(.*?)\]$/
     And the output should contain "\n"
 
   Scenario: encrypt a simple string with block output
-    When I run `eyaml -e -o block -s some_string`
+    When I run `eyaml encrypt -o block -s some_string`
     Then the output should match /^\s+ENC\[PKCS7,(.*?)\]$/
     

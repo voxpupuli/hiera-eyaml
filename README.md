@@ -6,6 +6,7 @@ Hiera eyaml
 hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
 to be used by Puppet.
 
+:new *v2.0 - commandline tool syntax has changed, see below for details*
 
 Advantages over hiera-gpg
 -------------------------
@@ -46,7 +47,7 @@ encrypted-property: >
     IZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
 ```
 
-To edit this you can use the command `eyaml -i important.eyaml` which will decrypt the file, fire up an editor with
+To edit this you can use the command `eyaml edit important.eyaml` which will decrypt the file, fire up an editor with
 the decrypted values and re-encrypt any edited values when you exit the editor. This tool makes editing your encrypted
 files as simple as clear text files.
 
@@ -62,7 +63,7 @@ Setup
 
 The first step is to create a pair of keys:
 
-    $ eyaml -c
+    $ eyaml createkeys
 
 This creates a public and private key with default names in the default location. (./keys)
 
@@ -90,13 +91,13 @@ The permissions for this folder should allow the puppet user (normally 'puppet')
 
 To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
 
-    $ eyaml -e -f filename            # Encrypt a file
-    $ eyaml -e -s 'hello there'       # Encrypt a string
-    $ eyaml -e -p                     # Encrypt a password (prompt for it)
+    $ eyaml encrypt -f filename            # Encrypt a file
+    $ eyaml encrypt -s 'hello there'       # Encrypt a string
+    $ eyaml encrypt -p                     # Encrypt a password (prompt for it)
 
 Use the -l parameter to pass in a label for the encrypted value,
 
-    $ eyaml -e -l 'some_easy_to_use_label' -s 'yourSecretString' --pkcs7-private-key /etc/puppet/secure/keys/private_key.pkcs7.pem --pkcs7-public-key /etc/puppet/secure/keys/public_key.pkcs7.pem
+    $ eyaml encrypt -l 'some_easy_to_use_label' -s 'yourSecretString'
 
 
 ### Decryption
@@ -105,8 +106,8 @@ To decrypt something, you need the public_key and the private_key.
 
 To test decryption you can also use the eyaml tool if you have both keys
 
-    $ eyaml -d -f filename               # Decrypt a file
-    $ eyaml -d -s 'ENC[PKCS7,.....]'     # Decrypt a string
+    $ eyaml decrypt -f filename               # Decrypt a file
+    $ eyaml decrypt -s 'ENC[PKCS7,.....]'     # Decrypt a string
 
 ### Editing eyaml files
 
@@ -115,7 +116,7 @@ you can edit the encrypted values in place, using the special edit mode of the e
 mode opens a decrypted copy of the eyaml file in your `$EDITOR` and will encrypt and modified values
 when you exit the editor.
 
-    $ eyaml -i filename.eyaml         # Edit an eyaml file in place
+    $ eyaml edit filename.eyaml         # Edit an eyaml file in place
 
 When editing eyaml files, you will see that the unencrypted plaintext is marked to allow the eyaml tool to 
 identify each encrypted block, along with the encryption method. This is used to make sure that the block 

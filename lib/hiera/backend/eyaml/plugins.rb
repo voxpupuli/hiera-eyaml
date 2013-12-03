@@ -6,13 +6,16 @@ class Hiera
       class Plugins
 
         @@plugins = []
-        @@options = {}
+        @@commands = []
+        @@options = []
 
         def self.register_options args
-          options_hash = args[ :options ]
+          options = args[ :options ]
           plugin = args[ :plugin ]
-          options_hash.each do |key, value|
-            @@options.merge!({ "#{plugin}_#{key}" => value })
+          options.each do |name, option_hash|
+            new_option = {:name => "#{plugin}_#{name}"}
+            new_option.merge! option_hash
+            @@options << new_option
           end
         end
 
@@ -31,8 +34,6 @@ class Hiera
             specs.each do |spec|
               next if @@plugins.include? spec
 
-              # If this gem depends on Vagrant, verify this is a valid release of
-              # Vagrant for this gem to load into.
               dependency = spec.dependencies.find { |d| d.name == "hiera-eyaml" }
               next if dependency && !dependency.requirement.satisfied_by?( this_version )
 
@@ -57,6 +58,10 @@ class Hiera
 
         def self.plugins
           @@plugins
+        end
+
+        def self.commands
+          @@commands
         end
 
       end

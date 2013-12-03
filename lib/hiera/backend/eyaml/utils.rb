@@ -25,6 +25,11 @@ class Hiera
           string.split('_').map{|e| e.capitalize}.join
         end
 
+        def self.snakecase string
+          return string if string !~ /[A-Z]/
+          string.split(/(?=[A-Z])/).collect {|x| x.downcase}.join("_")
+        end
+
         def self.find_editor
           editor = ENV['EDITOR']
           editor ||= %w{ /usr/bin/sensible-editor /usr/bin/editor /usr/bin/vim /usr/bin/vi }.collect {|e| e if FileTest.executable? e}.compact.first
@@ -80,12 +85,83 @@ class Hiera
 
         end
 
-        def self.info message
-          STDERR.puts message unless Eyaml::Options[:quiet]
+        def self.find_closest_class args
+          parent_class = args[ :parent_class ]
+          class_name = args[ :class_name ]
+          constants = parent_class.constants
+          candidates = []
+          constants.each do | candidate |
+            candidates << candidate.to_s if candidate.to_s.downcase == class_name.downcase
+          end
+          if candidates.count > 0
+            parent_class.const_get candidates.first
+          else
+            nil
+          end
         end
 
-        def self.debug message
-          STDERR.puts message if Eyaml::Options[:debug]
+        def self.require_dir classdir
+          num_class_hierarchy_levels = self.to_s.split("::").count - 1 
+          root_folder = File.dirname(__FILE__) + "/" + Array.new(num_class_hierarchy_levels).fill("..").join("/")
+          class_folder = root_folder + "/" + classdir
+          Dir[File.expand_path("#{class_folder}/*.rb")].uniq.each do |file|
+            # puts "Requiring file: #{file}"
+            require file
+          end
+        end
+
+        def self.find_all_subclasses_of args
+          parent_class = args[ :parent_class ]
+          constants = parent_class.constants
+          candidates = []
+          constants.each do | candidate |
+            candidates << candidate.to_s.split('::').last if parent_class.const_get(candidate).class.to_s == "Class"
+          end
+          candidates
+        end 
+
+        def self.hiera?
+          "hiera".eql? Eyaml::Options[:source]
+        end
+
+        def self.structure_message messageinfo
+          message = {:from => "hiera-eyaml-core"}
+          case messageinfo.class.to_s
+          when 'Hash'
+            message.merge!(messageinfo)
+          else
+            message.merge!({:msg => messageinfo.to_s})
+          end
+        end
+
+        def self.warn messageinfo
+          message = self.structure_message messageinfo
+          message = "[#{message[:from]}] !!! #{message[:msg]}"
+          if self.hiera?
+            Hiera.warn format_message msg
+          else
+            STDERR.puts message
+          end
+        end
+
+        def self.info messageinfo
+          message = self.structure_message messageinfo
+          message = "[#{message[:from]}] #{message[:msg]}"
+          if self.hiera?
+            Hiera.debug message if Eyaml.verbosity_level > 0
+          else
+            STDERR.puts message if Eyaml.verbosity_level > 0
+          end
+        end
+
+        def self.debug messageinfo
+          message = self.structure_message messageinfo
+          message = "[#{message[:from]}] #{message[:msg]}"
+          if self.hiera?
+            Hiera.debug message if Eyaml.verbosity_level > 1
+          else
+            STDERR.puts message if Eyaml.verbosity_level > 1
+          end
         end
 
       end
