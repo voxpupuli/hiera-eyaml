@@ -11,10 +11,10 @@ class Hiera
         class Pkcs7 < Encryptor
 
           self.options = {
-            :private_key => { :desc => "Private key directory", 
+            :private_key => { :desc => "Path to private key", 
                               :type => :string, 
                               :default => "./keys/private_key.pkcs7.pem" },
-            :public_key => { :desc => "Public key directory",  
+            :public_key => { :desc => "Path to public key",  
                              :type => :string, 
                              :default => "./keys/public_key.pkcs7.pem" }
           }
