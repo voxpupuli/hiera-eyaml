@@ -1,4 +1,6 @@
-ENV['RUBYLIB'] = File.dirname(__FILE__) + '/../../lib'
+rubylib = (ENV["RUBYLIB"] || "").split(File::PATH_SEPARATOR)
+rubylib.unshift %|#{File.dirname(__FILE__) + '/../../lib'}|
+ENV["RUBYLIB"] = rubylib.uniq.join(File::PATH_SEPARATOR)
 require 'rubygems'
 require 'aruba/config'
 require 'aruba/cucumber'
