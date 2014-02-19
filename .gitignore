@@ -6,4 +6,3 @@ pkg/
 tmp/
 .DS_Store
 .rvmrc
-Gemfile.lock
