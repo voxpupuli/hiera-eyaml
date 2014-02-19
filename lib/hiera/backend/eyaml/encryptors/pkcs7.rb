@@ -1,4 +1,5 @@
 require 'openssl'
+require 'yaml'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
@@ -9,14 +10,24 @@ class Hiera
       module Encryptors
 
         class Pkcs7 < Encryptor
+          @config_file="#{ENV['HOME']}/.eyaml/config.yaml"
+
+          @eyaml_defaults={"private_key"=>"./keys/private_key.pkcs7.pem",
+                           "public_key" =>"./keys/public_key.pkcs7.pem" }
+
+          @eyaml_config = begin
+            YAML.load_file(@config_file)
+          rescue Errno::ENOENT, IndexError
+            @eyaml_defaults
+          end
 
           self.options = {
-            :private_key => { :desc => "Path to private key", 
-                              :type => :string, 
-                              :default => "./keys/private_key.pkcs7.pem" },
-            :public_key => { :desc => "Path to public key",  
-                             :type => :string, 
-                             :default => "./keys/public_key.pkcs7.pem" }
+            :private_key => { :desc => "Path to private key",
+                              :type => :string,
+                              :default => @eyaml_config.fetch('private_key',@eyaml_defaults["private_key"]) },
+            :public_key  => { :desc => "Path to public key",
+                              :type => :string,
+                              :default => @eyaml_config.fetch('public_key',@eyaml_defaults["public_key"]) }
           }
 
           self.tag = "PKCS7"
