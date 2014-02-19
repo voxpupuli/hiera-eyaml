@@ -140,7 +140,7 @@ class Hiera
           message = self.structure_message messageinfo
           message = "[#{message[:from]}] !!! #{message[:msg]}"
           if self.hiera?
-            Hiera.warn format_message msg
+            Hiera.warn format_message message
           else
             STDERR.puts message
           end
