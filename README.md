@@ -1,3 +1,9 @@
+Note
+====
+Contains fix for this issue: https://github.com/TomPoulton/hiera-eyaml/pull/62
+
+See https://github.com/TomPoulton/hiera-eyaml for the original version.
+
 Hiera eyaml
 ===========
 

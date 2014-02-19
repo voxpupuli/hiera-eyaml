@@ -64,10 +64,12 @@ class Hiera
             Utils.ensure_key_dir_exists private_key
             Utils.write_important_file :filename => private_key, :content => key.to_pem, :mode => 0600
 
-            name = OpenSSL::X509::Name.parse("/")
+            name = OpenSSL::X509::Name.parse("/DC=org/DC=example/CN=eyaml")
             cert = OpenSSL::X509::Certificate.new()
             cert.serial = 0
             cert.version = 2
+            cert.subject = name
+            cert.issuer = cert.subject
             cert.not_before = Time.now
             cert.not_after = if 1.size == 8       # 64bit
               Time.now + 50 * 365 * 24 * 60 * 60
