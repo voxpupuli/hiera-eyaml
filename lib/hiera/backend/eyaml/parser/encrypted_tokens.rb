@@ -113,7 +113,7 @@ class Hiera
 
         class DecStringTokenType < TokenType
           def initialize
-            @regex = /DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/
+            @regex = /DEC(\(\d+\))?::(\w+)\[(.+?)\]\!/m
           end
           def create_token(string)
             md = @regex.match(string)
