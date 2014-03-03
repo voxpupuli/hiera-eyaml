@@ -13,7 +13,7 @@ class Hiera
       attr_reader :extension
 
       def initialize(cache = nil)
-        Hiera.debug("Hiera eYAML backend starting")
+        debug("Hiera eYAML backend starting")
 
         @cache     = cache || Filecache.new
         @extension = Config[:eyaml][:extension] || "eyaml"
@@ -24,10 +24,10 @@ class Hiera
 
         parse_options(scope)
 
-        Hiera.debug("Looking up #{key} in eYAML backend")
+        debug("Looking up #{key} in eYAML backend")
 
         Backend.datasources(scope, order_override) do |source|
-          Hiera.debug("Looking for data source #{source}")
+          debug("Looking for data source #{source}")
           eyaml_file = Backend.datafile(:eyaml, scope, source, extension) || next
 
           next unless File.exists?(eyaml_file)
@@ -43,7 +43,7 @@ class Hiera
           # multiple times if the resolution type is array or hash but that
           # should be expected as the logging will then tell the user ALL the
           # places where the key is found.
-          Hiera.debug("Found #{key} in #{source}")
+          debug("Found #{key} in #{source}")
 
           # for array resolution we just append to the array whatever
           # we find, we then goes onto the next file and keep adding to
@@ -71,9 +71,13 @@ class Hiera
 
       private
 
+      def debug(message)
+        Hiera.debug("[eyaml_backend]: #{message}")
+      end
+
       def decrypt(data)
         if encrypted?(data)
-          Hiera.debug("Attempting to decrypt")
+          debug("Attempting to decrypt")
 
           parser = Eyaml::Parser::ParserFactory.hiera_backend_parser
           tokens = parser.parse(data)
@@ -117,7 +121,7 @@ class Hiera
         Config[:eyaml].each do |key, value|
           parsed_value = Backend.parse_string(value, scope)
           Eyaml::Options[key] = parsed_value
-          Hiera.debug("Set option: #{key} = #{parsed_value}")
+          debug("Set option: #{key} = #{parsed_value}")
         end
 
         Eyaml::Options[:source] = "hiera"
