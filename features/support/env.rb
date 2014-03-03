@@ -11,7 +11,7 @@ require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/encrypted_tokens'
 
 test_files = {}
-Dir["features/sandbox/**/*"].each do |file_name|
+Dir.glob("features/sandbox/**/*", File::FNM_DOTMATCH).each do |file_name|
   next unless File.file? file_name
   read_mode = "r"
   read_mode = "rb" if file_name =~ /\.bin$/
@@ -31,5 +31,7 @@ Aruba.configure do |config|
 end
 
 Before do
+  # set to a non-existant home in order so rogue configs don't confuse
+  ENV['HOME'] = 'clean_home'
   @aruba_timeout_seconds = 30
 end

@@ -1,4 +1,5 @@
 require 'base64'
+require 'yaml'
 # require 'hiera/backend/eyaml/subcommands/unknown_command'
 
 class Hiera
@@ -29,10 +30,32 @@ class Hiera
               :short       => 'h'}
           ]
         
+        def self.load_config_file
+          config_file="#{ENV['HOME']}/.eyaml/config.yaml"
+          begin
+            config = YAML.load_file(config_file)
+            Utils::info "Loaded config from #{config_file}"
+            config
+          rescue Errno::ENOENT, IndexError
+            {}
+          end
+        end
+
         def self.all_options 
           options = @@global_options.dup
           options += self.options if self.options
           options += Plugins.options
+          # merge in defaults from configuration file
+          config_file = self.load_config_file
+          options.map!{ | opt| 
+            key_name = "#{opt[:name]}"
+            if config_file.has_key? key_name
+              opt[:default] = config_file[key_name]
+              opt
+            else
+              opt
+            end
+          }
           options
         end
 
