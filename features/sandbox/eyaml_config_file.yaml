@@ -1,0 +1,4 @@
+---
+pkcs7_public_key: config_file_pub_key.pkcs7.pem
+encrypt_method: plaintext
+plaintext_diagnostic_message: config_file_success
