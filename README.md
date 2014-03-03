@@ -233,6 +233,27 @@ things:
         - nested thing 2.1
 ```
 
+Configuration file for eyaml
+----------------------------
+
+Default parameters for the eyaml command line tool can be provided by creating a configuration YAML file.
+
+The location of the file defaults to `~/.eyaml/config.yaml` but can be overriden by setting `EYAML_CONFIG` environment variable.
+
+The file takes any long form argument that you can provide on the command line. For example, to override the pkcs7 keys:
+```yaml
+---
+pkcs7_private_key: '~/keys/eyaml/private_key.pkcs7.pem'
+pkcs7_public_key: '~/keys/eyaml/public_key.pkcs7.pem'
+```
+
+Or to override to use GPG by default:
+```yaml
+---
+encrypt_method: 'gpg'
+gpg_gnupghome: '~/alternative_gnupghome'
+gpg_recipients: 'sihil@example.com,gtmtech@example.com,tpoulton@example.com'
+```
 
 Pluggable Encryption
 --------------------

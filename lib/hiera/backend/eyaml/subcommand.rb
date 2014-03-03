@@ -31,7 +31,7 @@ class Hiera
           ]
         
         def self.load_config_file
-          config_file="#{ENV['HOME']}/.eyaml/config.yaml"
+          config_file=ENV['EYAML_CONFIG'] || "#{ENV['HOME']}/.eyaml/config.yaml"
           begin
             config = YAML.load_file(config_file)
             Utils::info "Loaded config from #{config_file}"

@@ -36,5 +36,6 @@ end
 Before do
   # set to a non-existant home in order so rogue configs don't confuse
   ENV['SANDBOX_HOME'] = 'clean_home'
+  ENV['EYAML_CONFIG'] = nil
   @aruba_timeout_seconds = 30
 end
