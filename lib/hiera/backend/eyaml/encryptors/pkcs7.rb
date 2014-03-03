@@ -16,7 +16,10 @@ class Hiera
                               :default => "./keys/private_key.pkcs7.pem" },
             :public_key => { :desc => "Path to public key",  
                              :type => :string, 
-                             :default => "./keys/public_key.pkcs7.pem" }
+                             :default => "./keys/public_key.pkcs7.pem" },
+            :subject => { :desc => "Subject to use for certificate when creating keys",
+                          :type => :string,
+                          :default => "/" },
           }
 
           self.tag = "PKCS7"
@@ -59,14 +62,15 @@ class Hiera
 
             public_key = self.option :public_key
             private_key = self.option :private_key
+            subject = self.option :subject
 
             key = OpenSSL::PKey::RSA.new(2048)
             Utils.ensure_key_dir_exists private_key
             Utils.write_important_file :filename => private_key, :content => key.to_pem, :mode => 0600
 
-            name = OpenSSL::X509::Name.parse("/")
             cert = OpenSSL::X509::Certificate.new()
-            cert.serial = 0
+            cert.subject = OpenSSL::X509::Name.parse(subject)
+            cert.serial = 1
             cert.version = 2
             cert.not_before = Time.now
             cert.not_after = if 1.size == 8       # 64bit
