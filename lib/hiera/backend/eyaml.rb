@@ -15,7 +15,7 @@ class Hiera
       def self.subcommand
         @@subcommand
       end
-      
+
       def self.default_encryption_scheme= new_encryption
         @@default_encryption_scheme = new_encryption
       end
@@ -41,7 +41,7 @@ class Hiera
       def self.subcommands
         @@subcommands
       end
-      
+
     end
   end
 end
