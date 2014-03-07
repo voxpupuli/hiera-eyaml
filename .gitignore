@@ -6,3 +6,5 @@ pkg/
 tmp/
 .DS_Store
 .rvmrc
+.ruby-version
+.ruby-gemset
