@@ -71,11 +71,7 @@ This creates a public and private key with default names in the default location
 
 Since the point of using this module is to securely store sensitive information, it's important to store these keys securely.
 If using Hiera with Puppet, Your puppetmaster will need to access these keys to perform decryption when the puppet agent runs on a remote node.
-So for this reason, a suggested location might be to store them in:
-
-    /etc/puppet/secure/keys
-
-(Using a secure/keys/ subfolder is so that you can still store other secure puppet files in the secure/ folder that might not be related to this module.)
+So for this reason, a suggested location might be to store them in `/etc/puppet/secure/keys` or `/var/lib/puppet/keys` depending on your setup.
 
 The permissions for this folder should allow the puppet user (normally 'puppet') execute access to the keys directory, read only access to the keys themselves and restrict everyone else:
 
