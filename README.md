@@ -1,5 +1,5 @@
 Hiera eyaml
-===========
+==========
 
 [![Build Status](https://travis-ci.org/TomPoulton/hiera-eyaml.png?branch=master)](https://travis-ci.org/TomPoulton/hiera-eyaml)
 
