@@ -12,7 +12,8 @@ class Hiera
         class Edit < Subcommand
 
           def self.options
-            []
+            [{ :name => :no_preamble,
+               :description => "Don't prefix edit sessions with the informative preamble" }]
           end
 
           def self.description
@@ -23,11 +24,28 @@ class Hiera
             "Usage: eyaml edit [options] <some-eyaml-file>"
           end
 
+          def self.preamble
+            <<-eos
+# This is eyaml edit mode. These lines (starting with # at the top of the file)
+# will be removed when you save and exit.
+#  - To edit encrypted values, change the content of the DEC(<num>)::PKCS7[]!
+#    (or DEC(<num>)::GPG[]!) block. DO NOT change the number in the parentheses.
+#  - To add a new encrypted value add a new DEC::<format>[]! block (where
+#    <format> is the encryption, e.g. GPG or PKCS7). You must not use a number
+#    when adding a new block.
+eos
+          end
+
           def self.validate options
             Trollop::die "You must specify an eyaml file" if ARGV.empty?
             options[:source] = :eyaml
             options[:eyaml] = ARGV.shift
-            options[:input_data] = File.read options[:eyaml]
+            if File.exists? options[:eyaml]
+              options[:input_data] = File.read options[:eyaml]
+            else
+              Utils.info "#{options[:eyaml]} doesn't exist, editing new file"
+              options[:input_data] = "---#{$/}"
+            end
             options
           end
 
@@ -35,7 +53,8 @@ class Hiera
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]
             decrypted_input = tokens.each_with_index.to_a.map{|(t,index)| t.to_decrypted :index => index}.join
-            decrypted_file = Utils.write_tempfile decrypted_input
+            decrypted_file_content = Eyaml::Options[:no_preamble] ? decrypted_input : (self.preamble + decrypted_input)
+            decrypted_file = Utils.write_tempfile decrypted_file_content
 
             editor = Utils.find_editor
 
@@ -44,7 +63,9 @@ class Hiera
               status = $?
 
               raise StandardError, "File was moved by editor" unless File.file? decrypted_file
-              edited_file = File.read decrypted_file
+              raw_edited_file = File.read decrypted_file
+              # strip comments at start of file
+              edited_file = raw_edited_file.split($/).drop_while {|line| line.start_with?('#')}.join($/)
 
               raise StandardError, "Editor #{editor} has not exited?" unless status.exited?
               raise StandardError, "Editor did not exit successfully (exit code #{status.exitstatus}), aborting" unless status.exitstatus == 0
