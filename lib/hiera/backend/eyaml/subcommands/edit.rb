@@ -24,16 +24,30 @@ class Hiera
             "Usage: eyaml edit [options] <some-eyaml-file>"
           end
 
+          def self.prefix
+            '#|'
+          end
+
           def self.preamble
-            <<-eos
-# This is eyaml edit mode. These lines (starting with # at the top of the file)
-# will be removed when you save and exit.
-#  - To edit encrypted values, change the content of the DEC(<num>)::PKCS7[]!
-#    (or DEC(<num>)::GPG[]!) block. DO NOT change the number in the parentheses.
-#  - To add a new encrypted value add a new DEC::<format>[]! block (where
-#    <format> is the encryption, e.g. GPG or PKCS7). You must not use a number
-#    when adding a new block.
+            tags = (["pkcs7"] + Plugins.plugins.collect {|plugin|
+              plugin.name.split("hiera-eyaml-").last
+            }).collect{|name| Encryptor.find(name).tag}
+            #tags = tags.collect {|tag| "DEC::#{tag}[]!" }
+            preamble = <<-eos
+This is eyaml edit mode. This text (lines starting with #{self.prefix} at the top of the
+file) will be removed when you save and exit.
+ - To edit encrypted values, change the content of the DEC(<num>)::PKCS7[]!
+   block#{(tags.size>1) ? " (or #{tags.drop(1).collect {|tag| "DEC(<num>)::#{tag}[]!" }.join(' or ')})." : '.' }
+   WARNING: DO NOT change the number in the parentheses.
+ - To add a new encrypted value copy and paste a new block from the
+   appropriate example below. Note that:
+    * the text to encrypt goes in the square brackets
+    * ensure you include the exclamation mark when you copy and paste
+    * you must not include a number when adding a new block
+   e.g. #{tags.collect {|tag| "DEC::#{tag}[]!" }.join(' -or- ')}
 eos
+
+            preamble.split($/).collect{|line| "#{self.prefix} #{line}"}.join($/) + $/
           end
 
           def self.validate options
@@ -44,7 +58,7 @@ eos
               options[:input_data] = File.read options[:eyaml]
             else
               Utils.info "#{options[:eyaml]} doesn't exist, editing new file"
-              options[:input_data] = "---#{$/}"
+              options[:input_data] = "---"
             end
             options
           end
@@ -65,7 +79,7 @@ eos
               raise StandardError, "File was moved by editor" unless File.file? decrypted_file
               raw_edited_file = File.read decrypted_file
               # strip comments at start of file
-              edited_file = raw_edited_file.split($/).drop_while {|line| line.start_with?('#')}.join($/)
+              edited_file = raw_edited_file.split($/).drop_while {|line| line.start_with?(self.prefix)}.join($/)
 
               raise StandardError, "Editor #{editor} has not exited?" unless status.exited?
               raise StandardError, "Editor did not exit successfully (exit code #{status.exitstatus}), aborting" unless status.exitstatus == 0

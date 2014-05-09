@@ -33,13 +33,13 @@ Feature: eyaml editing
     Given my EDITOR is set to "/bin/cat"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
-    Then the output should match /# This is eyaml edit mode/
+    Then the output should match /#| This is eyaml edit mode/
 
   Scenario: decrypting a eyaml file with --no-preamble should NOT add a preamble
     Given my EDITOR is set to "/bin/cat"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit --no-preamble test_input.eyaml`
-    Then the output should not match /# This is eyaml edit mode/
+    Then the output should not match /#| This is eyaml edit mode/
 
   Scenario: editing a non-existant eyaml file should give you a blank file
     Given my EDITOR is set to "/bin/cat"
@@ -52,6 +52,7 @@ Feature: eyaml editing
     When I run `bash -c 'rm non-existant-file.eyaml'`
     When I run `eyaml edit non-existant-file.eyaml`
     When I run `eyaml decrypt -e non-existant-file.eyaml`
+    Then the output should not match /#| This is eyaml edit mode/
     And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
 
