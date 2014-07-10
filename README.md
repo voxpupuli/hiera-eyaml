@@ -271,7 +271,7 @@ When editing eyaml files, you will see that the unencrypted plaintext is marked 
 This is a list of available plugins:
 
  - [hiera-eyaml-gpg](https://github.com/sihil/hiera-eyaml-gpg) - Provide GPG encryption
- - [hiera-eyaml-plaintext](https://github.com/gtmtech/hiera-eyaml-plaintext) - This is a no-op encryption plugin that 
+ - [hiera-eyaml-plaintext](https://github.com/gtmtechltd/hiera-eyaml-plaintext) - This is a no-op encryption plugin that 
    simply base64 encodes the values. It exists as an example plugin to create your own and to do integration tests on 
    hiera-eyaml. **THIS SHOULD NOT BE USED IN PRODUCTION**
 
