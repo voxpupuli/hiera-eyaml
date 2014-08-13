@@ -49,7 +49,7 @@ class Hiera
         end
 
         def self.write_tempfile data_to_write
-          file = Tempfile.open('eyaml_edit')
+          file = Tempfile.open(['eyaml_edit', '.yaml'])
           path = file.path
           file.close!
 
