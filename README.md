@@ -59,6 +59,10 @@ Setup
 
     $ gem install hiera-eyaml
 
+### Installing hiera-eyaml for the new [puppet-server](https://github.com/puppetlabs/puppet-server)
+
+    $ puppetserver gem install hiera-eyaml
+
 ### Generate keys
 
 The first step is to create a pair of keys:
