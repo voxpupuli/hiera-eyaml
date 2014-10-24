@@ -31,21 +31,25 @@ class Hiera
           ]
         
         def self.load_config_file
-          config_file=ENV['EYAML_CONFIG'] || "#{ENV['HOME']}/.eyaml/config.yaml"
-          begin
-            config = YAML.load_file(config_file)
-            Utils::info "Loaded config from #{config_file}"
-            config
-          rescue Errno::ENOENT, IndexError
-            {}
+          config = {}
+          [ "/etc/eyaml/config.yaml", "#{ENV['HOME']}/.eyaml/config.yaml", "#{ENV['EYAML_CONFIG']}" ].each do |config_file|
+          if config_file and File.file? config_file
+            begin
+              yaml_contents = YAML.load_file(config_file)
+              Utils::info "Loaded config from #{config_file}"
+              config.merge! yaml_contents
+            rescue 
+              raise StandardError, "Could not open config file \"#{config_file}\" for reading"
+            end
           end
+          config
         end
 
         def self.all_options 
           options = @@global_options.dup
           options += self.options if self.options
           options += Plugins.options
-          # merge in defaults from configuration file
+          # merge in defaults from configuration files
           config_file = self.load_config_file
           options.map!{ | opt| 
             key_name = "#{opt[:name]}"
