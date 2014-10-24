@@ -136,7 +136,7 @@ class Hiera
           end
           message[:prefix] = "[#{message[:from]}]"
           message[:spacer] = " #{' ' * message[:from].length} "
-          formatted_output = message[:msg].split("\n").collect.with_index do |line, index|
+          formatted_output = message[:msg].split("\n").each_with_index.map do |line, index|
             if index == 0
               "#{message[:prefix]} #{line}"
             else
