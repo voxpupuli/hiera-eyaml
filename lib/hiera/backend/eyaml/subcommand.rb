@@ -33,14 +33,13 @@ class Hiera
         def self.load_config_file
           config = {}
           [ "/etc/eyaml/config.yaml", "#{ENV['HOME']}/.eyaml/config.yaml", "#{ENV['EYAML_CONFIG']}" ].each do |config_file|
-          if config_file and File.file? config_file
             begin
               yaml_contents = YAML.load_file(config_file)
               Utils::info "Loaded config from #{config_file}"
               config.merge! yaml_contents
             rescue 
               raise StandardError, "Could not open config file \"#{config_file}\" for reading"
-            end
+            end if config_file and File.file? config_file
           end
           config
         end
