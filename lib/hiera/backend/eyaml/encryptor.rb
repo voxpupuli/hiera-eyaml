@@ -59,6 +59,10 @@ class Hiera
             "[eyaml_#{plugin_classname}]:  #{msg}"
           end
 
+          def self.trace msg
+            Utils::trace :from => plugin_classname, :msg => msg
+          end
+
           def self.debug msg
             Utils::debug :from => plugin_classname, :msg => msg
           end

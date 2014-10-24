@@ -20,13 +20,17 @@ class Hiera
           end
         end
 
-        def self.debug
-          Utils::debug "Dump of eyaml tool options dict:"
-          Utils::debug "--------------------------------"
+        def self.trace
+          Utils::trace "Dump of eyaml tool options dict:"
+          Utils::trace "--------------------------------"
           @@options.each do |k, v|
-            Utils::debug sprintf "%18s %-18s = %18s %-18s", "(#{k.class.name})", k.to_s, "(#{v.class.name})", v.to_s
+            begin
+              Utils::trace sprintf "%18s %-18s = %18s %-18s", "(#{k.class.name})", k.to_s, "(#{v.class.name})", v.to_s
+            rescue
+              Utils::trace sprintf "%18s %-18s = %18s %-18s", "(#{k.class.name})", k.to_s, "(#{v.class.name})", "<unprintable>" # case where v is binary
+            end
           end
-          Utils::debug "--------------------------------"
+          Utils::trace "--------------------------------"
         end
 
       end

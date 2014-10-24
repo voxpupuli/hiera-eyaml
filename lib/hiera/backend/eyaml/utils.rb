@@ -107,7 +107,7 @@ class Hiera
           root_folder = File.dirname(__FILE__) + "/" + Array.new(num_class_hierarchy_levels).fill("..").join("/")
           class_folder = root_folder + "/" + classdir
           Dir[File.expand_path("#{class_folder}/*.rb")].uniq.each do |file|
-            # puts "Requiring file: #{file}"
+            self.trace "Requiring file: #{file}"
             require file
           end
         end
@@ -134,36 +134,60 @@ class Hiera
           else
             message.merge!({:msg => messageinfo.to_s})
           end
+          message[:prefix] = "[#{message[:from]}]"
+          message[:spacer] = " #{' ' * message[:from].length} "
+          formatted_output = message[:msg].split("\n").collect.with_index do |line, index|
+            if index == 0
+              "#{message[:prefix]} #{line}"
+            else
+              "#{message[:spacer]} #{line}"
+            end
+          end
+          formatted_output.join "\n"
         end
 
         def self.warn messageinfo
-          message = self.structure_message messageinfo
-          message = "[#{message[:from]}] !!! #{message[:msg]}"
-          if self.hiera?
-            Hiera.warn message
-          else
-            STDERR.puts message
-          end
+          self.print_message({ :message => self.structure_message( messageinfo ), :hiera_loglevel => :warn, :cli_color => :red })
         end
 
         def self.info messageinfo
-          message = self.structure_message messageinfo
-          message = "[#{message[:from]}] #{message[:msg]}"
-          if self.hiera?
-            Hiera.debug message if Eyaml.verbosity_level > 0
-          else
-            STDERR.puts message if Eyaml.verbosity_level > 0
-          end
+          self.print_message({ :message => self.structure_message( messageinfo ), :hiera_loglevel => :debug, :cli_color => :white, :threshold => 0 })
         end
 
         def self.debug messageinfo
-          message = self.structure_message messageinfo
-          message = "[#{message[:from]}] #{message[:msg]}"
+          self.print_message({ :message => self.structure_message( messageinfo ), :hiera_loglevel => :debug, :cli_color => :green, :threshold => 1 })
+        end
+
+        def self.trace messageinfo
+          self.print_message({ :message => self.structure_message( messageinfo ), :hiera_loglevel => :debug, :cli_color => :blue, :threshold => 2 })
+        end
+
+        def self.print_message( args )
+          message        = args[:message] ||= ""
+          hiera_loglevel = args[:hiera_loglevel] ||= :debug
+          cli_color      = args[:cli_color] ||= :blue
+          threshold      = args[:threshold]
+
           if self.hiera?
-            Hiera.debug message if Eyaml.verbosity_level > 1
+            Hiera.send(hiera_loglevel, message) if threshold.nil? or Eyaml.verbosity_level > threshold
           else
-            STDERR.puts message if Eyaml.verbosity_level > 1
+            STDERR.puts self.colorize( message, cli_color ) if threshold.nil? or Eyaml.verbosity_level > threshold
           end
+        end
+
+        def self.colorize message, color
+          suffix = "\e[0m"
+          prefix = case color
+          when :red
+            "\e[31m"
+          when :green
+            "\e[32m"
+          when :blue
+            "\e[34m"
+          else #:white
+            "\e[0m"
+          end
+          "#{prefix}#{message}#{suffix}"
         end
 
       end
