@@ -326,6 +326,7 @@ You'll need to have a few requirements installed:
   * `aruba` (gem)
   * `cucumber` (gem)
   * `puppet` (gem)
+  * `hiera-eyaml-plaintext` (gem)
 
 
 Authors
