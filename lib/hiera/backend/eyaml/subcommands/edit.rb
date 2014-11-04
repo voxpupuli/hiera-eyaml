@@ -32,7 +32,7 @@ class Hiera
             tags = (["pkcs7"] + Plugins.plugins.collect {|plugin|
               plugin.name.split("hiera-eyaml-").last
             }).collect{|name| Encryptor.find(name).tag}
-            #tags = tags.collect {|tag| "DEC::#{tag}[]!" }
+
             preamble = <<-eos
 This is eyaml edit mode. This text (lines starting with #{self.prefix} at the top of the
 file) will be removed when you save and exit.
@@ -47,7 +47,7 @@ file) will be removed when you save and exit.
    e.g. #{tags.collect {|tag| "DEC::#{tag}[]!" }.join(' -or- ')}
 eos
 
-            preamble.split($/).collect{|line| "#{self.prefix} #{line}"}.join($/) + $/
+            preamble.gsub(/^/, "#{self.prefix} ") + $/
           end
 
           def self.validate options
@@ -55,7 +55,11 @@ eos
             options[:source] = :eyaml
             options[:eyaml] = ARGV.shift
             if File.exists? options[:eyaml]
-              options[:input_data] = File.read options[:eyaml]
+              begin
+                options[:input_data] = File.read options[:eyaml]
+              rescue
+                raise StandardError, "Could not open file for reading: #{options[:eyaml]}"
+              end
             else
               Utils.info "#{options[:eyaml]} doesn't exist, editing new file"
               options[:input_data] = "---"

@@ -41,6 +41,12 @@ Feature: eyaml editing
     When I run `eyaml edit --no-preamble test_input.eyaml`
     Then the output should not match /#| This is eyaml edit mode/
 
+  Scenario: editing a eyaml file should not leave the preamble
+    Given my EDITOR is set to "true"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the output should not match /#| This is eyaml edit mode/
+
   Scenario: editing a non-existant eyaml file should give you a blank file
     Given my EDITOR is set to "/bin/cat"
     When I run `bash -c 'rm non-existant-file.eyaml'`
