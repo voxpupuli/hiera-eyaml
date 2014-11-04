@@ -42,10 +42,10 @@ Feature: eyaml editing
     Then the output should not match /#| This is eyaml edit mode/
 
   Scenario: editing a eyaml file should not leave the preamble
-    Given my EDITOR is set to "true"
+    Given my EDITOR is set to "./convert_decrypted_values_to_uppercase.sh"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
-    Then the output should not match /#| This is eyaml edit mode/
+    Then the file "test_input.eyaml" should not match /#| This is eyaml edit mode/
 
   Scenario: editing a non-existant eyaml file should give you a blank file
     Given my EDITOR is set to "/bin/cat"
