@@ -29,6 +29,39 @@ Feature: eyaml editing
     And the output should match /\s+key6: DEC\(\d+\)::PKCS7\[value6\]\!/
     And the output should match /multi_encryption: DEC\(29\)::PLAINTEXT\[jammy\]\! DEC\(\d+\)::PKCS7\[dodger\]!/
 
+  Scenario: decrypting a eyaml file should add a preamble
+    Given my EDITOR is set to "/bin/cat"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the output should match /#| This is eyaml edit mode/
+
+  Scenario: decrypting a eyaml file with --no-preamble should NOT add a preamble
+    Given my EDITOR is set to "/bin/cat"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit --no-preamble test_input.eyaml`
+    Then the output should not match /#| This is eyaml edit mode/
+
+  Scenario: editing a eyaml file should not leave the preamble
+    Given my EDITOR is set to "./convert_decrypted_values_to_uppercase.sh"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the file "test_input.eyaml" should not match /#| This is eyaml edit mode/
+
+  Scenario: editing a non-existant eyaml file should give you a blank file
+    Given my EDITOR is set to "/bin/cat"
+    When I run `bash -c 'rm non-existant-file.eyaml'`
+    When I run `eyaml edit --no-preamble non-existant-file.eyaml`
+    Then the output should match /^---/
+
+  Scenario: editing a non-existant eyaml file should save a new file
+    Given my EDITOR is set to "./append.sh test_new_values.yaml"
+    When I run `bash -c 'rm non-existant-file.eyaml'`
+    When I run `eyaml edit non-existant-file.eyaml`
+    When I run `eyaml decrypt -e non-existant-file.eyaml`
+    Then the output should not match /#| This is eyaml edit mode/
+    And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
+    And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
+
   Scenario: decrypt and reencrypt an eyaml file
     Given my EDITOR is set to "./convert_decrypted_values_to_uppercase.sh"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
