@@ -34,7 +34,7 @@ class Hiera
 
           options = command_class.validate options
           Eyaml::Options.set options
-          Eyaml::Options.debug
+          Eyaml::Options.trace
 
         end
 
@@ -46,7 +46,7 @@ class Hiera
             puts result unless result.nil?
           rescue Exception => e
             Utils.warn e.message
-            Utils.info e.backtrace.inspect
+            Utils.debug e.backtrace.join("\n")
           end
 
         end

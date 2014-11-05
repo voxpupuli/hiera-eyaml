@@ -22,6 +22,9 @@ class Hiera
            {:name          => :verbose,
               :description => "Be more verbose",
               :short       => 'v'},
+           {:name          => :trace,
+              :description => "Enable trace debug",
+              :short       => 't'},
            {:name          => :quiet,
               :description => "Be less verbose",
               :short       => 'q'},
@@ -104,6 +107,10 @@ class Hiera
 
           if options[:verbose]
             Hiera::Backend::Eyaml.verbosity_level += 1
+          end
+
+          if options[:trace]
+            Hiera::Backend::Eyaml.verbosity_level += 2
           end
 
           if options[:quiet]

@@ -94,7 +94,7 @@ class Hiera
 
             Utils.ensure_key_dir_exists public_key
             Utils.write_important_file :filename => public_key, :content => cert.to_pem
-            puts "Keys created OK"
+            Utils.info "Keys created OK"
 
           end
 
