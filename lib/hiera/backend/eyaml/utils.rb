@@ -55,6 +55,7 @@ class Hiera
             num_bytes.times { file.print(byte.chr) }
             file.fsync
           end
+          file.close
           File.delete args[:file]
         end
 
