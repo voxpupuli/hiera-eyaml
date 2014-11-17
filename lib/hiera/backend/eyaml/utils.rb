@@ -37,7 +37,7 @@ class Hiera
           if editor.index(' ')
             editor = editor.gsub(/~/, ENV['HOME'])
             pieces = editor.split(' ')
-            paths = pieces.each_with_index {|_,x| pieces[0..x].join(' ')}.reverse
+            paths = pieces.each_with_index.map {|_,x| pieces[0..x].join(' ')}.reverse
             extensions = (ENV['PATHEXT'] || '').split(';') # handle Windows executables
             editorfile = paths.select { |path|
         FileTest.file?(path) || ! extensions.select {|ext| FileTest.file?(path + ext) }.empty?
