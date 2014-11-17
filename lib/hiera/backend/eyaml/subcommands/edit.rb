@@ -77,7 +77,7 @@ eos
             editor = Utils.find_editor
 
             begin
-              system "#{editor} #{decrypted_file}"
+              system "\"#{editor}\" \"#{decrypted_file}\""
               status = $?
 
               raise StandardError, "File was moved by editor" unless File.file? decrypted_file
