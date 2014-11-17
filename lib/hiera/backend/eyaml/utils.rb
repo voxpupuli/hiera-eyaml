@@ -35,7 +35,7 @@ class Hiera
           editor ||= %w{ /usr/bin/sensible-editor /usr/bin/editor /usr/bin/vim /usr/bin/vi }.collect {|e| e if FileTest.executable? e}.compact.first
           raise StandardError, "Editor not found. Please set your EDITOR env variable" if editor.nil?
           if editor.index(' ')
-            editor = editor.gsub(/~/, ENV['HOME'])
+            editor = editor.gsub(/([^\\]|^)~/, '\1' + ENV['HOME'])
             pieces = editor.split(' ')
             paths = pieces.each_with_index.map {|_,x| pieces[0..x].join(' ')}.reverse
             extensions = (ENV['PATHEXT'] || '').split(';') # handle Windows executables
