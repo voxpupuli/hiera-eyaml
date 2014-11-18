@@ -38,6 +38,7 @@ class Hiera
             editor = editor.dup if editor.frozen? # values from ENV are frozen
             editor.gsub!(/([^\\]|^)~/, '\1' + ENV['HOME']) # replace ~ with home unless escaped
             editor.gsub!(/^"?([^"]+)"?$/, '\1') # remove surrounding quotes during processing
+            editor.gsub!(/\\ /, ' ') # unescape spaces since we quote paths
             pieces = editor.split(' ')
             paths = pieces.each_with_index.map {|_,x| pieces[0..x].join(' ')}.reverse # get possible paths, starting with longest
             extensions = (ENV['PATHEXT'] || '').split(';') # handle Windows executables
