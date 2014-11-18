@@ -47,7 +47,7 @@ file) will be removed when you save and exit.
    e.g. #{tags.collect {|tag| "DEC::#{tag}[]!" }.join(' -or- ')}
 eos
 
-            preamble.gsub(/^/, "#{self.prefix} ") + $/
+            preamble.gsub(/^/, "#{self.prefix} ")
           end
 
           def self.validate options
