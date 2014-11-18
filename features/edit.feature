@@ -97,19 +97,19 @@ Feature: eyaml editing
     And the output should match /multi_encryption: DEC::PLAINTEXT\[jammy\]\! DEC::PKCS7\[dodger\]!/
 
   Scenario: EDITOR has a space in it and isn't quoted or escaped
-    Given my EDITOR is set to "./spaced editor"
+    Given my EDITOR is set to "./spaced editor.sh"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
     Then the stderr should contain "No changes detected"
 
   Scenario: EDITOR has a space in it that is escaped but not isn't quoted
-    Given my EDITOR is set to "./spaced\\ editor"
+    Given my EDITOR is set to "./spaced\\ editor.sh"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
     Then the stderr should contain "No changes detected"
 
   Scenario: EDITOR has a space in it and is quoted
-    Given my EDITOR is set to "\"./spaced editor\""
+    Given my EDITOR is set to "\"./spaced editor.sh\""
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
     Then the stderr should contain "No changes detected"
