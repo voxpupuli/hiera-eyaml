@@ -108,3 +108,9 @@ Feature: eyaml editing
     When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
     When I run `eyaml edit test_edit.eyaml`
     Then the stderr should contain "No changes detected"
+
+  Scenario: editing but not modifying a eyaml file with --no-preamble should be detected
+    Given my EDITOR is set to "/usr/bin/env true"
+    When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
+    When I run `eyaml edit --no-preamble test_edit.eyaml`
+    Then the stderr should contain "No changes detected"
