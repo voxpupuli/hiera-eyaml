@@ -96,18 +96,6 @@ Feature: eyaml editing
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
     And the output should match /multi_encryption: DEC::PLAINTEXT\[jammy\]\! DEC::PKCS7\[dodger\]!/
 
-  Scenario: editing but not modifying a eyaml file should be detected
-    Given my EDITOR is set to "/bin/cat"
-    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
-    When I run `eyaml edit test_input.eyaml`
-    Then the stderr should contain "No changes detected"
-
-  Scenario: editing but not modifying a eyaml file with --no-preamble should be detected
-    Given my EDITOR is set to "/bin/cat"
-    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
-    When I run `eyaml edit --no-preamble test_input.eyaml`
-    Then the stderr should contain "No changes detected"
-
   Scenario: EDITOR has a space in it and isn't quoted or escaped
     Given my EDITOR is set to "./spaced editor"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
