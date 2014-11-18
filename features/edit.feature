@@ -107,3 +107,21 @@ Feature: eyaml editing
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit --no-preamble test_input.eyaml 2>1`
     Then the output should match /No changes detected/
+
+  Scenario: EDITOR has a space in it and isn't quoted or escaped
+    Given my EDITOR is set to "./spaced editor"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml 2>1`
+    Then the output should match /No changes detected/
+
+  Scenario: EDITOR has a space in it that is escaped but not isn't quoted
+    Given my EDITOR is set to "./spaced\\ editor"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml 2>1`
+    Then the output should match /No changes detected/
+
+  Scenario: EDITOR has a space in it and is quoted
+    Given my EDITOR is set to "\"./spaced editor\""
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml 2>1`
+    Then the output should match /No changes detected/
