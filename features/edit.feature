@@ -95,3 +95,15 @@ Feature: eyaml editing
     And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
     And the output should match /multi_encryption: DEC::PLAINTEXT\[jammy\]\! DEC::PKCS7\[dodger\]!/
+
+  Scenario: editing but not modifying a eyaml file should be detected
+    Given my EDITOR is set to "/bin/cat"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml 2>1`
+    Then the output should match /No changes detected/
+
+  Scenario: editing but not modifying a eyaml file with --no-preamble should be detected
+    Given my EDITOR is set to "/bin/cat"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit --no-preamble test_input.eyaml 2>1`
+    Then the output should match /No changes detected/
