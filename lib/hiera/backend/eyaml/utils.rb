@@ -35,8 +35,8 @@ class Hiera
           editor ||= %w{ /usr/bin/sensible-editor /usr/bin/editor /usr/bin/vim /usr/bin/vi }.collect {|e| e if FileTest.executable? e}.compact.first
           raise StandardError, "Editor not found. Please set your EDITOR env variable" if editor.nil?
           if editor.index(' ')
-            editor = editor.gsub(/([^\\]|^)~/, '\1' + ENV['HOME']) # replace ~ with home unless escaped
-            editor = editor.gsub(/^"?([^"]+)"?$/, '\1') # remove surrounding quotes during processing
+            editor.gsub!(/([^\\]|^)~/, '\1' + ENV['HOME']) # replace ~ with home unless escaped
+            editor.gsub!(/^"?([^"]+)"?$/, '\1') # remove surrounding quotes during processing
             pieces = editor.split(' ')
             paths = pieces.each_with_index.map {|_,x| pieces[0..x].join(' ')}.reverse # get possible paths, starting with longest
             extensions = (ENV['PATHEXT'] || '').split(';') # handle Windows executables
