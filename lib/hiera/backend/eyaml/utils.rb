@@ -45,6 +45,7 @@ class Hiera
             editorfile = paths.select { |path|
               FileTest.file?(path) || ! extensions.select {|ext| FileTest.file?(path + ext) }.empty?
             }.first
+            raise StandardError, "Editor not found. Please set your EDITOR env variable" if editorfile.nil?
             editor = "\"#{editorfile}\"#{editor[editorfile.size()..-1]}"
           end
           editor
