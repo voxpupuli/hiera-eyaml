@@ -83,7 +83,7 @@ eos
               raise StandardError, "File was moved by editor" unless File.file? decrypted_file
               raw_edited_file = File.read decrypted_file
               # strip comments at start of file
-              edited_file = raw_edited_file.split($/).drop_while {|line| line.start_with?(self.prefix)}.join($/)
+              edited_file = raw_edited_file.split($/,-1).drop_while {|line| line.start_with?(self.prefix)}.join($/)
 
               raise StandardError, "Editor #{editor} has not exited?" unless status.exited?
               raise StandardError, "Editor did not exit successfully (exit code #{status.exitstatus}), aborting" unless status.exitstatus == 0

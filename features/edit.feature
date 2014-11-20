@@ -95,3 +95,22 @@ Feature: eyaml editing
     And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
     And the output should match /multi_encryption: DEC::PLAINTEXT\[jammy\]\! DEC::PKCS7\[dodger\]!/
+
+  Scenario: not editing a file should result in an untouched file
+    Given my EDITOR is set to "/usr/bin/env true"
+    When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
+    When I run `eyaml edit test_edit.eyaml`
+    When I run `bash -c 'diff test_edit.yaml test_edit.eyaml'`
+    Then the exit status should be 0
+
+  Scenario: not editing a file should result in a no changes detected message
+    Given my EDITOR is set to "/usr/bin/env true"
+    When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
+    When I run `eyaml edit test_edit.eyaml`
+    Then the stderr should contain "No changes detected"
+
+  Scenario: editing but not modifying a eyaml file with --no-preamble should be detected
+    Given my EDITOR is set to "/usr/bin/env true"
+    When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
+    When I run `eyaml edit --no-preamble test_edit.eyaml`
+    Then the stderr should contain "No changes detected"
