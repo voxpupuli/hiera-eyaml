@@ -34,6 +34,20 @@ class Hiera
           editor = ENV['EDITOR']
           editor ||= %w{ /usr/bin/sensible-editor /usr/bin/editor /usr/bin/vim /usr/bin/vi }.collect {|e| e if FileTest.executable? e}.compact.first
           raise StandardError, "Editor not found. Please set your EDITOR env variable" if editor.nil?
+          if editor.index(' ')
+            editor = editor.dup if editor.frozen? # values from ENV are frozen
+            editor.gsub!(/([^\\]|^)~/, '\1' + ENV['HOME']) # replace ~ with home unless escaped
+            editor.gsub!(/(^|[^\\])"/, '\1') # remove unescaped quotes during processing
+            editor.gsub!(/\\ /, ' ') # unescape spaces since we quote paths
+            pieces = editor.split(' ')
+            paths = pieces.each_with_index.map {|_,x| pieces[0..x].join(' ')}.reverse # get possible paths, starting with longest
+            extensions = (ENV['PATHEXT'] || '').split(';') # handle Windows executables
+            editorfile = paths.select { |path|
+              FileTest.file?(path) || ! extensions.select {|ext| FileTest.file?(path + ext) }.empty?
+            }.first
+            raise StandardError, "Editor not found. Please set your EDITOR env variable" if editorfile.nil?
+            editor = "\"#{editorfile}\"#{editor[editorfile.size()..-1]}"
+          end
           editor
         end
 
@@ -45,6 +59,7 @@ class Hiera
             num_bytes.times { file.print(byte.chr) }
             file.fsync
           end
+          file.close
           File.delete args[:file]
         end
 
