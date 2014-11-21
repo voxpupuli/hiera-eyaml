@@ -113,6 +113,7 @@ Feature: eyaml editing
     Given my EDITOR is set to "/usr/bin/env true"
     When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
     When I run `eyaml edit --no-preamble test_edit.eyaml`
+    Then the stderr should contain "No changes detected"
 
   Scenario: EDITOR has a space in it and isn't quoted or escaped
     Given my EDITOR is set to "./spaced editor.sh"
