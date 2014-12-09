@@ -10,4 +10,6 @@ end
 
 group :test do
   gem 'rake'
+  gem 'rspec'
+  gem 'mocha', :require => false
 end
