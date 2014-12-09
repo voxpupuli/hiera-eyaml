@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'hiera/backend/eyaml/utils'
 
 class Hiera
   module Backend
@@ -9,18 +10,32 @@ class Hiera
         @@commands = []
         @@options = []
 
+        def self.options
+          @@options
+        end
+
+        def self.plugins
+          @@plugins
+        end
+
+        def self.commands
+          @@commands
+        end
+
         def self.register_options args
           options = args[ :options ]
           plugin = args[ :plugin ]
           options.each do |name, option_hash|
-            new_option = {:name => "#{plugin}_#{name}"}
+            option_name = "#{plugin}_#{name}"
+            new_option = {:name => option_name}
             new_option.merge! option_hash
+            Hiera::Backend::Eyaml::Utils.warn "Duplicate option #{name} for #{plugin} plugin" if self.option_exists? option_name
             @@options << new_option
           end
         end
 
-        def self.options
-          @@options
+        def self.option_exists? option_name
+          @@options.select { |option| option[:name] == option_name }.count > 0
         end
 
         def self.find
@@ -54,14 +69,6 @@ class Hiera
 
           @@plugins
 
-        end
-
-        def self.plugins
-          @@plugins
-        end
-
-        def self.commands
-          @@commands
         end
 
       end
