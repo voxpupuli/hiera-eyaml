@@ -42,6 +42,9 @@ class Hiera
             pieces = editor.split(' ')
             paths = pieces.each_with_index.map {|_,x| pieces[0..x].join(' ')}.reverse # get possible paths, starting with longest
             extensions = (ENV['PATHEXT'] || '').split(';') # handle Windows executables
+            pathdirs = ENV['PATH'].split(File::PATH_SEPARATOR)
+            paths += pathdirs.collect { |dir| paths.collect { |path| File.expand_path(path, dir) } }.flatten
+            paths.uniq!
             editorfile = paths.select { |path|
               FileTest.file?(path) || ! extensions.select {|ext| FileTest.file?(path + ext) }.empty?
             }.first
