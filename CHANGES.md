@@ -4,7 +4,7 @@ Change log for hiera-eyaml
 2.05
 ----
 
- - #128 - Fix a bug (#117) that caused `eyaml` to break when arguments were supplied in `$EDITOR`
+ - #128 - Fix a bug (#127) that caused `eyaml edit` to break when `$EDITOR` was a command on PATH rather than a path to a command
 
 2.04
 ----
