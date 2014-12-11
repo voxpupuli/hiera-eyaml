@@ -1,6 +1,11 @@
 Change log for hiera-eyaml
 ==========================
 
+2.05
+----
+
+ - #128 - Fix a bug (#117) that caused `eyaml` to break when arguments were supplied in `$EDITOR`
+
 2.04
 ----
 
