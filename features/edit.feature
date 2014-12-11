@@ -115,20 +115,55 @@ Feature: eyaml editing
     When I run `eyaml edit --no-preamble test_edit.eyaml`
     Then the stderr should contain "No changes detected"
 
-  Scenario: EDITOR has a space in it and isn't quoted or escaped
-    Given my EDITOR is set to "./spaced editor.sh"
+  Scenario: EDITOR has a space in it that isn't quoted or escaped
+    Given my EDITOR is set to "./path/spaced editor.sh"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
     Then the stderr should contain "No changes detected"
 
   Scenario: EDITOR has a space in it that is escaped but not isn't quoted
-    Given my EDITOR is set to "./spaced\ editor.sh"
+    Given my EDITOR is set to "./path/spaced\ editor.sh"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
     Then the stderr should contain "No changes detected"
 
-  Scenario: EDITOR has a space in it and is quoted
-    Given my EDITOR is set to ""./spaced editor.sh""
+  Scenario: EDITOR has a space in it that is quoted
+    Given my EDITOR is set to ""./path/spaced editor.sh""
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the stderr should contain "No changes detected"
+
+  Scenario: EDITOR is an executable on PATH
+    Given my EDITOR is set to "editor.sh"
+    Given my PATH contains "./path"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the stderr should contain "No changes detected"
+
+  Scenario: EDITOR is an executable on PATH and contains arguments
+    Given my EDITOR is set to "editor.sh -c"
+    Given my PATH contains "./path"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the stderr should contain "No changes detected"
+
+  Scenario: EDITOR is an executable on PATH and has a space in it that isn't quoted or escaped
+    Given my EDITOR is set to "spaced editor.sh"
+    Given my PATH contains "./path"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the stderr should contain "No changes detected"
+
+  Scenario: EDITOR is an executable on PATH and has a space in it that is escaped but not quoted
+    Given my EDITOR is set to "spaced\ editor.sh"
+    Given my PATH contains "./path"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the stderr should contain "No changes detected"
+
+  Scenario: EDITOR is an executable on PATH and has a space in it that is quoted
+    Given my EDITOR is set to ""spaced editor.sh""
+    Given my PATH contains "./path"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
     Then the stderr should contain "No changes detected"
