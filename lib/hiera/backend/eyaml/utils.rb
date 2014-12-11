@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'highline/import'
 require 'tempfile'
 require 'fileutils'
@@ -28,6 +29,24 @@ class Hiera
         def self.snakecase string
           return string if string !~ /[A-Z]/
           string.split(/(?=[A-Z])/).collect {|x| x.downcase}.join("_")
+        end
+
+        def self.find_gem_specs
+          if Gem::VERSION < '1.6.0'
+            Gem.source_index.latest_specs
+          elsif Gem::VERSION < '1.8.0'
+            Gem.source_index.latest_specs(true)
+          else
+            Gem::Specification.latest_specs(true)
+          end
+        end
+
+        def self.find_file_in_gem(gem_spec, glob)
+          if Gem::VERSION < "1.8.0"
+            Gem.searcher.matching_files(gem_spec, glob).first
+          else
+            gem_spec.matches_for_glob(glob).first
+          end
         end
 
         def self.find_editor
