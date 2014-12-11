@@ -9,3 +9,9 @@ end
 Given /^my EYAML_CONFIG is set to \"(.*?)\"$/ do |config_file|
   ENV['EYAML_CONFIG'] = config_file
 end
+
+Given /^my PATH contains \"(.*?)\"$/ do |path_value|
+  return if ENV['PATH'].start_with? path_value
+  paths = [path_value] + ENV['PATH'].split(File::PATH_SEPARATOR)
+  ENV['PATH'] = paths.join(File::PATH_SEPARATOR)
+end
