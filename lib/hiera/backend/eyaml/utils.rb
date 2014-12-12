@@ -44,12 +44,12 @@ class Hiera
             extensions = (ENV['PATHEXT'] || '').split(';') # handle Windows executables
             pathdirs = ENV['PATH'].split(File::PATH_SEPARATOR)
             paths += pathdirs.collect { |dir| paths.collect { |path| File.expand_path(path, dir) } }.flatten
-            paths.uniq!
             editorfile = paths.select { |path|
               FileTest.file?(path) || ! extensions.select {|ext| FileTest.file?(path + ext) }.empty?
             }.first
             raise StandardError, "Editor not found. Please set your EDITOR env variable" if editorfile.nil?
-            editor = "\"#{editorfile}\"#{editor[editorfile.size()..-1]}"
+            raw_command = paths[(paths.index editorfile) % pieces.size]
+            editor = "\"#{editorfile}\"#{editor[raw_command.size()..-1]}"
           end
           editor
         end
