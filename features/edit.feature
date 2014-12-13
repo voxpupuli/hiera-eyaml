@@ -145,6 +145,7 @@ Feature: eyaml editing
     Given my PATH contains "./path"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
+    Then the output should match /editor\.sh" -c/
     Then the stderr should contain "No changes detected"
 
   Scenario: EDITOR is an executable on PATH and has a space in it that isn't quoted or escaped
@@ -166,4 +167,12 @@ Feature: eyaml editing
     Given my PATH contains "./path"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit test_input.eyaml`
+    Then the stderr should contain "No changes detected"
+
+  Scenario: EDITOR is an executable on PATH and has a space in it and contains arguments
+    Given my EDITOR is set to "spaced editor.sh -c"
+    Given my PATH contains "./path"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the output should match /spaced editor\.sh" -c/
     Then the stderr should contain "No changes detected"
