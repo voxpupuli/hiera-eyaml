@@ -1,10 +1,15 @@
 Change log for hiera-eyaml
 ==========================
 
+2.06
+----
+
+ - #131 - Fix another EDITOR bug (#130) that could erase command line flags to the specified editor (@elyscape)
+
 2.05
 ----
 
- - #128 - Fix a bug (#127) that caused `eyaml edit` to break when `$EDITOR` was a command on PATH rather than a path to a command
+ - #128 - Fix a bug (#127) that caused `eyaml edit` to break when `$EDITOR` was a command on PATH rather than a path to a command (@elyscape)
 
 2.04
 ----
