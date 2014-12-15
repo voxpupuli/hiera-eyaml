@@ -8,14 +8,6 @@ class Hiera
       class RecoverableError < StandardError
       end
 
-      def self.subcommand= command
-        @@subcommand = command
-      end
-
-      def self.subcommand
-        @@subcommand
-      end
-
       def self.default_encryption_scheme= new_encryption
         @@default_encryption_scheme = new_encryption
       end
@@ -32,14 +24,6 @@ class Hiera
       def self.verbosity_level
         @@debug_level ||= 1
         @@debug_level
-      end
-
-      def self.subcommands= commands
-        @@subcommands = commands
-      end
-
-      def self.subcommands
-        @@subcommands
       end
 
     end
