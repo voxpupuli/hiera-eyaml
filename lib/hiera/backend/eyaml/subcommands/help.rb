@@ -1,5 +1,6 @@
-require 'hiera/backend/eyaml/subcommand'
 require 'hiera/backend/eyaml'
+require 'hiera/backend/eyaml/subcommand'
+require 'hiera/backend/eyaml/subcommands'
 
 class Hiera
   module Backend
@@ -25,8 +26,8 @@ Usage:
 eyaml subcommand [global-opts] [subcommand-opts]
 
 Available subcommands:
-#{Eyaml.subcommands.collect {|command|
-  command_class = Subcommands.const_get(Utils.camelcase command)
+#{Eyaml::Subcommands.collect {|command|
+  command_class = Eyaml::Subcommands.class_for command
   sprintf "%15s: %-65s", command.downcase, command_class.description unless command_class.hidden?
 }.compact.join("\n")}
 

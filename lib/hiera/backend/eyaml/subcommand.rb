@@ -1,5 +1,6 @@
 require 'base64'
 require 'yaml'
+require 'hiera/backend/eyaml/subcommands'
 # require 'hiera/backend/eyaml/subcommands/unknown_command'
 
 class Hiera
@@ -104,7 +105,7 @@ class Hiera
 
             end
 
-            stop_on Eyaml.subcommands
+            stop_on Eyaml::Subcommands.names
 
           end
 
