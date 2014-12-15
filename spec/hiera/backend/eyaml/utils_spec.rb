@@ -93,6 +93,34 @@ class Hiera
           end
         end
 
+        describe '.find_all_subclasses_of' do
+
+          class ParentClass
+          end
+          class ChildClassOne < ParentClass
+          end
+          class ChildClassTwo < ParentClass
+          end
+          class GrandChildOne < ChildClassOne
+          end
+
+          subject(:classes) { Utils.find_all_subclasses_of Hiera::Backend::Eyaml::ParentClass }
+
+          it 'returns a collection of classes' do
+            classes.each { |klass|
+              expect(klass).to be_a Class
+            }
+          end
+
+          it 'finds all children of parent class' do
+            expect(classes).to include(Hiera::Backend::Eyaml::ChildClassOne, Hiera::Backend::Eyaml::ChildClassTwo)
+          end
+
+          it 'only finds direct descendants' do
+            expect(classes.count).to eq 2
+          end
+        end
+
       end
     end
   end

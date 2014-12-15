@@ -146,15 +146,9 @@ class Hiera
           end
         end
 
-        def self.find_all_subclasses_of args
-          parent_class = args[ :parent_class ]
-          constants = parent_class.constants
-          candidates = []
-          constants.each do | candidate |
-            candidates << candidate.to_s.split('::').last if parent_class.const_get(candidate).class.to_s == "Class"
-          end
-          candidates
-        end 
+        def self.find_all_subclasses_of(parent_class)
+          ObjectSpace.each_object(Class).select { |klass| klass.superclass == parent_class }
+        end
 
         def self.hiera?
           "hiera".eql? Eyaml::Options[:source]
