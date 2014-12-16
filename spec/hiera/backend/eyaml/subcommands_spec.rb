@@ -65,7 +65,7 @@ class Hiera
           end
         end
 
-        describe '.parse' do
+        describe '.find_all' do
 
           before(:each) do
             Utils.stubs(:require_dir)
@@ -74,21 +74,21 @@ class Hiera
 
           it 'requires all subcommands' do
             Utils.expects(:require_dir).with('hiera/backend/eyaml/subcommands').once
-            Subcommands.parse
+            Subcommands.find_all
           end
 
           it 'adds all subcommmands to list' do
-            Subcommands.parse
+            Subcommands.find_all
             expect(Subcommands.get_subcommands.count).to eq subcommand_classes.count
           end
 
           it 'uses subcommand name as key' do
-            Subcommands.parse
+            Subcommands.find_all
             expect(Subcommands.get_subcommands).to include('command1', 'command2', 'command3')
           end
 
           it 'uses subcommand class as value' do
-            Subcommands.parse
+            Subcommands.find_all
             expect(Subcommands.get_subcommands['command1']).to eq Hiera::Backend::Eyaml::Subcommands::Command1
           end
         end

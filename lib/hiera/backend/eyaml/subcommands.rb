@@ -18,10 +18,10 @@ class Hiera
           @@subcommands[subcommand]
         end
 
-        def self.parse
+        def self.find_all
           @@subcommands = {}
-          Utils.require_dir 'hiera/backend/eyaml/subcommands'
-          Utils.find_all_subclasses_of(Hiera::Backend::Eyaml::Subcommand).collect { |klass|
+          Eyaml::Utils.require_dir 'hiera/backend/eyaml/subcommands'
+          Eyaml::Utils.find_all_subclasses_of(Eyaml::Subcommand).collect { |klass|
             subcommand = klass.name.split('::').last.downcase
             @@subcommands[subcommand] = klass
           }
@@ -32,7 +32,7 @@ class Hiera
             require "hiera/backend/eyaml/subcommands/#{subcommand}"
           rescue Exception
             require 'hiera/backend/eyaml/subcommands/unknown_command'
-            return Hiera::Backend::Eyaml::Subcommands::UnknownCommand
+            return Eyaml::Subcommands::UnknownCommand
           end
           self.class_for subcommand
         end
