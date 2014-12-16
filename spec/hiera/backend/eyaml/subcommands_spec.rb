@@ -18,7 +18,7 @@ class Hiera
         end
         class Command2
         end
-        class Command3
+        class CommandThree
         end
       end
 
@@ -34,7 +34,7 @@ class Hiera
           [
               Hiera::Backend::Eyaml::Subcommands::Command1,
               Hiera::Backend::Eyaml::Subcommands::Command2,
-              Hiera::Backend::Eyaml::Subcommands::Command3,
+              Hiera::Backend::Eyaml::Subcommands::CommandThree,
           ]
         }
 
@@ -84,7 +84,12 @@ class Hiera
 
           it 'uses subcommand name as key' do
             Subcommands.find_all
-            expect(Subcommands.get_subcommands).to include('command1', 'command2', 'command3')
+            expect(Subcommands.get_subcommands).to include('command1', 'command2')
+          end
+
+          it 'converts subcommand name to snake case' do
+            Subcommands.find_all
+            expect(Subcommands.get_subcommands).to include('command_three')
           end
 
           it 'uses subcommand class as value' do

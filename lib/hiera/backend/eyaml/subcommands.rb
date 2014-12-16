@@ -22,7 +22,7 @@ class Hiera
           @@subcommands = {}
           Eyaml::Utils.require_dir 'hiera/backend/eyaml/subcommands'
           Eyaml::Utils.find_all_subclasses_of(Eyaml::Subcommand).collect { |klass|
-            subcommand = klass.name.split('::').last.downcase
+            subcommand = Eyaml::Utils.snakecase klass.name.split('::').last
             @@subcommands[subcommand] = klass
           }
         end
