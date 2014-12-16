@@ -4,6 +4,7 @@ require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/plugins'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/subcommand'
+require 'hiera/backend/eyaml/subcommands'
 
 class Hiera
   module Backend
@@ -11,23 +12,22 @@ class Hiera
       class CLI
 
         def self.parse
+          Eyaml::Subcommands.find_all
 
-          Utils.require_dir 'hiera/backend/eyaml/subcommands'
-          Eyaml.subcommands = Utils.find_all_subclasses_of({ :parent_class => Hiera::Backend::Eyaml::Subcommands }).collect {|classname| Utils.snakecase classname}
+          subcommand_arg = ARGV.shift.to_s.downcase
+          Eyaml::Subcommands.input = subcommand_arg
 
-          Eyaml.subcommand = ARGV.shift
-          subcommand = case Eyaml.subcommand
-          when nil
-            ARGV.delete_if {true}
-            "unknown_command"
-          when /^\-/
-            ARGV.delete_if {true}
-            "help"
+          if Eyaml::Subcommands.names.member? subcommand_arg
+            subcommand = subcommand_arg
+          elsif subcommand_arg.match(/^\-/)
+            subcommand = 'help'
+            ARGV.clear
           else
-            Eyaml.subcommand
+            subcommand = 'unknown_command'
+            ARGV.clear
           end
 
-          command_class = Subcommand.find subcommand
+          command_class = Eyaml::Subcommands.find_and_use subcommand
 
           options = command_class.parse
           options[:executor] = command_class
