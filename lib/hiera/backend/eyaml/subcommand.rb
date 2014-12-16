@@ -70,18 +70,6 @@ class Hiera
           self.suboptions += opt
         end
 
-        def self.find commandname = "unknown_command"
-          begin
-            require "hiera/backend/eyaml/subcommands/#{commandname.downcase}"
-          rescue Exception => e
-            require "hiera/backend/eyaml/subcommands/unknown_command"
-            return Hiera::Backend::Eyaml::Subcommands::UnknownCommand
-          end          
-          command_module = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Subcommands')
-          command_class = Utils.find_closest_class :parent_class => command_module, :class_name => commandname
-          command_class || Hiera::Backend::Eyaml::Subcommands::UnknownCommand
-        end
-
         def self.parse
 
           me = self

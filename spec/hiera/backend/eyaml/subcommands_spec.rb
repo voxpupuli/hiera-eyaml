@@ -1,5 +1,6 @@
 require 'spec/spec_helper'
 require 'hiera/backend/eyaml/subcommands'
+require 'hiera/backend/eyaml/subcommands/unknown_command'
 
 class Hiera
   module Backend
@@ -90,6 +91,60 @@ class Hiera
             Subcommands.parse
             expect(Subcommands.get_subcommands['command1']).to eq Hiera::Backend::Eyaml::Subcommands::Command1
           end
+        end
+
+        describe '.find_and_use' do
+
+          before(:each) do
+            Subcommands.stubs(:require)
+            Subcommands.stubs(:class_for).returns Subcommands::Command1
+          end
+
+          context 'when subcommand class loads without failure' do
+
+            let(:subcommand) { 'command1' }
+
+            before(:each) do
+              Subcommands.stubs(:require).returns(true)
+            end
+
+            it 'loads subcommands class' do
+              Subcommands.expects(:require).with(regexp_matches(/#{subcommand}$/)).once
+              Subcommands.find_and_use subcommand
+            end
+
+            it 'returns the subcommand class' do
+              Subcommands.stubs(:class_for).with(subcommand).returns Subcommands::Command1
+              command_class = Subcommands.find_and_use subcommand
+              expect(command_class).to eq Subcommands::Command1
+            end
+          end
+
+          context 'when subcommand class load fails' do
+
+            let(:subcommand) { 'non_ex_command' }
+
+            before(:each) do
+              Subcommands.stubs(:require).raises(LoadError).then.returns(true)
+            end
+
+            it 'tries to load command class' do
+              Subcommands.expects(:require).with(regexp_matches(/#{subcommand}$/)).once
+              Subcommands.find_and_use subcommand
+            end
+
+            it 'falls back to unknown_command' do
+              Subcommands.expects(:require).with(regexp_matches(/unknown_command$/)).once
+              Subcommands.find_and_use subcommand
+            end
+
+            it 'returns unknown_command class' do
+              Subcommands.stubs(:class_for).with('unknown_command').returns Subcommands::UnknownCommand
+              command_class = Subcommands.find_and_use subcommand
+              expect(command_class).to eq Subcommands::UnknownCommand
+            end
+          end
+
         end
 
       end

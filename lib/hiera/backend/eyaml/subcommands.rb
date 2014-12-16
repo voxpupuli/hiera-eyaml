@@ -27,6 +27,16 @@ class Hiera
           }
         end
 
+        def self.find_and_use(subcommand)
+          begin
+            require "hiera/backend/eyaml/subcommands/#{subcommand}"
+          rescue Exception
+            require 'hiera/backend/eyaml/subcommands/unknown_command'
+            return Hiera::Backend::Eyaml::Subcommands::UnknownCommand
+          end
+          self.class_for subcommand
+        end
+
         def self.input= command
           @@input = command
         end
