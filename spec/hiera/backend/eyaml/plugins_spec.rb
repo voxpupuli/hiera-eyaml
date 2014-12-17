@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require 'spec_helper'
 require 'hiera/backend/eyaml/plugins'
 require 'hiera/backend/eyaml/utils'
 

@@ -1,5 +1,5 @@
-require 'spec/spec_helper'
-require 'spec/keys'
+require 'spec_helper'
+require 'keys'
 require 'hiera/backend/eyaml/CLI'
 require 'hiera/backend/eyaml/encryptors/pkcs7'
 
