@@ -149,7 +149,32 @@ class Hiera
               expect(command_class).to eq Subcommands::UnknownCommand
             end
           end
+        end
 
+        describe '.each' do
+
+          let(:consumer) { mock('Object') }
+
+          it 'yields each subcommand name and class' do
+            Subcommands.set_subcommands subcommand_hash
+            consumer.expects(:consume).with('command1', Subcommands::Command1).once
+            consumer.expects(:consume).with('command2', Subcommands::Command2).once
+            Subcommands.each { |name, klass|
+              consumer.consume name, klass
+            }
+          end
+        end
+
+        describe '.collect' do
+
+          it 'yields each subcommand name and class' do
+            Subcommands.set_subcommands subcommand_hash
+            results = Subcommands.collect { |name, klass|
+              "#{name}=#{klass.to_s}"
+            }
+            expect(results).to include('command1=Hiera::Backend::Eyaml::Subcommands::Command1')
+            expect(results).to include('command2=Hiera::Backend::Eyaml::Subcommands::Command2')
+          end
         end
 
       end

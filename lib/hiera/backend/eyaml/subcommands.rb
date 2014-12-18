@@ -37,6 +37,18 @@ class Hiera
           self.class_for subcommand
         end
 
+        def self.each &block
+          @@subcommands.each &block
+        end
+
+        def self.collect
+          values = []
+          @@subcommands.each do |name, klass|
+            values.push yield name, klass
+          end
+          values
+        end
+
         def self.input= command
           @@input = command
         end
