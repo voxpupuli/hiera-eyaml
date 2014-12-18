@@ -7,21 +7,10 @@ class Hiera
     module Eyaml
       module Subcommands
 
-        class Help < Subcommand
+        class Help < Eyaml::Subcommand
 
-          def self.options
-            []
-          end
-
-          def self.description
-            "this page"
-          end
-
-          def self.execute
-
-            puts <<-EOS
-Welcome to eyaml #{Eyaml::VERSION} 
-
+          def self.usage
+            <<-EOS
 Usage:
 eyaml subcommand [global-opts] [subcommand-opts]
 
@@ -33,10 +22,22 @@ Available subcommands:
 For more help on an individual command, use --help on that command
 
 Installed Plugins:
-#{Plugins.plugins.collect {|plugin| 
+#{Plugins.plugins.collect {|plugin|
   "\t" + plugin.name.split("hiera-eyaml-").last
 }.join("\n")}
 EOS
+          end
+
+          def self.options
+            []
+          end
+
+          def self.description
+            "this page"
+          end
+
+          def self.execute
+            puts "Welcome to eyaml #{Eyaml::VERSION}\n\n#{self.usage}"
           end
 
           def self.hidden?
