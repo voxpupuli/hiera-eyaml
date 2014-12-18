@@ -26,9 +26,8 @@ Usage:
 eyaml subcommand [global-opts] [subcommand-opts]
 
 Available subcommands:
-#{Eyaml::Subcommands.collect {|command|
-  command_class = Eyaml::Subcommands.class_for command
-  sprintf "%15s: %-65s", command.downcase, command_class.description unless command_class.hidden?
+#{Eyaml::Subcommands.collect {|name, klass|
+  sprintf "%15s: %-65s", name.downcase, klass.description unless klass.hidden?
 }.compact.join("\n")}
 
 For more help on an individual command, use --help on that command
