@@ -1,13 +1,13 @@
 require 'hiera/backend/eyaml'
-require 'hiera/backend/eyaml/command'
 require 'hiera/backend/eyaml/commands'
+require 'hiera/backend/eyaml/commands/command'
 
 class Hiera
   module Backend
     module Eyaml
       module Commands
 
-        class Help < Eyaml::Command
+        class Help < Eyaml::Commands::Command
 
           def self.usage
             <<-EOS

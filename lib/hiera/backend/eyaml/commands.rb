@@ -1,5 +1,5 @@
 require 'hiera/backend/eyaml/utils'
-require 'hiera/backend/eyaml/command'
+require 'hiera/backend/eyaml/commands/command'
 
 class Hiera
   module Backend
@@ -21,7 +21,7 @@ class Hiera
         def self.find_all
           @@commands = {}
           Eyaml::Utils.require_dir 'hiera/backend/eyaml/commands'
-          Eyaml::Utils.find_all_subclasses_of(Eyaml::Command).collect { |klass|
+          Eyaml::Utils.find_all_subclasses_of(Eyaml::Commands::Command).collect { |klass|
             command = Eyaml::Utils.snakecase klass.name.split('::').last
             @@commands[command] = klass
           }

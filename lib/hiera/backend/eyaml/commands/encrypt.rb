@@ -1,14 +1,14 @@
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
 require 'hiera/backend/eyaml/parser/encrypted_tokens'
-require 'hiera/backend/eyaml/command'
+require 'hiera/backend/eyaml/commands/command'
 
 class Hiera
   module Backend
     module Eyaml
       module Commands
 
-        class Encrypt < Command
+        class Encrypt < Eyaml::Commands::Command
 
           def self.options
             [{:name => :password, 

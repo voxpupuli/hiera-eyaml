@@ -3,7 +3,6 @@ require 'hiera/backend/eyaml'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/plugins'
 require 'hiera/backend/eyaml/options'
-require 'hiera/backend/eyaml/command'
 require 'hiera/backend/eyaml/commands'
 
 class Hiera

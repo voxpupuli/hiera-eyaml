@@ -2,14 +2,14 @@ require 'hiera/backend/eyaml'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
-require 'hiera/backend/eyaml/command'
+require 'hiera/backend/eyaml/commands/command'
 
 class Hiera
   module Backend
     module Eyaml
       module Commands
 
-        class Decrypt < Command
+        class Decrypt < Eyaml::Commands::Command
 
           def self.options
             [{:name => :string,

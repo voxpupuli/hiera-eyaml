@@ -1,13 +1,13 @@
-require 'hiera/backend/eyaml/command'
 require 'hiera/backend/eyaml/commands'
 require 'hiera/backend/eyaml/commands/help'
+require 'hiera/backend/eyaml/commands/command'
 
 class Hiera
   module Backend
     module Eyaml
       module Commands
 
-        class UnknownCommand < Eyaml::Command
+        class UnknownCommand < Eyaml::Commands::Command
 
           def self.message
             "Unknown command: #{Eyaml::Commands.input.to_s}"
