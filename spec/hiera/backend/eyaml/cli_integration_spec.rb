@@ -14,9 +14,9 @@ class Hiera
           @@options = []
         end
       end
-      module Subcommands
+      module Commands
         def self.clear_all
-          @@subcommands = {}
+          @@commands = {}
         end
       end
 
@@ -27,7 +27,7 @@ class Hiera
           File.stubs(:read).with('./keys/private_key.pkcs7.pem').returns Eyaml::Keys.pkcs7_private_key
 
           Plugins.clear_all
-          Subcommands.clear_all
+          Commands.clear_all
           Hiera::Backend::Eyaml::Encryptors::Pkcs7.register
           ARGV.clear
         end

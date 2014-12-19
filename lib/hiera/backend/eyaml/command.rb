@@ -1,13 +1,13 @@
 require 'base64'
 require 'yaml'
-require 'hiera/backend/eyaml/subcommands'
-# require 'hiera/backend/eyaml/subcommands/unknown_command'
+require 'hiera/backend/eyaml/commands'
+# require 'hiera/backend/eyaml/commands/unknown_command'
 
 class Hiera
   module Backend
     module Eyaml
 
-      class Subcommand
+      class Command
 
         class << self
           attr_accessor :global_options, :options, :helptext
@@ -93,7 +93,7 @@ class Hiera
 
             end
 
-            stop_on Eyaml::Subcommands.names
+            stop_on Eyaml::Commands.names
 
           end
 

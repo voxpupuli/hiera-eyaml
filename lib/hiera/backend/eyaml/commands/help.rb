@@ -1,21 +1,21 @@
 require 'hiera/backend/eyaml'
-require 'hiera/backend/eyaml/subcommand'
-require 'hiera/backend/eyaml/subcommands'
+require 'hiera/backend/eyaml/command'
+require 'hiera/backend/eyaml/commands'
 
 class Hiera
   module Backend
     module Eyaml
-      module Subcommands
+      module Commands
 
-        class Help < Eyaml::Subcommand
+        class Help < Eyaml::Command
 
           def self.usage
             <<-EOS
 Usage:
-eyaml subcommand [global-opts] [subcommand-opts]
+eyaml command [global-opts] [command-opts]
 
-Available subcommands:
-#{Eyaml::Subcommands.collect {|name, klass|
+Available commands:
+#{Eyaml::Commands.collect {|name, klass|
   sprintf "%15s: %-65s", name.downcase, klass.description unless klass.hidden?
 }.compact.join("\n")}
 

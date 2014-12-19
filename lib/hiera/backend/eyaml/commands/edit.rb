@@ -1,15 +1,15 @@
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
-require 'hiera/backend/eyaml/subcommand'
+require 'hiera/backend/eyaml/command'
 require 'highline/import'
 
 class Hiera
   module Backend
     module Eyaml
-      module Subcommands
+      module Commands
 
-        class Edit < Subcommand
+        class Edit < Command
 
           def self.options
             [{ :name => :no_preamble,

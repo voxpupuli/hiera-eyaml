@@ -1,13 +1,13 @@
-require 'hiera/backend/eyaml/subcommand'
+require 'hiera/backend/eyaml/command'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
 
 class Hiera
   module Backend
     module Eyaml
-      module Subcommands
+      module Commands
 
-        class Recrypt < Subcommand
+        class Recrypt < Command
 
           def self.options
             []

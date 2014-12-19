@@ -1,16 +1,16 @@
-require 'hiera/backend/eyaml/subcommand'
-require 'hiera/backend/eyaml/subcommands'
-require 'hiera/backend/eyaml/subcommands/help'
+require 'hiera/backend/eyaml/command'
+require 'hiera/backend/eyaml/commands'
+require 'hiera/backend/eyaml/commands/help'
 
 class Hiera
   module Backend
     module Eyaml
-      module Subcommands
+      module Commands
 
-        class UnknownCommand < Eyaml::Subcommand
+        class UnknownCommand < Eyaml::Command
 
           def self.message
-            "Unknown subcommand: #{Eyaml::Subcommands.input.to_s}"
+            "Unknown command: #{Eyaml::Commands.input.to_s}"
           end
 
           def self.options
@@ -22,7 +22,7 @@ class Hiera
           end
 
           def self.execute
-            puts "#{self.message}\n\n#{Eyaml::Subcommands::Help.usage}"
+            puts "#{self.message}\n\n#{Eyaml::Commands::Help.usage}"
           end
 
           def self.hidden?

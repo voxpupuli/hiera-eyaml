@@ -9,59 +9,59 @@ class Hiera
 
         describe '.parse' do
 
-          let(:subcommand_arg) { 'command_arg' }
+          let(:command_arg) { 'command_arg' }
           let(:option_arg) { 'option_arg' }
-          let(:subcommand_class) { mock('Eyaml::Subcommand') }
+          let(:command_class) { mock('Eyaml::Command') }
 
           before(:each) do
-            Eyaml::Subcommands.stubs(:find_all)
-            Eyaml::Subcommands.stubs(:find_and_use).returns subcommand_class
-            Eyaml::Subcommands.stubs(:names).returns [subcommand_arg]
-            subcommand_class.stubs(:parse).returns({})
-            subcommand_class.stubs(:validate).returns({})
+            Eyaml::Commands.stubs(:find_all)
+            Eyaml::Commands.stubs(:find_and_use).returns command_class
+            Eyaml::Commands.stubs(:names).returns [command_arg]
+            command_class.stubs(:parse).returns({})
+            command_class.stubs(:validate).returns({})
             Eyaml::Options.stubs(:set)
             Eyaml::Options.stubs(:trace)
             ARGV.clear
-            ARGV.push subcommand_arg
+            ARGV.push command_arg
             ARGV.push option_arg
           end
 
-          it 'finds all subcommands' do
-            Eyaml::Subcommands.expects(:find_all).once
+          it 'finds all commands' do
+            Eyaml::Commands.expects(:find_all).once
             CLI.parse
           end
 
-          it 'reads eyaml subcommand from ARGV' do
+          it 'reads eyaml command from ARGV' do
             CLI.parse
-            expect(Eyaml::Subcommands.input).to eq subcommand_arg
+            expect(Eyaml::Commands.input).to eq command_arg
           end
 
           it 'cleans user input' do
             ARGV.clear
             ARGV.push 'CoMMand_Arg'
-            Eyaml::Subcommands.expects(:find_and_use).with(subcommand_arg).once.returns subcommand_class
+            Eyaml::Commands.expects(:find_and_use).with(command_arg).once.returns command_class
             CLI.parse
           end
 
-          it 'uses the subcommand class specified by subcommand_arg' do
-            Eyaml::Subcommands.expects(:find_and_use).with(subcommand_arg).once.returns subcommand_class
+          it 'uses the command class specified by command_arg' do
+            Eyaml::Commands.expects(:find_and_use).with(command_arg).once.returns command_class
             CLI.parse
           end
 
-          context 'when subcommand_arg is nil' do
+          context 'when command_arg is nil' do
             before(:each) do
               ARGV.clear
               ARGV.push nil
               ARGV.push option_arg
             end
 
-            it 'sets subcommands input to empty string' do
+            it 'sets commands input to empty string' do
               CLI.parse
-              expect(Eyaml::Subcommands.input).to eq ''
+              expect(Eyaml::Commands.input).to eq ''
             end
 
             it 'uses the UnknownCommand class' do
-              Eyaml::Subcommands.expects(:find_and_use).with('unknown_command').once.returns subcommand_class
+              Eyaml::Commands.expects(:find_and_use).with('unknown_command').once.returns command_class
               CLI.parse
             end
 
@@ -71,15 +71,15 @@ class Hiera
             end
           end
 
-          context 'when subcommand_arg starts with a dash' do
+          context 'when command_arg starts with a dash' do
             before(:each) do
               ARGV.clear
               ARGV.push '-blah'
               ARGV.push option_arg
             end
 
-            it 'uses the Help subcommand' do
-              Eyaml::Subcommands.expects(:find_and_use).with('help').once.returns subcommand_class
+            it 'uses the Help command' do
+              Eyaml::Commands.expects(:find_and_use).with('help').once.returns command_class
               CLI.parse
             end
 
@@ -89,7 +89,7 @@ class Hiera
             end
           end
 
-          context 'when subcommand_arg is not recognised' do
+          context 'when command_arg is not recognised' do
             before(:each) do
               ARGV.clear
               ARGV.push 'random_arg'
@@ -97,7 +97,7 @@ class Hiera
             end
 
             it 'uses the UnknownCommand class' do
-              Eyaml::Subcommands.expects(:find_and_use).with('unknown_command').once.returns subcommand_class
+              Eyaml::Commands.expects(:find_and_use).with('unknown_command').once.returns command_class
               CLI.parse
             end
 
