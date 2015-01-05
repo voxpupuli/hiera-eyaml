@@ -1,12 +1,12 @@
-require 'hiera/backend/eyaml/subcommand'
 require 'hiera/backend/eyaml'
+require 'hiera/backend/eyaml/commands/command'
 
 class Hiera
   module Backend
     module Eyaml
-      module Subcommands
+      module Commands
 
-        class Version < Subcommand
+        class Version < Eyaml::Commands::Command
 
           def self.options
             []
