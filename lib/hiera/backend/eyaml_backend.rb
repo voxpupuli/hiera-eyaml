@@ -30,20 +30,23 @@ class Hiera
           debug("Looking for data source #{source}")
 
           eyaml_file = Backend.datafile(:eyaml, scope, source, extension)
-          dir_of_files = Backend.datafile(:eyaml, scope, scource, "d")
+          dir_of_files = Backend.datafile(:eyaml, scope, source, "d")
 
           data = if eyaml_file
+            debug("Looking in #{eyaml_file} for #{key}")
             next unless File.exists?(eyaml_file)
 
             @cache.read(eyaml_file, Hash) do |data|
               YAML.load(data) || {}
             end
-          else if dir_of_files
+          elsif dir_of_files
             path = File.join(dir_of_files, key)
+            debug("Looking in #{dir_of_files} for #{dir_of_files}/#{key}")
             next unless File.exist? path
-            File.read path
+            { key => File.read( path ) }
           end
 
+          next if data.nil?
           next if data.empty?
           next unless data.include?(key)
 
