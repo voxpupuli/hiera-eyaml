@@ -28,12 +28,20 @@ class Hiera
 
         Backend.datasources(scope, order_override) do |source|
           debug("Looking for data source #{source}")
-          eyaml_file = Backend.datafile(:eyaml, scope, source, extension) || next
 
-          next unless File.exists?(eyaml_file)
+          eyaml_file = Backend.datafile(:eyaml, scope, source, extension)
+          dir_of_files = Backend.datafile(:eyaml, scope, scource, "d")
 
-          data = @cache.read(eyaml_file, Hash) do |data|
-            YAML.load(data) || {}
+          data = if eyaml_file
+            next unless File.exists?(eyaml_file)
+
+            @cache.read(eyaml_file, Hash) do |data|
+              YAML.load(data) || {}
+            end
+          else if dir_of_files
+            path = File.join(dir_of_files, key)
+            next unless File.exist? path
+            File.read path
           end
 
           next if data.empty?
