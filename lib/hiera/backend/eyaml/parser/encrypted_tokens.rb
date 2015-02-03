@@ -39,13 +39,13 @@ class Hiera
             case format
               when :block
                 # strip any white space
-                @cipher = @cipher.gsub(/ /m, "")
+                @cipher = @cipher.gsub(/[ \t]/, "")
                 # normalize indentation
-                ciphertext = @cipher.gsub(/\n/, "\n" + @indentation)
+                ciphertext = @cipher.gsub(/[\n\r]/, "\n" + @indentation)
                 chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
                 "#{label_string}#{chevron}" + @indentation + "ENC[#{@encryptor.tag},#{ciphertext}]"
               when :string
-                ciphertext = @cipher.gsub(/\n/, "")
+                ciphertext = @cipher.gsub(/[\n\r]/, "")
                 "#{label_string}ENC[#{@encryptor.tag},#{ciphertext}]"
               else
                 raise "#{@format} is not a valid format"
@@ -87,7 +87,7 @@ class Hiera
             @string_token_type = EncStringTokenType.new()
           end
           def create_token(string)
-            @string_token_type.create_token(string.gsub(/[ \n]/, ''))
+            @string_token_type.create_token(string.gsub(/\s/, ''))
           end
         end
 
@@ -103,7 +103,7 @@ class Hiera
 
         class EncBlockTokenType < EncTokenType
           def initialize
-            @regex = />\n(\s*)ENC\[(\w+,)?([a-zA-Z0-9\+\/ =\n]+?)\]/
+            @regex = />\n(\s*)ENC\[(\w+,)?([a-zA-Z0-9\+\/=\s]+?)\]/
           end
           def create_token(string)
             md = @regex.match(string)
