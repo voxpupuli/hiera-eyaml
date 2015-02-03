@@ -7,7 +7,7 @@ Feature: Recrypt
     And I configure the keypair
     And I load a file called test_input.yaml
     And I recrypt it twice
-    Then I should have 33 tokens
+    Then I should have 35 tokens
     Then the recrypted tokens should match
     Then the recrypted decrypted content should match
     Then the recrypted contents should differ

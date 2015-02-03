@@ -20,6 +20,7 @@ Feature: eyaml decrypting
     When I run `eyaml decrypt -e test_input.yaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/
     And the output should match /encrypted_block: >\n\s+DEC::PKCS7\[gangs of new york\]\!/
+    And the output should match /encrypted_tabbed_block: >\n\s+DEC::PKCS7\[gangs of new york\]\!/
     And the output should match /\- DEC::PKCS7\[apocalypse now\]\!/
     And the output should match /\- DEC::PKCS7\[the count of monte cristo\]\!/
     And the output should match /\- array4/

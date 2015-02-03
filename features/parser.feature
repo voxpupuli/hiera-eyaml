@@ -15,7 +15,7 @@ Feature: Parser
     And I configure the keypair
     And I load a file called test_input.yaml
     When I parse the content
-    Then I should have 33 tokens
+    Then I should have 35 tokens
     Then token 1 should be a NonMatchToken
     Then token 2 should be a EncToken
     Then token 2 should start with "ENC[PKCS7,MIIBiQYJKoZIhvcNAQ"
@@ -47,4 +47,4 @@ Feature: Parser
     When I parse the content
     And map it to index decrypted values
     Then decryption 1 should be "DEC(1)::PKCS7[planet of the apes]!"
-    Then decryption 11 should be "DEC(11)::PKCS7[the count of monte cristo]!"
+    Then decryption 13 should be "DEC(13)::PKCS7[the count of monte cristo]!"
