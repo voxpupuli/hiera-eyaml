@@ -79,12 +79,19 @@ class Hiera
       def decrypt(data)
         if encrypted?(data)
           debug("Attempting to decrypt")
+          begin
+            parser = Eyaml::Parser::ParserFactory.hiera_backend_parser
+            tokens = parser.parse(data)
+            decrypted = tokens.map{ |token| token.to_plain_text }
+            plaintext = decrypted.join
+          rescue OpenSSL::PKCS7::PKCS7Error => e
+            debug("Caught exception: #{e.class}, #{e.message}\n"\
+                  "#{e.backtrace.join("\n")}")
+            raise "Hiera-eyaml decryption failed, check the "\
+              "encrypted data matches the key you are using.\n"\
+              "Raw message from system: #{e.message}"
 
-          parser = Eyaml::Parser::ParserFactory.hiera_backend_parser
-          tokens = parser.parse(data)
-          decrypted = tokens.map{ |token| token.to_plain_text }
-          plaintext = decrypted.join
-
+          end
           plaintext.chomp
         else
           data
