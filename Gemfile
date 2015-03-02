@@ -1,7 +1,7 @@
 source 'https://rubygems.org/'
 
-gem 'highline'
-gem 'trollop'
+gem 'highline', '~> 1.6.19'
+gem 'trollop', '~> 2.0'
 
 group :development do
   gem "aruba"
