@@ -1,6 +1,13 @@
 Change log for hiera-eyaml
 ==========================
 
+2.0.7
+-----
+
+ - #142 - Fixed highline dependency to exclude newer versions that are not compatible with ruby 1.8.7 (@elyscape)
+ - #136 - \t and \r characters are now supported in encrypted blocks (@elyscape)
+ - #138 - Added missing tags and new tagging tool (@elyscape)
+
 2.0.6
 -----
 
