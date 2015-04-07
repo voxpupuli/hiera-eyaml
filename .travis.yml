@@ -10,3 +10,5 @@ before_install:
   - sudo apt-get install expect
 script:
   bundle exec cucumber -f progress
+notifications:
+  email: false
