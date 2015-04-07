@@ -75,6 +75,8 @@ class Hiera
           file.puts data_to_write
           file.close
 
+          Utils::debug "Wrote temporary file: #{path}"
+
           path
         end
 
