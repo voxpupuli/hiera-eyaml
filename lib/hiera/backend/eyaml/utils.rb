@@ -72,6 +72,17 @@ class Hiera
           file.close!
 
           file = File.open(path, "w")
+          file.chmod(0600)
+          if ENV['OS'] == 'Windows_NT'
+            # Windows doesn't support chmod
+            icacls = 'C:\Windows\system32\icacls.exe'
+            if File.executable? icacls
+              current_user = `C:\\Windows\\system32\\whoami.exe`.chomp
+              # Use ACLs to restrict access to the current user only
+              command = %Q{#{icacls} "#{file.path}" /grant:r "#{current_user}":f /inheritance:r}
+              system "#{command} >NUL 2>&1"
+            end
+          end
           file.puts data_to_write
           file.close
 
