@@ -68,15 +68,15 @@ eos
           end
 
           def self.execute
+            editor = Utils.find_editor
+
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]
             decrypted_input = tokens.each_with_index.to_a.map{|(t,index)| t.to_decrypted :index => index}.join
             decrypted_file_content = Eyaml::Options[:no_preamble] ? decrypted_input : (self.preamble + decrypted_input)
-            decrypted_file = Utils.write_tempfile decrypted_file_content
-
-            editor = Utils.find_editor
 
             begin
+              decrypted_file = Utils.write_tempfile decrypted_file_content unless decrypted_file
               system "#{editor} \"#{decrypted_file}\""
               status = $?
 

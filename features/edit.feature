@@ -30,6 +30,12 @@ Feature: eyaml editing
     And the output should match /\s+key6: DEC\(\d+\)::PKCS7\[value6\]\!/
     And the output should match /multi_encryption: DEC\(\d+\)::PLAINTEXT\[jammy\]\! DEC\(\d+\)::PKCS7\[dodger\]!/
 
+  Scenario: decrypting a eyaml file should create a temporary file
+    Given my EDITOR is set to "/usr/bin/env true"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit -v test_input.eyaml`
+    Then the stderr should contain "Wrote temporary file"
+
   Scenario: decrypting a eyaml file should add a preamble
     Given my EDITOR is set to "/bin/cat"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
@@ -177,3 +183,10 @@ Feature: eyaml editing
     When I run `eyaml edit test_input.eyaml`
     Then the output should match /spaced editor\.sh" -c/
     Then the stderr should contain "No changes detected"
+
+  Scenario: EDITOR is invalid
+    Given my EDITOR is set to "does_not_exist.sh"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit test_input.eyaml`
+    Then the stderr should contain "Editor did not exit successfully"
+    Then the stderr should not contain "Wrote temporary file"
