@@ -1,6 +1,11 @@
 Change log for hiera-eyaml
 ==========================
 
+2.0.8
+-----
+
+ - (#149) - Fix to tempfile permissions and invalid editor scenario (@elyscape)
+
 2.0.7
 -----
 
