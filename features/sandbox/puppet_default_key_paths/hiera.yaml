@@ -1,0 +1,15 @@
+---
+:backends:
+  - yaml
+  - eyaml
+
+:hierarchy:
+  - environments/%{environment}/%{module_name}
+
+:yaml:
+  :datadir: ./puppet
+
+:logger: console
+
+:eyaml:
+  :datadir: ./puppet

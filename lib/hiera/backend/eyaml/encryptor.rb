@@ -48,7 +48,14 @@ class Hiera
           end
 
           def self.option name
-            Eyaml::Options[ "#{plugin_classname}_#{name}" ] || self.options[ "#{plugin_classname}_#{name}" ]
+            opt = Eyaml::Options[ "#{plugin_classname}_#{name}" ]
+            return opt unless opt.nil?
+
+            # options[<name>][:default]
+            default = self.options[ name.to_sym ]
+            unless default.nil?
+              default[:default]
+            end
           end
 
           def self.hiera?
