@@ -11,12 +11,12 @@ class Hiera
         class Encrypt < Subcommand
 
           def self.options
-            [{:name => :password, 
-              :description => "Source input is a password entered on the terminal", 
+            [{:name => :password,
+              :description => "Source input is a password entered on the terminal",
               :short => 'p'},
              {:name => :string,
               :description => "Source input is a string provided as an argument",
-              :short => 's', 
+              :short => 's',
               :type => :string},
              {:name => :file,
               :description => "Source input is a regular file",

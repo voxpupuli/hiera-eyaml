@@ -14,7 +14,7 @@ class Hiera
           def self.options
             [{:name => :string,
               :description => "Source input is a string provided as an argument",
-              :short => 's', 
+              :short => 's',
               :type => :string},
              {:name => :file,
               :description => "Source input is a regular file",

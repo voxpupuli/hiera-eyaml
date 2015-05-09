@@ -29,7 +29,7 @@ class Hiera
             options
           end
 
-          def self.execute 
+          def self.execute
 
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]

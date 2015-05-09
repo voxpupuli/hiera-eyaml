@@ -78,9 +78,9 @@ encrypted_array_with_blocks:
 
 mixed_array_with_blocks:
   - >
-    tomorrow and tomorrow and 
+    tomorrow and tomorrow and
     tomorrow creeps in this petty
-    pace 
+    pace
   - >
     ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAw
     DQYJKoZIhvcNAQEBBQAEggEAj9R0rZ98jseASAthfPUflx1oj2bNmOoCkfv9
@@ -93,8 +93,8 @@ mixed_array_with_blocks:
     VR0ggCDK2aXbmJOBwtj6GyRBYokOEk8EcLuUTDh+GOvYaErUdQ==]
   - >
     when shall we three meet again
-    in thunder lightning or 
-    in rain 
+    in thunder lightning or
+    in rain
 
 mixed_array_with_random:
   - ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAwDQYJKoZIhvcNAQEBBQAEggEApxf3lqPCoidIFp5qvB21dUhlmCHx6JLm7rtt9m6rXwc35VrJVukSCIrjvAz1b/osEU+RdSEQh9WL2E65QHB9aHklWdu4SgR3QvC/TU4uVWQCvfy3g/bpX3D/j13BkSpe99nH0Va0kZpCnaorHEwiv9fvs5VneGIwSKiBIy/5lYdcmmHWPSlE+4G285XwznMKUqh+P/prUTn664oDA8LeRGitENfndmFGLPaoEbgfJLAQQlVPzt/DhR/YiYoG5qHh9445NAVo/MVq13SVzbxCwyg7WVrNTI3KK4Z2/hDiizRHpE/L7ceWfJiXCUQ4ouy2QvWNcNjmGTM0bRZDgep8XDBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBBWzWT0Fn9sVdKPp0BoGWIcgCC0ga55Q3kw9i+D6acq4TOlI1rcdIyS/lwBSe7gixWQdg==]
@@ -110,7 +110,7 @@ mixed_array_with_random:
     Dfs1gCBnNYMzne3ae3pyxKTf2FUaJyZWOgmCPMoWAwgr20Gkvw==]
   - >
     i wondered lonely
-    as a cloud 
+    as a cloud
   - the grand old duke of york
 
 simple_hash:
