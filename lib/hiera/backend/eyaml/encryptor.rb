@@ -80,4 +80,3 @@ class Hiera
     end
   end
 end
-

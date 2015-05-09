@@ -36,4 +36,3 @@ Feature: eyaml hiera integration
     Then the file "/tmp/eyaml_puppettest.4" should match /"here": "be rabbits"/
     Then the file "/tmp/eyaml_puppettest.4" should match /"see": "no evil"/
     Then the file "/tmp/eyaml_puppettest.5" should match /^source code\nis to donny darko$/
-

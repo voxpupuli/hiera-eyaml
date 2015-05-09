@@ -27,4 +27,3 @@ Feature: eyaml outputs
   Scenario: encrypt a simple string with block output
     When I run `eyaml encrypt -o block -s some_string`
     Then the output should match /^\s+ENC\[PKCS7,(.*?)\]$/
-

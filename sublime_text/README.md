@@ -13,4 +13,3 @@ To install, simply copy eyaml.sublime-package into your "Installed Packages" dir
 * Linux: ~/.Sublime Text 2
 
 Then restart sublimetext
-
