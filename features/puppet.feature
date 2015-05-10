@@ -13,6 +13,14 @@ Feature: eyaml hiera integration
     Then the file "/tmp/eyaml_puppettest.4" should match /^and good luck$/
     Then the file "/tmp/eyaml_puppettest.5" should match /^gangs of new york$/
 
+  Scenario: verify puppet3 with hiera-eyaml can find decryption keys in default relative path
+    When I run `rm -f /tmp/eyaml_puppettest.* 2>/dev/null`
+    When I run `puppet apply --confdir ./puppet_default_key_paths --node_name_value localhost puppet/manifests/init.pp`
+    Then the file "/tmp/eyaml_puppettest.1" should match /^good night$/
+    Then the file "/tmp/eyaml_puppettest.2" should match /^and good luck$/
+    Then the file "/tmp/eyaml_puppettest.3" should match /^and good luck$/
+    Then the file "/tmp/eyaml_puppettest.4" should match /^and good luck$/
+    Then the file "/tmp/eyaml_puppettest.5" should match /^gangs of new york$/
 
   Scenario: verify puppet3 and facter for correct hash merge with incorrect fact
     Given I set FACTER_fact to "not-existcity"

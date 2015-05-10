@@ -8,7 +8,7 @@ group :development do
   gem "cucumber", '~> 1.1'
   gem "rspec-expectations", '~> 3.1.0'
   gem "hiera-eyaml-plaintext"
-  gem "puppet"
+  gem "puppet", ENV['PUPPET_GEM_VERSION'] || '~> 3.7'
 end
 
 group :test do
