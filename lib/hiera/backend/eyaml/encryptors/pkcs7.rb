@@ -60,8 +60,8 @@ class Hiera
             # Try to do equivalent of:
             # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
 
-            public_key = self.option :public_key
-            private_key = self.option :private_key
+            public_key = File.expand_path(self.option(:public_key))
+            private_key = File.expand_path(self.option(:private_key))
             subject = self.option :subject
 
             key = OpenSSL::PKey::RSA.new(2048)
