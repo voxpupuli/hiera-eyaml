@@ -1,5 +1,4 @@
 @puppet
-@announce
 Feature: eyaml hiera integration
 
   In order to use eyaml as a hiera plugin

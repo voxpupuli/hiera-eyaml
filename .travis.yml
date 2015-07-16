@@ -14,6 +14,6 @@ addons:
     packages:
       - expect
 script:
-  bundle exec cucumber
+  bundle exec cucumber -f progress
 notifications:
   email: false
