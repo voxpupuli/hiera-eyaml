@@ -16,12 +16,12 @@ class test::run {
 
   file { "/tmp/eyaml_puppettest.3":
     ensure => present,
-    content => inline_template("<%= require 'json'; JSON.pretty_generate data['encrypted_array'] %>\n"),
+    content => inline_template("<%= require 'json'; JSON.pretty_generate @data['encrypted_array'] %>\n"),
   }
 
   file { "/tmp/eyaml_puppettest.4":
     ensure => present,
-    content => inline_template("<%= require 'json'; JSON.pretty_generate data['encrypted_hash'] %>\n"),
+    content => inline_template("<%= require 'json'; JSON.pretty_generate @data['encrypted_hash'] %>\n"),
   }
 
   file { "/tmp/eyaml_puppettest.5":

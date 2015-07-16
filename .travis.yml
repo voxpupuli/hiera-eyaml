@@ -6,13 +6,14 @@ rvm:
   - "2.0.0"
   - "2.1.5"
 env:
-  - PUPPET_VERSION=3.7.4
+  - PUPPET_VERSION=3.1.1
+  - PUPPET_VERSION=3.7.5
 sudo: false
 addons:
   apt:
     packages:
       - expect
 script:
-  bundle exec cucumber -f progress
+  bundle exec cucumber
 notifications:
   email: false

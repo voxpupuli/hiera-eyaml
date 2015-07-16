@@ -8,12 +8,9 @@ group :development do
   gem "cucumber", '~> 1.1'
   gem "rspec-expectations", '~> 3.1.0'
   gem "hiera-eyaml-plaintext"
-  gem "puppet"
+  gem "puppet", '< 3.8'
 end
 
 group :test do
   gem "rake"
 end
-
-
-
