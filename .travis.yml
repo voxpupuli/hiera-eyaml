@@ -5,9 +5,14 @@ rvm:
   - "1.9.3"
   - "2.0.0"
   - "2.1.5"
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install expect
+env:
+  - PUPPET_VERSION=3.1.1
+  - PUPPET_VERSION=3.7.5
+sudo: false
+addons:
+  apt:
+    packages:
+      - expect
 script:
   bundle exec cucumber -f progress
 notifications:
