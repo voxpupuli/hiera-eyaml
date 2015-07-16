@@ -57,6 +57,12 @@ class Hiera
             label_string = label.nil? ? '' : "#{label}: "
             format = args[:format].nil? ? @format : args[:format]
             index = args[:index].nil? ? '' : "(#{args[:index]})"
+            if @plain_text.nil? then
+              if Utils::hiera? then
+                raise "Encryptor #{@encryptor.tag} could not decrypt #{label_string} and returned nil!"
+              end
+              return to_encrypted(args)
+            end
             case format
               when :block
                 chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
