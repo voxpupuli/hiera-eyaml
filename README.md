@@ -246,8 +246,24 @@ Then, edit your hiera yaml files, and insert your encrypted values. The default 
 ### Data formatting note
 
 *Important Note:*
+If you use both the eyaml backend and the yaml backend, *any* value found in the first backend,
+e.g., in the bottom level `common.eyaml`, will override a value in the second backend, e.g., in the
+top level `node/fqdn.yaml`, which may come as a surprise.  It is recommended to use just the eyaml
+backend with a single extension, but to ease transitioning from two backends, an array can be
+specified so that eyaml handles both files.
+
+```yaml
+:eyaml:
+    :extension:
+      - 'eyaml'
+      - 'yaml'
+```
+
+*Important Note:*
 The eyaml backend will not parse internally json formatted yaml files, whereas the regular yaml backend will.
 You'll need to ensure any existing yaml files using json format are converted to syntactically correct yaml format.
+
+### Extended example
 
 ```yaml
 ---

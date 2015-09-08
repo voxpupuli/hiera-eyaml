@@ -28,41 +28,43 @@ class Hiera
 
         Backend.datasources(scope, order_override) do |source|
           debug("Looking for data source #{source}")
-          eyaml_file = Backend.datafile(:eyaml, scope, source, extension) || next
+          Array(extension).each do |ext|
+            eyaml_file = Backend.datafile(:eyaml, scope, source, ext) || next
 
-          next unless File.exists?(eyaml_file)
+            next unless File.exists?(eyaml_file)
 
-          data = @cache.read(eyaml_file, Hash) do |data|
-            YAML.load(data) || {}
-          end
+            data = @cache.read(eyaml_file, Hash) do |data|
+              YAML.load(data) || {}
+            end
 
-          next if data.empty?
-          next unless data.include?(key)
+            next if data.empty?
+            next unless data.include?(key)
 
-          # Extra logging that we found the key. This can be outputted
-          # multiple times if the resolution type is array or hash but that
-          # should be expected as the logging will then tell the user ALL the
-          # places where the key is found.
-          debug("Found #{key} in #{source}")
+            # Extra logging that we found the key. This can be outputted
+            # multiple times if the resolution type is array or hash but that
+            # should be expected as the logging will then tell the user ALL the
+            # places where the key is found.
+            debug("Found #{key} in #{source}")
 
-          # for array resolution we just append to the array whatever
-          # we find, we then goes onto the next file and keep adding to
-          # the array
-          #
-          # for priority searches we break after the first found data item
-          new_answer = parse_answer(data[key], scope)
-          case resolution_type
-          when :array
-            raise Exception, "Hiera type mismatch: expected Array and got #{new_answer.class}" unless new_answer.kind_of? Array or new_answer.kind_of? String
-            answer ||= []
-            answer << new_answer
-          when :hash
-            raise Exception, "Hiera type mismatch: expected Hash and got #{new_answer.class}" unless new_answer.kind_of? Hash
-            answer ||= {}
-            answer = Backend.merge_answer(new_answer,answer)
-          else
-            answer = new_answer
-            break
+            # for array resolution we just append to the array whatever
+            # we find, we then goes onto the next file and keep adding to
+            # the array
+            #
+            # for priority searches we break after the first found data item
+            new_answer = parse_answer(data[key], scope)
+            case resolution_type
+            when :array
+              raise Exception, "Hiera type mismatch: expected Array and got #{new_answer.class}" unless new_answer.kind_of? Array or new_answer.kind_of? String
+              answer ||= []
+              answer << new_answer
+            when :hash
+              raise Exception, "Hiera type mismatch: expected Hash and got #{new_answer.class}" unless new_answer.kind_of? Hash
+              answer ||= {}
+              answer = Backend.merge_answer(new_answer,answer)
+            else
+              answer = new_answer
+              break
+            end
           end
         end
 
