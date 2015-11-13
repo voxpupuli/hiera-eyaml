@@ -1,7 +1,7 @@
 ---
 :backends:
-  - yaml
   - eyaml
+  - yaml
 
 :hierarchy:
   - environments/%{environment}/%{module_name}
