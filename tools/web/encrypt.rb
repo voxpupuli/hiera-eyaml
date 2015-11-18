@@ -2,6 +2,7 @@
 
 require 'cgi'
 require 'shellwords'
+require 'tempfile'
 
 # Likely customizations for your environment
 eyaml_path = '/usr/local/bin/eyaml'
@@ -16,10 +17,16 @@ if !cgi.key?('encrypt_request_str') || cgi['encrypt_request_str'] == ''''
   output_html = cgi.h2 { 'No input provided, try again.' }
 else
   # Assume the user is using special characters that wouldn't play nice with a shell instance, so escape certain characters
-  input = Shellwords.escape(cgi['encrypt_request_str'])
+  input = cgi['encrypt_request_str']
+  
+  # Write out input to a temp file to fix escaping and length issues with SSL certificates for example
+  tmpfile = Tempfile.new('hiera-eyaml-web')
+  tmpfile << input
+  tmpfile.flush 
 
   # Perform the encryption
-  encrypt_output = `#{eyaml_path} encrypt -o string --pkcs7-private-key=#{private_key} --pkcs7-public-key=#{public_key} -s #{input}`.strip!
+  encrypt_command = "#{eyaml_path} encrypt -o string --pkcs7-private-key=#{private_key} --pkcs7-public-key=#{public_key} -f #{tmpfile.path}"
+  encrypt_output = `#{encrypt_command}`.strip! 
 
   # Built output
   output_html = cgi.h3 { 'Encrypted Output:' } + cgi.blockquote('style' => 'word-wrap: break-word') { encrypt_output }
