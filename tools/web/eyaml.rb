@@ -3,7 +3,7 @@
 require 'cgi'
 
 cgi = CGI.new('html4')
-header = cgi.h3 { 'Enter the string you wish to encrypt:' }
+header = cgi.h3 { 'Enter the string you wish to encrypt or select a file:' }
 encrypt_url = 'encrypt.rb'
 toggle_verify_url = cgi.br + cgi.a('eyaml.rb?verify=true') { 'Show verification' }
 
@@ -16,8 +16,9 @@ if cgi['verify'] == 'true'
 end
 
 # Add encryption function form
-html_out = cgi.form('POST', encrypt_url) do
+html_out = cgi.multipart_form(encrypt_url) do
   header + cgi.password_field('encrypt_request_str') + cgi.br +
+  cgi.file_field('encrypt_request_file') + cgi.br +
   cgi.hidden('verify', cgi['verify'] == 'true' ? 'true' : 'false') + cgi.submit
 end
 # Add link to switch validation status
