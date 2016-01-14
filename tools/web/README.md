@@ -19,10 +19,10 @@ Functionality
 ===
 This tool provide two functions.
 
-First, if can take an arbitrary input and return back to you the eyaml encrypted string to put in your hiera data.  I did include a verification mode you can use if you suspect the tool is mangling your input badly.  Use it with care because it does return your secret back to you in plaintext on your screen.
+First, if can take an arbitrary input and return back to you the eyaml encrypted string to put in your hiera data.  I did include a verification mode you can use if you suspect the tool is mangling your input badly.  Use it with care because it does return your secret back to you in plaintext on your screen.  I've also added the ability to upload a file in order to preserve line endings, non-printed characters, and formatting (i.e. SSL Certificates).
 
 Second, you can provide two eyaml encrypted strings from your hiera data to see if they are the same in their decrypted forms.
 
 I specifically didn't create a decrypt function in this tool because I viewed it as a security hole.  If you need a secret, go look at the puppet deployed version (assuming you have access) or login to the server and run the command manually (assuming you have access).  Generally, being able to compare a known secret to an unknown secret should be good enough.
 
-
+You can view screenshots of the simple interface [here](http://imgur.com/a/GEgH1).
