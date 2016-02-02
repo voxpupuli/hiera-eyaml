@@ -14,14 +14,14 @@ cgi = CGI.new('html4')
 footer = cgi.br + cgi.a(cgi.referer) { 'Back' }
 
 # Perform some sanity checking on the input
-if (!cgi.key?('encrypt_request_str') || cgi['encrypt_request_str'] == '''') && (!cgi.key?('encrypt_request_file') || cgi['encrypt_request_file'].original_filename == '''')
+if (!cgi.key?('encrypt_request_str') || cgi['encrypt_request_str'].string == '''') && (!cgi.key?('encrypt_request_file') || cgi['encrypt_request_file'].original_filename == '''')
   output_html = cgi.h2 { 'No input provided, try again.' }
 else
-  input = ''
-  output_html = ''
+  input = ""
+  output_html = ""
   # Assume the user is using special characters that wouldn't play nice with a shell instance, so escape certain characters
-  if cgi['encrypt_request_str'] != ''''
-    input = cgi['encrypt_request_str']
+  if cgi['encrypt_request_str'].string != ''''
+    input = cgi['encrypt_request_str'].string
   else
     input = cgi['encrypt_request_file'].read
   end
@@ -37,7 +37,7 @@ else
 
   # Built output
   output_html += cgi.h3 { 'Encrypted Output:' } + cgi.blockquote('style' => 'word-wrap: break-word') { encrypt_output }
-  if cgi['verify'] == 'true'
+  if cgi['verify'].string == 'true'
     decrypt_output = `#{eyaml_path} decrypt --pkcs7-private-key=#{private_key} --pkcs7-public-key=#{public_key} -s #{encrypt_output}`.strip!
     output_html = cgi.h3 { 'Original Input:' } + cgi.blockquote { input } + output_html
     output_html += cgi.h3 { 'Decrypted Output Verification:' } + cgi.blockquote { decrypt_output }
