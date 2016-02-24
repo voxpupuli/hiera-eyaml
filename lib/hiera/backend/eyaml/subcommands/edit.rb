@@ -68,7 +68,7 @@ eos
           end
 
           def self.execute
-            editor = Utils.find_editor
+            editor = EditHelper.find_editor
 
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]
