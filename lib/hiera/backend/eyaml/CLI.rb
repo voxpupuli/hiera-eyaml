@@ -45,8 +45,8 @@ class Hiera
             result = executor.execute
             puts result unless result.nil?
           rescue Exception => e
-            Utils.warn e.message
-            Utils.debug e.backtrace.join("\n")
+            LoggingHelper.warn e.message
+            LoggingHelper.debug e.backtrace.join("\n")
           end
 
         end

@@ -61,7 +61,7 @@ eos
                 raise StandardError, "Could not open file for reading: #{options[:eyaml]}"
               end
             else
-              Utils.info "#{options[:eyaml]} doesn't exist, editing new file"
+              LoggingHelper.info "#{options[:eyaml]} doesn't exist, editing new file"
               options[:input_data] = "---"
             end
             options
@@ -90,7 +90,7 @@ eos
               raise StandardError, "Edited file is blank" if edited_file.empty?
 
               if edited_file == decrypted_input
-                Utils.info "No changes detected, exiting"
+                LoggingHelper.info "No changes detected, exiting"
               else
                 decrypted_parser = Parser::ParserFactory.decrypted_parser
                 edited_tokens = decrypted_parser.parse(edited_file)
@@ -123,7 +123,7 @@ eos
                 }
               end
             rescue RecoverableError => e
-              Utils.info e
+              LoggingHelper.info e
               if agree "Return to the editor to try again?"
                 retry
               else
