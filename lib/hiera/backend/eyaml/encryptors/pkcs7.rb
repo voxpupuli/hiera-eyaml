@@ -1,6 +1,7 @@
 require 'openssl'
 require 'hiera/backend/eyaml/encryptor'
-require 'hiera/backend/eyaml/utils'
+require 'hiera/backend/eyaml/encrypthelper'
+require 'hiera/backend/eyaml/logginghelper'
 require 'hiera/backend/eyaml/options'
 
 class Hiera
@@ -65,8 +66,8 @@ class Hiera
             subject = self.option :subject
 
             key = OpenSSL::PKey::RSA.new(2048)
-            Utils.ensure_key_dir_exists private_key
-            Utils.write_important_file :filename => private_key, :content => key.to_pem, :mode => 0600
+            EncryptHelper.ensure_key_dir_exists private_key
+            EncryptHelper.write_important_file :filename => private_key, :content => key.to_pem, :mode => 0600
 
             cert = OpenSSL::X509::Certificate.new()
             cert.subject = OpenSSL::X509::Name.parse(subject)
@@ -92,9 +93,9 @@ class Hiera
 
             cert.sign key, OpenSSL::Digest::SHA1.new
 
-            Utils.ensure_key_dir_exists public_key
-            Utils.write_important_file :filename => public_key, :content => cert.to_pem
-            Utils.info "Keys created OK"
+            EncryptHelper.ensure_key_dir_exists public_key
+            EncryptHelper.write_important_file :filename => public_key, :content => cert.to_pem
+            LoggingHelper.info "Keys created OK"
 
           end
 

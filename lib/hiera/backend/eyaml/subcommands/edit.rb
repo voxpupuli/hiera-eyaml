@@ -1,8 +1,8 @@
-require 'hiera/backend/eyaml/utils'
+require 'hiera/backend/eyaml/edithelper'
+require 'hiera/backend/eyaml/highlinehelper'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
 require 'hiera/backend/eyaml/subcommand'
-require 'highline/import'
 
 class Hiera
   module Backend
@@ -76,7 +76,7 @@ eos
             decrypted_file_content = Eyaml::Options[:no_preamble] ? decrypted_input : (self.preamble + decrypted_input)
 
             begin
-              decrypted_file = Utils.write_tempfile decrypted_file_content unless decrypted_file
+              decrypted_file = EditHelper.write_tempfile decrypted_file_content unless decrypted_file
               system "#{editor} \"#{decrypted_file}\""
               status = $?
 
@@ -130,7 +130,7 @@ eos
                 raise e
               end
             ensure
-              Utils.secure_file_delete :file => decrypted_file, :num_bytes => [edited_file.length, decrypted_input.length].max
+              EditHelper.secure_file_delete :file => decrypted_file, :num_bytes => [edited_file.length, decrypted_input.length].max
             end
 
             nil

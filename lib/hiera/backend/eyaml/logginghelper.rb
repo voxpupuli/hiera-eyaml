@@ -70,6 +70,10 @@ class Hiera
           "#{prefix}#{message}#{suffix}"
         end
 
+        def self.hiera?
+          "hiera".eql? Eyaml::Options[:source]
+        end
+
       end
     end
   end

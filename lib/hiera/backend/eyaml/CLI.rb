@@ -1,5 +1,6 @@
 require 'trollop'
 require 'hiera/backend/eyaml'
+require 'hiera/backend/eyaml/logginghelper'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/plugins'
 require 'hiera/backend/eyaml/options'

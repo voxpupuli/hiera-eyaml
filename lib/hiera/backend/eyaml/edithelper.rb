@@ -1,3 +1,5 @@
+require 'hiera/backend/eyaml/logginghelper'
+
 class Hiera
   module Backend
     module Eyaml
@@ -25,6 +27,43 @@ class Hiera
             editor = "\"#{editorfile}\"#{editor[raw_command.size()..-1]}"
           end
           editor
+        end
+
+        def self.secure_file_delete args
+          file = File.open(args[:file], 'r+')
+          num_bytes = args[:num_bytes]
+          [0xff, 0x55, 0xaa, 0x00].each do |byte|
+            file.seek(0, IO::SEEK_SET)
+            num_bytes.times { file.print(byte.chr) }
+            file.fsync
+          end
+          file.close
+          File.delete args[:file]
+        end
+
+        def self.write_tempfile data_to_write
+          file = Tempfile.open(['eyaml_edit', '.yaml'])
+          path = file.path
+          file.close!
+
+          file = File.open(path, "w")
+          file.chmod(0600)
+          if ENV['OS'] == 'Windows_NT'
+            # Windows doesn't support chmod
+            icacls = 'C:\Windows\system32\icacls.exe'
+            if File.executable? icacls
+              current_user = `C:\\Windows\\system32\\whoami.exe`.chomp
+              # Use ACLs to restrict access to the current user only
+              command = %Q{#{icacls} "#{file.path}" /grant:r "#{current_user}":f /inheritance:r}
+              system "#{command} >NUL 2>&1"
+            end
+          end
+          file.puts data_to_write
+          file.close
+
+          LoggingHelper::debug "Wrote temporary file: #{path}"
+
+          path
         end
 
       end
