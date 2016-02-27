@@ -1,14 +1,30 @@
 language: ruby
 rvm:
   - "1.8.7-p374"
-  - "1.9.2"
   - "1.9.3"
   - "2.0.0"
   - "2.1.5"
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install expect
+  - "2.2.3"
+env:
+  - PUPPET_VERSION=3.7.5
+  - PUPPET_VERSION=3.8.4
+  - PUPPET_VERSION=4.2.2
+sudo: false
+addons:
+  apt:
+    packages:
+      - expect
 script:
   bundle exec cucumber -f progress
 notifications:
   email: false
+
+matrix:
+  exclude:
+    - rvm: 1.8.7-p374
+      env: PUPPET_VERSION=4.2.2
+    - rvm: 2.2.3
+      env: PUPPET_VERSION=3.7.5
+    - rvm: 2.2.3
+      env: PUPPET_VERSION=3.8.4
+
