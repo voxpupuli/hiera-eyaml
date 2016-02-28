@@ -281,6 +281,7 @@ This is a list of available plugins:
  - [hiera-eyaml-twofac](https://github.com/gtmtechltd/hiera-eyaml-twofac) - PKCS7 keypair + AES256 symmetric password for two-factor encryption
    Note that this plugin mandates the user enter a password. It is useful for non-automated scenarios, and is not advised to be used
    in conjunction with puppet, as it requires entry of a password over a terminal.
+ - [hiera-eyaml-kms](https://github.com/adenot/hiera-eyaml-kms) - Encryption using AWS Key Management Service (KMS)
 
 
 Notes
