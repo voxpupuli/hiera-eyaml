@@ -1,7 +1,6 @@
 source 'https://rubygems.org/'
 
-gem 'highline', '~> 1.6.19'
-gem 'trollop', '~> 2.0'
+gemspec
 
 group :development do
   gem "aruba", '~> 0.6.2'

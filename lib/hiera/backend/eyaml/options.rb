@@ -21,16 +21,16 @@ class Hiera
         end
 
         def self.trace
-          Utils::trace "Dump of eyaml tool options dict:"
-          Utils::trace "--------------------------------"
+          LoggingHelper::trace "Dump of eyaml tool options dict:"
+          LoggingHelper::trace "--------------------------------"
           @@options.each do |k, v|
             begin
-              Utils::trace sprintf "%18s %-18s = %18s %-18s", "(#{k.class.name})", k.to_s, "(#{v.class.name})", v.to_s
+              LoggingHelper::trace sprintf "%18s %-18s = %18s %-18s", "(#{k.class.name})", k.to_s, "(#{v.class.name})", v.to_s
             rescue
-              Utils::trace sprintf "%18s %-18s = %18s %-18s", "(#{k.class.name})", k.to_s, "(#{v.class.name})", "<unprintable>" # case where v is binary
+              LoggingHelper::trace sprintf "%18s %-18s = %18s %-18s", "(#{k.class.name})", k.to_s, "(#{v.class.name})", "<unprintable>" # case where v is binary
             end
           end
-          Utils::trace "--------------------------------"
+          LoggingHelper::trace "--------------------------------"
         end
 
       end

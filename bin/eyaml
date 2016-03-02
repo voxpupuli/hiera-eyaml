@@ -12,15 +12,15 @@ Hiera::Backend::Eyaml::Plugins.find
 begin
   Hiera::Backend::Eyaml::CLI.parse
 rescue StandardError => e
-  Hiera::Backend::Eyaml::Utils.warn e.message
-  Hiera::Backend::Eyaml::Utils.debug e.backtrace.join("\n")
+  Hiera::Backend::Eyaml::LoggingHelper.warn e.message
+  Hiera::Backend::Eyaml::LoggingHelper.debug e.backtrace.join("\n")
   exit 1
 end
 
 begin
   Hiera::Backend::Eyaml::CLI.execute
 rescue StandardError => e
-  Hiera::Backend::Eyaml::Utils.warn e.message
-  Hiera::Backend::Eyaml::Utils.debug e.backtrace.join("\n")
+  Hiera::Backend::Eyaml::LoggingHelper.warn e.message
+  Hiera::Backend::Eyaml::LoggingHelper.debug e.backtrace.join("\n")
   exit 1
 end
