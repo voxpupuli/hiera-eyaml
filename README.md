@@ -7,6 +7,7 @@ hiera-eyaml is a backend for Hiera that provides per-value encryption of sensiti
 to be used by Puppet.
 
 :new: *v2.0 - commandline tool syntax has changed, see below for details*
+:new: *v2.1 - hiera-eyaml supports reading encrypted data from a file like hiera-file
 
 Advantages over hiera-gpg
 -------------------------
@@ -231,6 +232,32 @@ things:
             IZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
     -   - nested thing 2.0
         - nested thing 2.1
+```
+
+Reading large eyaml values from files
+-------------------------------------
+
+Sometimes, for extremely large encrypted values, you might find it easier to store the encrypted information in a single file. In addition to reading from .eyaml files, hiera-eyaml can read key-value pairs from a file, where the filename is the key, and the contents of the file is an encrypted value. When hiera searches the hierarchy, eyaml will look for a directory called `<hierarchy>.d`, and if it exists, will look for keys as files in this directory.
+
+example:
+
+```
+hiera.yaml:
+
+:hierarchy:
+    - %{environment}
+    - common
+
+
+common.d/some_thing:
+
+ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefvNBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDhjJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4yl5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd/HjZFXwcXRtTlzewJLc+/gox2IfByQRhsI/AgogRfYQKocZgFb/DOZoXR7wmIZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
+
+common.yaml:
+
+some_thing: ENC[PKCS7,Y22exl+OvjDe+drmik2XEeD3VQtl1uZJXFFF2NnrMXDWx0csyqLB/2NOWefvNBTZfOlPvMlAesyr4bUY4I5XeVbVk38XKxeriH69EFAD4CahIZlC8lkE/uDhjJGQfh052eonkungHIcuGKY/5sEbbZl/qufjAtp/ufor15VBJtsXt17tXP4yl5ZP119Fwq8xiREGOL0lVvFYJz2hZc1ppPCNG5lwuLnTekXN/OazNYpf4CMd/HjZFXwcXRtTlzewJLc+/gox2IfByQRhsI/AgogRfYQKocZgFb/DOZoXR7wmIZGeunzwhqfmEtGiqpvJJQ5wVRdzJVpTnANBA5qxeA==]
+
+(the last 2 are equivalent ways of setting a "some_thing" key with an encrypted value)
 ```
 
 Configuration file for eyaml
