@@ -1,6 +1,12 @@
 Change log for hiera-eyaml
 ==========================
 
+2.1.0
+-----
+
+ - (#187) - Change the way third party highline library is imported to avoid memory leak when running under puppet server (@petems)
+ - (#181) - Improve test suite to run against a variety of puppet versions (@peculater)
+
 2.0.8
 -----
 

@@ -53,7 +53,8 @@ class Hiera
 
             options[:input_data] = case options[:source]
             when :password
-              Utils.read_password
+              require 'hiera/backend/eyaml/highlinehelper'
+              HighlineHelper.read_password
             when :string
               options[:string]
             when :file

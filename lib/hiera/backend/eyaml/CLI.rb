@@ -1,5 +1,6 @@
 require 'trollop'
 require 'hiera/backend/eyaml'
+require 'hiera/backend/eyaml/logginghelper'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/plugins'
 require 'hiera/backend/eyaml/options'
@@ -45,8 +46,8 @@ class Hiera
             result = executor.execute
             puts result unless result.nil?
           rescue Exception => e
-            Utils.warn e.message
-            Utils.debug e.backtrace.join("\n")
+            LoggingHelper.warn e.message
+            LoggingHelper.debug e.backtrace.join("\n")
           end
 
         end

@@ -38,7 +38,7 @@ class Hiera
           [ "/etc/eyaml/config.yaml", "#{ENV['HOME']}/.eyaml/config.yaml", "#{ENV['EYAML_CONFIG']}" ].each do |config_file|
             begin
               yaml_contents = YAML.load_file(config_file)
-              Utils::info "Loaded config from #{config_file}"
+              LoggingHelper::info "Loaded config from #{config_file}"
               config.merge! yaml_contents
             rescue 
               raise StandardError, "Could not open config file \"#{config_file}\" for reading"

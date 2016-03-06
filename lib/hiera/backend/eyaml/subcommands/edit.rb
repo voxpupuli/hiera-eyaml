@@ -1,8 +1,8 @@
-require 'hiera/backend/eyaml/utils'
+require 'hiera/backend/eyaml/edithelper'
+require 'hiera/backend/eyaml/highlinehelper'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
 require 'hiera/backend/eyaml/subcommand'
-require 'highline/import'
 
 class Hiera
   module Backend
@@ -61,14 +61,14 @@ eos
                 raise StandardError, "Could not open file for reading: #{options[:eyaml]}"
               end
             else
-              Utils.info "#{options[:eyaml]} doesn't exist, editing new file"
+              LoggingHelper.info "#{options[:eyaml]} doesn't exist, editing new file"
               options[:input_data] = "---"
             end
             options
           end
 
           def self.execute
-            editor = Utils.find_editor
+            editor = EditHelper.find_editor
 
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]
@@ -76,7 +76,7 @@ eos
             decrypted_file_content = Eyaml::Options[:no_preamble] ? decrypted_input : (self.preamble + decrypted_input)
 
             begin
-              decrypted_file = Utils.write_tempfile decrypted_file_content unless decrypted_file
+              decrypted_file = EditHelper.write_tempfile decrypted_file_content unless decrypted_file
               system "#{editor} \"#{decrypted_file}\""
               status = $?
 
@@ -90,7 +90,7 @@ eos
               raise StandardError, "Edited file is blank" if edited_file.empty?
 
               if edited_file == decrypted_input
-                Utils.info "No changes detected, exiting"
+                LoggingHelper.info "No changes detected, exiting"
               else
                 decrypted_parser = Parser::ParserFactory.decrypted_parser
                 edited_tokens = decrypted_parser.parse(edited_file)
@@ -123,14 +123,14 @@ eos
                 }
               end
             rescue RecoverableError => e
-              Utils.info e
+              LoggingHelper.info e
               if agree "Return to the editor to try again?"
                 retry
               else
                 raise e
               end
             ensure
-              Utils.secure_file_delete :file => decrypted_file, :num_bytes => [edited_file.length, decrypted_input.length].max
+              EditHelper.secure_file_delete :file => decrypted_file, :num_bytes => [edited_file.length, decrypted_input.length].max
             end
 
             nil
