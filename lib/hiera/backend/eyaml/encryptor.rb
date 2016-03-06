@@ -1,5 +1,5 @@
 require 'base64'
-require 'hiera/backend/eyaml/utils'
+require 'hiera/backend/eyaml/encrypthelper'
 
 class Hiera
   module Backend
@@ -60,19 +60,19 @@ class Hiera
           end
 
           def self.trace msg
-            Utils::trace :from => plugin_classname, :msg => msg
+            LoggingHelper::trace :from => plugin_classname, :msg => msg
           end
 
           def self.debug msg
-            Utils::debug :from => plugin_classname, :msg => msg
+            LoggingHelper::debug :from => plugin_classname, :msg => msg
           end
 
           def self.info msg
-            Utils::info :from => plugin_classname, :msg => msg
+            LoggingHelper::info :from => plugin_classname, :msg => msg
           end
 
           def self.warn msg
-            Utils::warn :from => plugin_classname, :msg => msg
+            LoggingHelper::warn :from => plugin_classname, :msg => msg
           end
 
       end
