@@ -98,7 +98,7 @@ eos
                 # check that the tokens haven't been copy / pasted
                 used_ids = edited_tokens.find_all{ |t| t.class.name =~ /::EncToken$/ and !t.id.nil? }.map{ |t| t.id }
                 if used_ids.length != used_ids.uniq.length
-                    raise RecoverableError, "A duplicate DEC(ID) was found so I don't know how to proceed. This is probably because you copy and pasted a value - if you do this please delete the ID in parentheses"
+                    raise RecoverableError, "A duplicate DEC(ID) was found so I don't know how to proceed. This is probably because you copy and pasted a value - if you do this please delete the ID and parentheses"
                 end
 
                 # replace untouched values with the source values
