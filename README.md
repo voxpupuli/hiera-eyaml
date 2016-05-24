@@ -298,6 +298,38 @@ Github has a great guide on removing sensitive data from repos here:
 https://help.github.com/articles/remove-sensitive-data
 
 
+Host by host enabling
+---------------------
+
+Sometimes you want to be able to enable eyaml on a host-by-host basis when migrating from yaml to eyaml.
+
+This could be done by using the **pkcs7_enforce_certs** config option.
+
+```yaml
+:backends: 
+  - eyaml
+  - yaml
+:yaml:
+    :datadir: /etc/puppet/hieradata
+:eyaml:
+  :datadir: /etc/puppet/hieradata
+  :pkcs7_private_key: /etc/puppet/private_key.pkcs7.pem
+  :pkcs7_public_key:  /etc/puppet/public_key.pkcs7.pem
+  :pkcs7_enforce_certs: false
+  :extension: yaml
+```
+
+Without the pkcs7_enforce_certs option (which defaults to 'true'), puppet would fail if the certificates
+doesn't exist. Meaning, that you can't distribute _one_ hiera.yaml config file everywhere.
+
+So this allows you to distribute one config file everywhere, but once you copy the certificates onto
+the machine, puppet will start decrypting the values correctly. If not, it will simply put a
+
+    <secret>
+
+in place of the encrypted value.
+
+
 Troubleshooting
 ---------------
 

@@ -21,6 +21,9 @@ class Hiera
             :subject => { :desc => "Subject to use for certificate when creating keys",
                           :type => :string,
                           :default => "/" },
+            :enforce_certs => { :desc => "Enforce the existance of the certs",
+                                :type => :string,
+                                :default => "true" },
           }
 
           self.tag = "PKCS7"
@@ -42,8 +45,26 @@ class Hiera
 
             public_key = self.option :public_key
             private_key = self.option :private_key
+            enforce_certs = self.option :enforce_certs
             raise StandardError, "pkcs7_public_key is not defined" unless public_key
             raise StandardError, "pkcs7_private_key is not defined" unless private_key
+
+            if not File.exist?(public_key)
+              if enforce_certs == true || enforce_certs =~ (/^(true|t|yes|y|1)$/i)
+                raise StandardError, "pkcs7_public_key does not exist"
+              else
+                return "<secret>"
+              end
+            end
+
+            if not File.exist?(private_key)
+              if enforce_certs =~ (/^(true|t|yes|y|1)$/i)
+                raise StandardError, "pkcs7_private_key does not exist"
+              else
+                return "<secret>"
+              end
+            end
+
 
             private_key_pem = File.read private_key
             private_key_rsa = OpenSSL::PKey::RSA.new( private_key_pem )
