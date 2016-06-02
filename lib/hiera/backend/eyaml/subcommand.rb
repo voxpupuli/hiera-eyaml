@@ -35,7 +35,12 @@ class Hiera
         
         def self.load_config_file
           config = {}
-          [ "/etc/eyaml/config.yaml", "#{ENV['HOME']}/.eyaml/config.yaml", "#{ENV['EYAML_CONFIG']}" ].each do |config_file|
+          [
+            "/etc/eyaml/config.yaml",
+            "#{ENV['HOME']}/.eyaml/config.yaml",
+            find_parent_config_file,
+            "#{ENV['EYAML_CONFIG']}",
+          ].each do |config_file|
             begin
               yaml_contents = YAML.load_file(config_file)
               LoggingHelper::info "Loaded config from #{config_file}"
@@ -47,7 +52,19 @@ class Hiera
           config
         end
 
-        def self.all_options 
+        def self.find_parent_config_file
+          check_for_config_file('eyaml_config.yaml')
+        rescue SystemCallError
+        end
+
+        def self.check_for_config_file(filename)
+          return Dir.pwd if File.exist?(filename)
+          Dir.chdir('..') do
+            check_for_config_file(filename)
+          end
+        end
+
+        def self.all_options
           options = @@global_options.dup
           options += self.options if self.options
           options += Plugins.options
