@@ -12,15 +12,21 @@ class Hiera
         class Pkcs7 < Encryptor
 
           self.options = {
-            :private_key => { :desc => "Path to private key", 
-                              :type => :string, 
+            :private_key => { :desc => "Path to private key",
+                              :type => :string,
                               :default => "./keys/private_key.pkcs7.pem" },
-            :public_key => { :desc => "Path to public key",  
-                             :type => :string, 
+            :public_key => { :desc => "Path to public key",
+                             :type => :string,
                              :default => "./keys/public_key.pkcs7.pem" },
             :subject => { :desc => "Subject to use for certificate when creating keys",
                           :type => :string,
                           :default => "/" },
+            :vault_appid => { :desc    => "Vault Application ID",
+                              :type    => :string,
+                              :default => nil },
+            :vault_userid => { :desc    => "Path to Vault User ID",
+                               :type    => :string,
+                               :default => :nil }
           }
 
           self.tag = "PKCS7"
@@ -30,12 +36,12 @@ class Hiera
             public_key = self.option :public_key
             raise StandardError, "pkcs7_public_key is not defined" unless public_key
 
-            public_key_pem = File.read public_key 
+            public_key_pem = File.read public_key
             public_key_x509 = OpenSSL::X509::Certificate.new( public_key_pem )
 
             cipher = OpenSSL::Cipher::AES.new(256, :CBC)
             OpenSSL::PKCS7::encrypt([public_key_x509], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
-            
+
           end
 
           def self.decrypt ciphertext
