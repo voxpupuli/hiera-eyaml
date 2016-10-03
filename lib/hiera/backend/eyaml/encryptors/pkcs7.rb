@@ -24,13 +24,13 @@ class Hiera
                                 :default => "/" },
             :vault_appid   => { :desc    => "Vault Application ID",
                                 :type    => :string,
-                                :default => nil },
+                                :default => "" },
             :vault_userid  => { :desc    => "Path to Vault User ID",
                                 :type    => :string,
-                                :default => nil }
+                                :default => "" },
             :vault_address => { :desc    => "Vault Server Address",
                                 :type    => :string,
-                                :defualt => nil }
+                                :defualt => "" }
           }
 
           self.tag = "PKCS7"
@@ -56,37 +56,37 @@ class Hiera
             raise StandardError, "pkcs7_private_key is not defined" unless private_key
             if public_key.start_with?('VAULT') or private_key.start_with?('VAULT') then
               vault_appid = self.option :vault_appid
-              vault_userid = self.option :vault_userid
+              vault_userid = File.read(self.option :vault_userid)
               vault_address = self.option :vault_address
 
               raise StandardError, "Trying to use Vault without Authentication" unless vault_appid and vault_userid and vault_address
 
               Vault.address = vault_address
-              Vault.auth.app_id vault_appid, vault_userid unless self.private_key_rsa
+              Vault.auth.app_id vault_appid, vault_userid unless @private_key_rsa
             end
 
-            if not self.private_key_rsa then
-              if vault_appid then
+            if not defined?(@private_key_rsa) then
+              if private_key.start_with?('VAULT') then
                 path, key = private_key.match(/VAULT\[([^:]*):([^\]]*)\]/).captures
-                private_key_pem = Vault.logical.read(path)[key]
+                private_key_pem = Vault.logical.read(path).data[key.to_sym()]
               else
-                private_key_pem = File.read private_key unless self.private_key_rsa
+                private_key_pem = File.read private_key unless @private_key_rsa
               end
             end
-            self.private_key_rsa ||= OpenSSL::PKey::RSA.new( private_key_pem )
+            @private_key_rsa ||= OpenSSL::PKey::RSA.new( private_key_pem )
 
-            if not self.public_key_x509 then
-              if vault_appid then
+            if not defined?(@public_key_x509) then
+              if public_key.start_with?('VAULT') then
                 path, key = public_key.match(/VAULT\[([^:]*):([^\]]*)\]/).captures
-                public_key_pem = Vault.logical.read(path)[key]
+                public_key_pem = Vault.logical.read(path).data[key.to_sym()]
               else
-                public_key_pem = File.read public_key unless self.public_key_x509
+                public_key_pem = File.read public_key unless @public_key_x509
               end
             end
-            self.public_key_x509 ||= OpenSSL::X509::Certificate.new( public_key_pem )
+            @public_key_x509 ||= OpenSSL::X509::Certificate.new( public_key_pem )
 
             pkcs7 = OpenSSL::PKCS7.new( ciphertext )
-            pkcs7.decrypt(self.private_key_rsa, self.public_key_x509)
+            pkcs7.decrypt(@private_key_rsa, @public_key_x509)
 
           end
 
