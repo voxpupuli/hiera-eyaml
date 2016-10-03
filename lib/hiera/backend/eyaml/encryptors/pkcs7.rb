@@ -30,7 +30,7 @@ class Hiera
                                 :default => "" },
             :vault_address => { :desc    => "Vault Server Address",
                                 :type    => :string,
-                                :defualt => "" }
+                                :default => "" }
           }
 
           self.tag = "PKCS7"
