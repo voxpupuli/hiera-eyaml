@@ -50,7 +50,7 @@ class Hiera
           # the array
           #
           # for priority searches we break after the first found data item
-          new_answer = parse_answer(data[key], scope)
+          new_answer = data[key]
           case resolution_type
           when :array
             raise Exception, "Hiera type mismatch: expected Array and got #{new_answer.class}" unless new_answer.kind_of? Array or new_answer.kind_of? String
@@ -66,7 +66,7 @@ class Hiera
           end
         end
 
-        return answer
+        return parse_answer(answer, scope)
       end
 
       private
