@@ -3,6 +3,7 @@ require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
 require 'hiera/filecache'
+require 'hiera/version'
 
 require 'yaml'
 
@@ -15,12 +16,13 @@ class Hiera
       def initialize(cache = nil)
         debug("Hiera eYAML backend starting")
 
-        @decrypted_cache = {}
-        @cache     = cache || Filecache.new
-        @extension = Config[:eyaml][:extension] || "eyaml"
+        @decrypted_cache   = {}
+        @cache             = cache || Filecache.new
+        @extension         = Config[:eyaml][:extension] || "eyaml"
+        @hiera_api_version = Hiera.version.split('.')[0].to_i
       end
 
-      def lookup(key, scope, order_override, resolution_type)
+      def lookup(key, scope, order_override, resolution_type, context={:recurse_guard => nil, :order_override => nil})
         answer = nil
 
         parse_options(scope)
@@ -51,7 +53,11 @@ class Hiera
           # the array
           #
           # for priority searches we break after the first found data item
-          new_answer = parse_answer(data[key], scope)
+          if @hiera_api_version > 1
+            new_answer = parse_answer(data[key], scope, {}, context={:recurse_guard => nil, :order_override => nil})
+          else
+            new_answer = parse_answer(data[key], scope)
+          end
           case resolution_type
           when :array
             raise Exception, "Hiera type mismatch: expected Array and got #{new_answer.class}" unless new_answer.kind_of? Array or new_answer.kind_of? String
@@ -102,23 +108,39 @@ class Hiera
         /.*ENC\[.*?\]/ =~ data ? true : false
       end
 
-      def parse_answer(data, scope, extra_data={})
+      def parse_answer(data, scope, extra_data={}, context={:recurse_guard => nil, :order_override => nil})
         if data.is_a?(Numeric) or data.is_a?(TrueClass) or data.is_a?(FalseClass)
           return data
         elsif data.is_a?(String)
-          return parse_string(data, scope, extra_data)
+          if @hiera_api_version > 1
+            return parse_string(data, scope, extra_data, context)
+          else
+            return parse_string(data, scope, extra_data)
+          end
+
         elsif data.is_a?(Hash)
           answer = {}
           data.each_pair do |key, val|
-            interpolated_key = Backend.parse_string(key, scope, extra_data)
-            answer[interpolated_key] = parse_answer(val, scope, extra_data)
+            if @hiera_api_version > 1
+              debug("Using Hiera Backend API v2 to call Backend.parse_string with context")
+              interpolated_key = Backend.parse_string(key, scope, extra_data, context)
+              answer[interpolated_key] = parse_answer(val, scope, extra_data, context)
+            else
+              debug("Using Hiera Backend API v1 to call Backend.parse_string")
+              interpolated_key = Backend.parse_string(key, scope, extra_data)
+              answer[interpolated_key] = parse_answer(val, scope, extra_data)
+            end
           end
 
           return answer
         elsif data.is_a?(Array)
           answer = []
           data.each do |item|
-            answer << parse_answer(item, scope, extra_data)
+            if @hiera_api_version > 1
+              answer << parse_answer(item, scope, extra_data, context)
+            else
+              answer << parse_answer(item, scope, extra_data)
+            end
           end
 
           return answer
@@ -135,7 +157,7 @@ class Hiera
         Eyaml::Options[:source] = "hiera"
       end
 
-      def parse_string(data, scope, extra_data={})
+      def parse_string(data, scope, extra_data={}, context={:recurse_guard => nil, :order_override => nil})
         if Eyaml::Options[:cache_decrypted]
           if not @decrypted_cache.include?(data)
             decrypted_data = decrypt(data)
@@ -149,7 +171,13 @@ class Hiera
           decrypted_data = decrypt(data)
         end
 
-        Backend.parse_string(decrypted_data, scope, extra_data)
+        if @hiera_api_version > 1
+          debug("Using Hiera Backend API v2 to call Backend.parse_string with context")
+          Backend.parse_string(decrypted_data, scope, extra_data, context)
+        else
+          debug("Using Hiera Backend API v1 to call Backend.parse_string")
+          Backend.parse_string(decrypted_data, scope, extra_data)
+        end
       end
     end
   end
