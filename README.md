@@ -6,7 +6,12 @@ Hiera eyaml
 hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
 to be used by Puppet.
 
-:new: *v2.0 - commandline tool syntax has changed, see below for details*
+-------------------------
+:new: **hiera-eyaml is now part of voxpupuli**
+
+hiera-eyaml has a new home https://github.com/voxpupuli/hiera-eyaml.
+
+Hopefully this will mean more frequent feature updates and bug fixes!
 
 Advantages over hiera-gpg
 -------------------------
