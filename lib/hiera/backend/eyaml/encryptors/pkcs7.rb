@@ -21,6 +21,9 @@ class Hiera
             :subject => { :desc => "Subject to use for certificate when creating keys",
                           :type => :string,
                           :default => "/" },
+            :keysize => { :desc => "Key size used for encryption",
+                          :type => :integer,
+                          :default => 2048 },
           }
 
           self.tag = "PKCS7"
@@ -67,8 +70,9 @@ class Hiera
             public_key = self.option :public_key
             private_key = self.option :private_key
             subject = self.option :subject
+            keysize = self.option :keysize
 
-            key = OpenSSL::PKey::RSA.new(2048)
+            key = OpenSSL::PKey::RSA.new(keysize)
             EncryptHelper.ensure_key_dir_exists private_key
             EncryptHelper.write_important_file :filename => private_key, :content => key.to_pem, :mode => 0600
 
