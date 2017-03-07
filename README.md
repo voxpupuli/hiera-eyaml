@@ -165,7 +165,56 @@ by the eyaml tool.
 Hiera
 -----
 
-To use eyaml with hiera and puppet, first configure hiera.yaml to use the eyaml backend
+To use eyaml with hiera and puppet, first configure hiera.yaml to use the eyaml backend.
+
+Eyaml works with [Hiera 3.x](https://docs.puppet.com/hiera/latest), as well as with [Hiera 5](https://docs.puppet.com/puppet/latest/hiera_intro.html) (Puppet 4.9.3 and later).
+
+### With Hiera 5
+
+In Hiera 5, each hierarchy level has one designated backend, as well as its own independent configuration for that backend.
+
+Hierarchy levels that use eyaml must set the following keys:
+
+* `name`.
+* `lookup_key` (must be set to `eyaml_lookup_key`).
+* `path`/`paths`/`glob`/`globs` (choose one).
+* `datadir` (can be omitted if you've set a default).
+* `options` — a hash of eyaml-specific settings; by default, this should include `pkcs7_private_key` and `pkcs7_public_key`, but alternate encryption plugins use alternate options. Anything from the old `:eyaml` config section (except `datadir`) goes here.
+
+    You do not need to specify key names as `:symbols`; normal strings are fine.
+
+``` yaml
+---
+version: 5
+defaults:
+  datadir: data
+hierarchy:
+  - name: "Secret data: per-node, per-datacenter, common"
+    lookup_key: eyaml_lookup_key # eyaml backend
+    paths:
+      - "secrets/nodes/%{trusted.certname}.eyaml"  # Include explicit file extension
+      - "secrets/location/%{facts.whereami}.eyaml"
+      - "common.eyaml"
+    options:
+      pkcs7_private_key: /etc/puppetlabs/puppet/eyaml/private_key.pkcs7.pem
+      pkcs7_public_key:  /etc/puppetlabs/puppet/eyaml/public_key.pkcs7.pem
+  - name: "Normal data"
+    data_hash: yaml_data # Standard yaml backend
+    paths:
+      - "nodes/%{trusted.certname}.yaml"
+      - "location/%{facts.whereami}/%{facts.group}.yaml"
+      - "groups/%{facts.group}.yaml"
+      - "os/%{facts.os.family}.yaml"
+      - "common.yaml"
+```
+
+Unlike with Hiera 3, there's no default file extension for eyaml files, so you can specify your own file extension directly in the path name.
+
+For more details, see the [hiera.yaml (version 5) reference page](https://docs.puppet.com/puppet/latest/hiera_config_yaml_5.html).
+
+### With Hiera 3
+
+In Hiera 3, hierarchy levels don't have a backend assigned to them, and Hiera loops through the entire hierarchy for each backend. Options for the backend are set globally, in an `:eyaml` config section.
 
 ```yaml
 ---
@@ -193,6 +242,8 @@ Then, edit your hiera yaml files, and insert your encrypted values. The default 
 :eyaml:
     :extension: 'yaml'
 ```
+
+### Data formatting note
 
 *Important Note:*
 The eyaml backend will not parse internally json formatted yaml files, whereas the regular yaml backend will.
