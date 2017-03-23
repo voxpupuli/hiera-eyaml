@@ -25,3 +25,7 @@ Feature: Recrypt
     Then the exit status should be 0
     And I run `eyaml decrypt -e test_input.eyaml`
     Then the output should match /encrypted_string: DEC::PLAINTEXT\[planet of the apes\]\!/
+    And I run `eyaml recrypt -d pkcs7 test_input.eyaml`
+    Then the exit status should be 0
+    And I run `eyaml decrypt -e test_input.eyaml`
+    Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/
