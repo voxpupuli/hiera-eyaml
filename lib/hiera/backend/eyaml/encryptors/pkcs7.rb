@@ -27,6 +27,8 @@ class Hiera
 
           def self.encrypt plaintext
 
+            LoggingHelper::trace 'PKCS7 encrypt'
+
             public_key = self.option :public_key
             raise StandardError, "pkcs7_public_key is not defined" unless public_key
 
@@ -35,10 +37,11 @@ class Hiera
 
             cipher = OpenSSL::Cipher::AES.new(256, :CBC)
             OpenSSL::PKCS7::encrypt([public_key_x509], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
-            
           end
 
           def self.decrypt ciphertext
+
+            LoggingHelper::trace 'PKCS7 decrypt'
 
             public_key = self.option :public_key
             private_key = self.option :private_key
