@@ -80,14 +80,14 @@ This creates a public and private key with default names in the default location
 
 Since the point of using this module is to securely store sensitive information, it's important to store these keys securely.
 If using Hiera with Puppet, Your puppetmaster will need to access these keys to perform decryption when the puppet agent runs on a remote node.
-So for this reason, a suggested location might be to store them in `/etc/puppet/secure/keys` or `/var/lib/puppet/keys` depending on your setup.
+So for this reason, a suggested location might be to store them in `/etc/puppetlabs/puppet/eyaml` or `/var/lib/puppet/keys` depending on your setup.
 
 The permissions for this folder should allow the puppet user (normally 'puppet') execute access to the keys directory, read only access to the keys themselves and restrict everyone else:
 
-    $ chown -R puppet:puppet /etc/puppet/secure/keys
-    $ chmod -R 0500 /etc/puppet/secure/keys
-    $ chmod 0400 /etc/puppet/secure/keys/*.pem
-    $ ls -lha /etc/puppet/secure/keys
+    $ chown -R puppet:puppet /etc/puppetlabs/puppet/eyaml
+    $ chmod -R 0500 /etc/puppetlabs/puppet/eyaml
+    $ chmod 0400 /etc/puppetlabs/puppet/eyaml/*.pem
+    $ ls -lha //etc/puppetlabs/puppet/eyaml
     -r-------- 1 puppet puppet 1.7K Sep 24 16:24 private_key.pkcs7.pem
     -r-------- 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
 
