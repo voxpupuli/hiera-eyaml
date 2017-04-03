@@ -87,7 +87,7 @@ The permissions for this folder should allow the puppet user (normally 'puppet')
     $ chown -R puppet:puppet /etc/puppetlabs/puppet/eyaml
     $ chmod -R 0500 /etc/puppetlabs/puppet/eyaml
     $ chmod 0400 /etc/puppetlabs/puppet/eyaml/*.pem
-    $ ls -lha //etc/puppetlabs/puppet/eyaml
+    $ ls -lha /etc/puppetlabs/puppet/eyaml
     -r-------- 1 puppet puppet 1.7K Sep 24 16:24 private_key.pkcs7.pem
     -r-------- 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
 
