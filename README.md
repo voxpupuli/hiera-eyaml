@@ -3,7 +3,7 @@ Hiera eyaml
 
 [![Build Status](https://travis-ci.org/TomPoulton/hiera-eyaml.png?branch=master)](https://travis-ci.org/TomPoulton/hiera-eyaml)
 
-hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
+hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files
 to be used by Puppet.
 
 -------------------------
@@ -16,8 +16,8 @@ Hopefully this will mean more frequent feature updates and bug fixes!
 Advantages over hiera-gpg
 -------------------------
 
-A few people found that [hiera-gpg](https://github.com/crayfishx/hiera-gpg) just wasn't cutting it for all use cases, 
-one of the best expressed frustrations was 
+A few people found that [hiera-gpg](https://github.com/crayfishx/hiera-gpg) just wasn't cutting it for all use cases,
+one of the best expressed frustrations was
 [written back in June 2013](http://slashdevslashrandom.wordpress.com/2013/06/03/my-griefs-with-hiera-gpg/). So
 [Tom created an initial version](http://themettlemonkey.wordpress.com/2013/07/15/hiera-eyaml-per-value-encrypted-backend-for-hiera-and-puppet/)
 and this was refined into an elegant solution over the following months.
@@ -26,14 +26,14 @@ Unlike `hiera-gpg`, `hiera-eyaml`:
 
  - only encrypts the values (which allows files to be swiftly reviewed without decryption)
  - encrypts the value of each key individually (this means that `git diff` is meaningful)
- - includes a command line tool for encrypting, decrypting, editing and rotating keys (makes it almost as 
+ - includes a command line tool for encrypting, decrypting, editing and rotating keys (makes it almost as
    easy as using clear text files)
- - uses basic asymmetric encryption (PKCS#7) by default (doesn't require any native libraries that need to 
+ - uses basic asymmetric encryption (PKCS#7) by default (doesn't require any native libraries that need to
    be compiled & allows users without the private key to encrypt values that the puppet master can decrypt)
- - has a pluggable encryption framework (e.g. GPG encryption ([hiera-eyaml-gpg](https://github.com/sihil/hiera-eyaml-gpg)) can be used 
+ - has a pluggable encryption framework (e.g. GPG encryption ([hiera-eyaml-gpg](https://github.com/sihil/hiera-eyaml-gpg)) can be used
    if you have the need for multiple keys and easier key rotation)
 
-The Hiera eyaml backend uses yaml formatted files with the .eyaml extension. The encrypted strings are prefixed with the encryption 
+The Hiera eyaml backend uses yaml formatted files with the .eyaml extension. The encrypted strings are prefixed with the encryption
 method, wrapped with ENC[] and placed in an eyaml file. You can mix your plain values in as well or separate them into different files.
 Encrypted values can occur within arrays, hashes, nested arrays and nested hashes.
 
@@ -116,15 +116,15 @@ To test decryption you can also use the eyaml tool if you have both keys
 
 ### Editing eyaml files
 
-Once you have created a few eyaml files, with a mixture of encrypted and non-encrypted properties, 
+Once you have created a few eyaml files, with a mixture of encrypted and non-encrypted properties,
 you can edit the encrypted values in place, using the special edit mode of the eyaml utility. Edit
 mode opens a decrypted copy of the eyaml file in your `$EDITOR` and will encrypt and modified values
 when you exit the editor.
 
     $ eyaml edit filename.eyaml         # Edit an eyaml file in place
 
-When editing eyaml files, you will see that the unencrypted plaintext is marked to allow the eyaml tool to 
-identify each encrypted block, along with the encryption method. This is used to make sure that the block 
+When editing eyaml files, you will see that the unencrypted plaintext is marked to allow the eyaml tool to
+identify each encrypted block, along with the encryption method. This is used to make sure that the block
 is encrypted again only if the clear text value has changed, and is encrypted using the
 original encryption mechanism (see plugable encryption later).
 
@@ -155,7 +155,7 @@ things:
         - nested thing 2.1
 ```
 
-Whilst editing you can delete existing values and add new one using the same format (as below). Note that it is important to 
+Whilst editing you can delete existing values and add new one using the same format (as below). Note that it is important to
 omit the number in brackets for new values. If any duplicate IDs are found then the re-encryption process will be abandoned
 by the eyaml tool.
 
@@ -331,8 +331,8 @@ When editing eyaml files, you will see that the unencrypted plaintext is marked 
 This is a list of available plugins:
 
  - [hiera-eyaml-gpg](https://github.com/sihil/hiera-eyaml-gpg) - Provide GPG encryption
- - [hiera-eyaml-plaintext](https://github.com/gtmtechltd/hiera-eyaml-plaintext) - This is a no-op encryption plugin that 
-   simply base64 encodes the values. It exists as an example plugin to create your own and to do integration tests on 
+ - [hiera-eyaml-plaintext](https://github.com/gtmtechltd/hiera-eyaml-plaintext) - This is a no-op encryption plugin that
+   simply base64 encodes the values. It exists as an example plugin to create your own and to do integration tests on
    hiera-eyaml. **THIS SHOULD NOT BE USED IN PRODUCTION**
  - [hiera-eyaml-twofac](https://github.com/gtmtechltd/hiera-eyaml-twofac) - PKCS7 keypair + AES256 symmetric password for two-factor encryption
    Note that this plugin mandates the user enter a password. It is useful for non-automated scenarios, and is not advised to be used

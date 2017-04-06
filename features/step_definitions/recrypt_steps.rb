@@ -33,4 +33,3 @@ Then /^the tokens at (\d+) should match/ do |index|
   decrypted2 = @tokens_check[index.to_i]
   decrypted1.to_decrypted.should == decrypted2.to_decrypted
 end
-

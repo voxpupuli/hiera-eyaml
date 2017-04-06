@@ -19,15 +19,15 @@ encrypted_block: >
     /mczgCD/pI7usp1XPebnN8CngxHXuUjj5S+6IUpOW6l2JgUeWw==]
 
 encrypted_tabbed_block: >
-	ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAw
-	DQYJKoZIhvcNAQEBBQAEggEAYzeWn3MBLhOs4hokxMCWcDd9VuwCylQRUQ0w
-	KwCObeORw8PJkCDvi5ZIA2YkrvYTT6u3/7KfAiHd0Rg1WLb9et0Mg/Fd3DFF
-	7qhqOGHoQt3+4eKzlcikeR0/Lqrq2vTpqZ2Sw1CZ7Dn+Z4ll95p7lp97rb2J
-	kYTVroLYGWEcsS3JZLL4/l3z0bJbXNKKqJ1aHCAFq+wmWXeb6cDvvyHFg2N/
-	vGPFEQjP7AbWhxHxXDbYIGcU073u5NtE40JXL8SH82iHxqRF8s9g6Dh5cmjg
-	AY2pkBD9e6N78NNx+PAJswsFAV4DOCbXdf2BisyYbM3na35MVfyb6ggDegrE
-	ebOxxDBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBCWeGlYS5cQoX78L6LK
-	/mczgCD/pI7usp1XPebnN8CngxHXuUjj5S+6IUpOW6l2JgUeWw==]
+    ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAw
+    DQYJKoZIhvcNAQEBBQAEggEAYzeWn3MBLhOs4hokxMCWcDd9VuwCylQRUQ0w
+    KwCObeORw8PJkCDvi5ZIA2YkrvYTT6u3/7KfAiHd0Rg1WLb9et0Mg/Fd3DFF
+    7qhqOGHoQt3+4eKzlcikeR0/Lqrq2vTpqZ2Sw1CZ7Dn+Z4ll95p7lp97rb2J
+    kYTVroLYGWEcsS3JZLL4/l3z0bJbXNKKqJ1aHCAFq+wmWXeb6cDvvyHFg2N/
+    vGPFEQjP7AbWhxHxXDbYIGcU073u5NtE40JXL8SH82iHxqRF8s9g6Dh5cmjg
+    AY2pkBD9e6N78NNx+PAJswsFAV4DOCbXdf2BisyYbM3na35MVfyb6ggDegrE
+    ebOxxDBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBCWeGlYS5cQoX78L6LK
+    /mczgCD/pI7usp1XPebnN8CngxHXuUjj5S+6IUpOW6l2JgUeWw==]
 
 encrypted_default_encryption_block: >
     ENC[MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAw
@@ -78,9 +78,9 @@ encrypted_array_with_blocks:
 
 mixed_array_with_blocks:
   - >
-    tomorrow and tomorrow and 
+    tomorrow and tomorrow and
     tomorrow creeps in this petty
-    pace 
+    pace
   - >
     ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAw
     DQYJKoZIhvcNAQEBBQAEggEAj9R0rZ98jseASAthfPUflx1oj2bNmOoCkfv9
@@ -93,8 +93,8 @@ mixed_array_with_blocks:
     VR0ggCDK2aXbmJOBwtj6GyRBYokOEk8EcLuUTDh+GOvYaErUdQ==]
   - >
     when shall we three meet again
-    in thunder lightning or 
-    in rain 
+    in thunder lightning or
+    in rain
 
 mixed_array_with_random:
   - ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAwDQYJKoZIhvcNAQEBBQAEggEApxf3lqPCoidIFp5qvB21dUhlmCHx6JLm7rtt9m6rXwc35VrJVukSCIrjvAz1b/osEU+RdSEQh9WL2E65QHB9aHklWdu4SgR3QvC/TU4uVWQCvfy3g/bpX3D/j13BkSpe99nH0Va0kZpCnaorHEwiv9fvs5VneGIwSKiBIy/5lYdcmmHWPSlE+4G285XwznMKUqh+P/prUTn664oDA8LeRGitENfndmFGLPaoEbgfJLAQQlVPzt/DhR/YiYoG5qHh9445NAVo/MVq13SVzbxCwyg7WVrNTI3KK4Z2/hDiizRHpE/L7ceWfJiXCUQ4ouy2QvWNcNjmGTM0bRZDgep8XDBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBBWzWT0Fn9sVdKPp0BoGWIcgCC0ga55Q3kw9i+D6acq4TOlI1rcdIyS/lwBSe7gixWQdg==]
@@ -110,7 +110,7 @@ mixed_array_with_random:
     Dfs1gCBnNYMzne3ae3pyxKTf2FUaJyZWOgmCPMoWAwgr20Gkvw==]
   - >
     i wondered lonely
-    as a cloud 
+    as a cloud
   - the grand old duke of york
 
 simple_hash:
@@ -122,4 +122,3 @@ encrypted_hash_value:
   key6: ENC[PKCS7,MIIBeQYJKoZIhvcNAQcDoIIBajCCAWYCAQAxggEhMIIBHQIBADAFMAACAQAwDQYJKoZIhvcNAQEBBQAEggEAYXaRRYmZJUtU5zo/yVVVknavcsEouVPbs8gXwRXbVK+anEOyWNaFalbA2n16dIhD9kIVbfJ3MiBnUu3m/CbvyTrt4lVpw5r8TRuxjXh8F8C39k9bZbKOgj+zj8OCMfZYgRR3BTXN5fym6BLFQ1oWIaW9GxMc3671OyymudJE230eT1dk8ivx95giFAHQRasAyBVsf0YRuRmH5GVnOiD9zmTNb0eKTcxdGXdVTgc2rGbOlFhQLOS9CHcEryulAtbKH22foUTnYWugFk8SrRpdyS3HViimnSDOfx1ulRPa9TktXaQwR3YED/z4gbQ0x5Gx30tm0lmTYFCSt2FDFd54eTA8BgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBDy/ITSXoe+hXa6ewQlAAefgBCd16Ly4Z9nsitcdMS2fVvz]
 
 multi_encryption: ENC[PLAINTEXT,amFtbXk=] ENC[PKCS7,MIIBeQYJKoZIhvcNAQcDoIIBajCCAWYCAQAxggEhMIIBHQIBADAFMAACAQAwDQYJKoZIhvcNAQEBBQAEggEAKjKPUtDSN+X/n91bpIjhZHW3eLG9efNNWz7unq8ToxQOIMLrQcr3mj+83E1UNhmRu4TSymSz0kFkkPtjWd2TAkAG3PZvUj6ldFeUhbPMAvTOH/Q23hEZfQdI0GmZHTe6YsYBjJwAxEegXfdg1HKzCY3SBZoMTCEu9yFIJKd3slPxw8zPI6GERTg2ZBRWIckv9W9t7EN7nu9liWR0csRPEYwXUiAZlrgdX2r2Fhx/ZzWZ0tWJ55BiYYzE9U9bvSGZOjZJpWU9wUaOhpAhAx9xaIg48CO5THXMvV+8ss/zEMhYHGfhN56Cr69oQRDXGunYKnWT9tgoDCrxMGIrurtBnDA8BgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBBntvZSBPjinBRMofJhVxEtgBAd3fhzETLtxJm58bnlM3ci]
-

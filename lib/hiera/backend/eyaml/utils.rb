@@ -33,7 +33,7 @@ class Hiera
         end
 
         def self.require_dir classdir
-          num_class_hierarchy_levels = self.to_s.split("::").count - 1 
+          num_class_hierarchy_levels = self.to_s.split("::").count - 1
           root_folder = File.dirname(__FILE__) + "/" + Array.new(num_class_hierarchy_levels).fill("..").join("/")
           class_folder = root_folder + "/" + classdir
           Dir[File.expand_path("#{class_folder}/*.rb")].uniq.each do |file|
@@ -50,7 +50,7 @@ class Hiera
             candidates << candidate.to_s.split('::').last if parent_class.const_get(candidate).class.to_s == "Class"
           end
           candidates
-        end 
+        end
 
         def self.hiera?
           "hiera".eql? Eyaml::Options[:source]

@@ -31,5 +31,3 @@ Feature: eyaml plugins
   Scenario: decrypt using two plugins with default pkcs7
     When I run `eyaml decrypt -n pkcs7 -s 'ENC[PLAINTEXT,cmVkIGxvcnJ5IA==]ENC[MIIBeQYJKoZIhvcNAQcDoIIBajCCAWYCAQAxggEhMIIBHQIBADAFMAACAQAwDQYJKoZIhvcNAQEBBQAEggEAaezXCbx6WspcsKsCkgr9thLEckRppDvQyFloAHqswDNXllHxTSJDYlyoi96YvO96wazffdWO05TMs7HmkqJHkRzoTLGTdXSMz2Mu14QkUDe0zZyB0hl8qTbTcHzrw3ybUEJZEZ45Eenmr5VKuoBina7XJdIAXW8Ps4L/Dj7zsXlUxuyjDWu2WUd2X4gxO3W1SGfntk4OQ41NKXYKPIZLAXWMjC4VFh20tKXFwYhCpAanTBRNWgLBX3Dwg+c/l35EW8OQLfdaOQ30R/DgcoSsAZJveH3xqBv7UOes7vONLSYXTek6yFJBll7EuGbA/Mdw4gxd1qtCBdf48IiPPR0peTA8BgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBCNWcGBqa8joAd0RMRzvx9VgBAf6PsvDZEa5cWdBaoTM/lP]'`
     Then the output should match /^red lorry blue lorry/
-
-

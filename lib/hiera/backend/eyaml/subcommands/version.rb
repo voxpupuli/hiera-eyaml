@@ -32,7 +32,7 @@ class Hiera
             end
 
             nil
-            
+
           end
 
         end

@@ -8,7 +8,7 @@ class Hiera
         @@commands = []
 
         def self.register
-          
+
         end
 
         def self.commands

@@ -19,7 +19,7 @@ class Hiera
           def self.execute
 
             puts <<-EOS
-Welcome to eyaml #{Eyaml::VERSION} 
+Welcome to eyaml #{Eyaml::VERSION}
 
 Usage:
 eyaml subcommand [global-opts] [subcommand-opts]
@@ -33,7 +33,7 @@ Available subcommands:
 For more help on an individual command, use --help on that command
 
 Installed Plugins:
-#{Plugins.plugins.collect {|plugin| 
+#{Plugins.plugins.collect {|plugin|
   "\t" + plugin.name.split("hiera-eyaml-").last
 }.join("\n")}
 EOS

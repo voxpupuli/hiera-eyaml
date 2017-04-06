@@ -13,4 +13,3 @@ Feature: eyaml plugin api
   Scenario: exercise plugin options for a plugin
     When I run `eyaml createkeys -n plaintext --plaintext-diagnostic-message marker12345`
     Then the output should match /Create_keys: marker12345/
-
