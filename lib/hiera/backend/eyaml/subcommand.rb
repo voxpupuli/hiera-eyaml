@@ -34,11 +34,12 @@ class Hiera
           ]
         
         def self.load_config_file
-          config = {}
+          config = { :options => {}, :sources => [] }
           [ "/etc/eyaml/config.yaml", "#{ENV['HOME']}/.eyaml/config.yaml", "#{ENV['EYAML_CONFIG']}" ].each do |config_file|
             begin
               yaml_contents = YAML.load_file(config_file)
-              config.merge! yaml_contents
+              config[:options].merge! yaml_contents
+              config[:sources].push(config_file)
             rescue 
               raise StandardError, "Could not open config file \"#{config_file}\" for reading"
             end if config_file and File.file? config_file
@@ -54,14 +55,14 @@ class Hiera
           config_file = self.load_config_file
           options.map!{ | opt| 
             key_name = "#{opt[:name]}"
-            if config_file.has_key? key_name
-              opt[:default] = config_file[key_name]
+            if config_file[:options].has_key? key_name
+              opt[:default] = config_file[:options][key_name]
               opt
             else
               opt
             end
           }
-          options
+          { :options => options, :sources => config_file[:sources] || [] }
         end
 
         def self.attach_option opt
@@ -83,13 +84,14 @@ class Hiera
         def self.parse
 
           me = self
+          all = self.all_options
 
           options = Trollop::options do
 
             version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
             banner ["eyaml #{me.prettyname}: #{me.description}", me.helptext, "Options:"].compact.join("\n\n")
 
-            me.all_options.each do |available_option|
+            all[:options].each do |available_option|
 
               skeleton = {:description => "",
                           :short => :none}
@@ -121,6 +123,12 @@ class Hiera
 
           if options[:encrypt_method]
             Hiera::Backend::Eyaml.default_encryption_scheme = options[:encrypt_method]
+          end
+
+          if all[:sources]
+            all[:sources].each do |source|
+              LoggingHelper::debug "Loaded config from #{source}"
+            end
           end
 
           options
