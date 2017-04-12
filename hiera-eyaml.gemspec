@@ -19,4 +19,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency('trollop', '~> 2.0')
   gem.add_dependency('highline', '~> 1.6.19')
+  gem.add_dependency('vault', '~> 0.6.0')
 end

@@ -1,4 +1,5 @@
 require 'openssl'
+require 'vault'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/encrypthelper'
 require 'hiera/backend/eyaml/logginghelper'
@@ -12,15 +13,24 @@ class Hiera
         class Pkcs7 < Encryptor
 
           self.options = {
-            :private_key => { :desc => "Path to private key", 
-                              :type => :string, 
-                              :default => "./keys/private_key.pkcs7.pem" },
-            :public_key => { :desc => "Path to public key",  
-                             :type => :string, 
-                             :default => "./keys/public_key.pkcs7.pem" },
-            :subject => { :desc => "Subject to use for certificate when creating keys",
-                          :type => :string,
-                          :default => "/" },
+            :private_key   => { :desc    => "Path to private key",
+                                :type    => :string,
+                                :default => "./keys/private_key.pkcs7.pem" },
+            :public_key    => { :desc    => "Path to public key",
+                                :type    => :string,
+                                :default => "./keys/public_key.pkcs7.pem" },
+            :subject       => { :desc    => "Subject to use for certificate when creating keys",
+                                :type    => :string,
+                                :default => "/" },
+            :vault_appid   => { :desc    => "Vault Application ID",
+                                :type    => :string,
+                                :default => "" },
+            :vault_userid  => { :desc    => "Path to Vault User ID",
+                                :type    => :string,
+                                :default => "" },
+            :vault_address => { :desc    => "Vault Server Address",
+                                :type    => :string,
+                                :default => "" }
           }
 
           self.tag = "PKCS7"
@@ -30,12 +40,12 @@ class Hiera
             public_key = self.option :public_key
             raise StandardError, "pkcs7_public_key is not defined" unless public_key
 
-            public_key_pem = File.read public_key 
+            public_key_pem = File.read public_key
             public_key_x509 = OpenSSL::X509::Certificate.new( public_key_pem )
 
             cipher = OpenSSL::Cipher::AES.new(256, :CBC)
             OpenSSL::PKCS7::encrypt([public_key_x509], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
-            
+
           end
 
           def self.decrypt ciphertext
@@ -44,15 +54,39 @@ class Hiera
             private_key = self.option :private_key
             raise StandardError, "pkcs7_public_key is not defined" unless public_key
             raise StandardError, "pkcs7_private_key is not defined" unless private_key
+            if public_key.start_with?('VAULT') or private_key.start_with?('VAULT') then
+              vault_appid = self.option :vault_appid
+              vault_userid = File.read(self.option :vault_userid)
+              vault_address = self.option :vault_address
 
-            private_key_pem = File.read private_key
-            private_key_rsa = OpenSSL::PKey::RSA.new( private_key_pem )
+              raise StandardError, "Trying to use Vault without Authentication" unless vault_appid and vault_userid and vault_address
 
-            public_key_pem = File.read public_key
-            public_key_x509 = OpenSSL::X509::Certificate.new( public_key_pem )
+              Vault.address = vault_address
+              Vault.auth.app_id vault_appid, vault_userid unless @private_key_rsa
+            end
+
+            if not defined?(@private_key_rsa) then
+              if private_key.start_with?('VAULT') then
+                path, key = private_key.match(/VAULT\[([^:]*):([^\]]*)\]/).captures
+                private_key_pem = Vault.logical.read(path).data[key.to_sym()]
+              else
+                private_key_pem = File.read private_key unless @private_key_rsa
+              end
+            end
+            @private_key_rsa ||= OpenSSL::PKey::RSA.new( private_key_pem )
+
+            if not defined?(@public_key_x509) then
+              if public_key.start_with?('VAULT') then
+                path, key = public_key.match(/VAULT\[([^:]*):([^\]]*)\]/).captures
+                public_key_pem = Vault.logical.read(path).data[key.to_sym()]
+              else
+                public_key_pem = File.read public_key unless @public_key_x509
+              end
+            end
+            @public_key_x509 ||= OpenSSL::X509::Certificate.new( public_key_pem )
 
             pkcs7 = OpenSSL::PKCS7.new( ciphertext )
-            pkcs7.decrypt(private_key_rsa, public_key_x509)
+            pkcs7.decrypt(@private_key_rsa, @public_key_x509)
 
           end
 
