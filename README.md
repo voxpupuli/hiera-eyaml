@@ -353,6 +353,12 @@ access to a DEV branch will be able to read/view the contents of the PRD branch,
 Github has a great guide on removing sensitive data from repos here:
 https://help.github.com/articles/remove-sensitive-data
 
+Private & Public key locations can be defined in ~/.eyaml/config.yaml as such:
+
+```
+private_key: '~/keys/eyaml/private_key.pkcs7.pem'
+public_key: '~/keys/eyaml/public_key.pkcs7.pem'
+```
 
 Troubleshooting
 ---------------
