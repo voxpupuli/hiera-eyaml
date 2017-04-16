@@ -21,6 +21,9 @@ class Hiera
             :subject => { :desc => "Subject to use for certificate when creating keys",
                           :type => :string,
                           :default => "/" },
+            :redacted => { :desc => "Only return '!!!REDACTED!!!' when decrypting",
+                           :type => :bool,
+                           :default => false},
           }
 
           self.tag = "PKCS7"
@@ -42,6 +45,7 @@ class Hiera
 
             public_key = self.option :public_key
             private_key = self.option :private_key
+            redacted = self.option :redacted
             raise StandardError, "pkcs7_public_key is not defined" unless public_key
             raise StandardError, "pkcs7_private_key is not defined" unless private_key
 
@@ -51,8 +55,12 @@ class Hiera
             public_key_pem = File.read public_key
             public_key_x509 = OpenSSL::X509::Certificate.new( public_key_pem )
 
-            pkcs7 = OpenSSL::PKCS7.new( ciphertext )
-            pkcs7.decrypt(private_key_rsa, public_key_x509)
+            if redacted
+              "!!!REDACTED!!!"
+            else
+              pkcs7 = OpenSSL::PKCS7.new( ciphertext )
+              pkcs7.decrypt(private_key_rsa, public_key_x509)
+            end
 
           end
 
