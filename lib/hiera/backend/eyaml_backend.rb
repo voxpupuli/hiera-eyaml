@@ -15,6 +15,7 @@ class Hiera
       def initialize(cache = nil)
         debug("Hiera eYAML backend starting")
 
+        @decrypted_cache = {}
         @cache     = cache || Filecache.new
         @extension = Config[:eyaml][:extension] || "eyaml"
       end
@@ -128,8 +129,11 @@ class Hiera
       end
 
       def parse_string(data, scope, extra_data={})
-        decrypted_data = decrypt(data)
-        Backend.parse_string(decrypted_data, scope, extra_data)
+        if not @decrypted_cache.include?(data)
+          debug("Data not in decrypted cache. Populating...")
+          @decrypted_cache[data] = decrypt(data)
+        end
+        Backend.parse_string(@decrypted_cache[data], scope, extra_data)
       end
     end
   end
