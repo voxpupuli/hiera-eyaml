@@ -10,7 +10,12 @@ class Hiera
         class Recrypt < Subcommand
 
           def self.options
-            []
+            [
+                 {:name          => :change_encryption,
+                  :description   => "Specify the new encryption method that should be used for the file",
+                  :short         => 'd',
+                  :default       => "pkcs7"}
+             ]
           end
 
           def self.description
@@ -26,6 +31,7 @@ class Hiera
             options[:source] = :eyaml
             options[:eyaml] = ARGV.shift
             options[:input_data] = File.read options[:eyaml]
+            @change_encryption = options[:change_encryption]
             options
           end
 
@@ -38,7 +44,7 @@ class Hiera
             decrypted_parser = Parser::ParserFactory.decrypted_parser
             edited_tokens = decrypted_parser.parse(decrypted_input)
 
-            encrypted_output = edited_tokens.map{ |t| t.to_encrypted }.join
+            encrypted_output = edited_tokens.map{ |t| t.to_encrypted({:change_encryption => @change_encryption}) }.join
 
             filename = Eyaml::Options[:eyaml]
             File.open("#{filename}", 'w') { |file|

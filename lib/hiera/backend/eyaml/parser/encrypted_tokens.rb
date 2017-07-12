@@ -2,6 +2,7 @@ require 'hiera/backend/eyaml/parser/token'
 require 'hiera/backend/eyaml/utils'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml'
+require 'base64'
 
 
 class Hiera
@@ -36,6 +37,11 @@ class Hiera
             label = args[:label]
             label_string = label.nil? ? '' : "#{label}: "
             format = args[:format].nil? ? @format : args[:format]
+            encryption_method = args[:change_encryption]
+            if encryption_method != nil
+              @encryptor = Encryptor.find encryption_method
+              @cipher = Base64.encode64(@encryptor.encrypt @plain_text).strip
+            end
             case format
               when :block
                 # strip any white space
