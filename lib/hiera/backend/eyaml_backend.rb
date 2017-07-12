@@ -129,11 +129,20 @@ class Hiera
       end
 
       def parse_string(data, scope, extra_data={})
-        if not @decrypted_cache.include?(data)
-          debug("Data not in decrypted cache. Populating...")
-          @decrypted_cache[data] = decrypt(data)
+        if Eyaml::Options[:cache_decrypted]
+          if not @decrypted_cache.include?(data)
+            decrypted_data = decrypt(data)
+            debug("Adding data to decrypted cache")
+            @decrypted_cache[data] = decrypted_data
+          else
+            debug("Retrieving data from decrypted cache")
+            decrypted_data = @decrypted_cache[data]
+          end
+        else
+          decrypted_data = decrypt(data)
         end
-        Backend.parse_string(@decrypted_cache[data], scope, extra_data)
+
+        Backend.parse_string(decrypted_data, scope, extra_data)
       end
     end
   end
