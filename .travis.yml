@@ -22,3 +22,7 @@ matrix:
       env: PUPPET_VERSION="~> 3.7.0"
     - rvm: 2.3.1
       env: PUPPET_VERSION="~> 3.8.0"
+branches:
+  only:
+    - master
+    - /^v\d/

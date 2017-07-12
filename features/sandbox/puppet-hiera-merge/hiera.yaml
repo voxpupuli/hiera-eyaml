@@ -11,7 +11,7 @@
   :datadir: ./puppet-hiera-merge
 
 :logger: console
-:merge_behavior: :deeper
+:merge_behavior: deeper
 :eyaml:
   :datadir: ./puppet-hiera-merge
   :pkcs7_private_key: ./keys/private_key.pkcs7.pem

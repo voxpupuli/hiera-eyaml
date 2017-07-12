@@ -6,7 +6,7 @@ Feature: eyaml hiera integration
 
   Scenario: verify puppet with hiera can use hiera-eyaml to decrypt data
     When I run `rm -f /tmp/eyaml_puppettest.* 2>/dev/null`
-    When I run `puppet apply --confdir ./puppet --node_name_value localhost puppet/manifests/init.pp`
+    When I run `puppet apply --disable_warnings deprecations --confdir ./puppet --node_name_value localhost puppet/manifests/init.pp`
     Then the output should contain "/tmp/eyaml_puppettest"
     Then the file "/tmp/eyaml_puppettest.1" should match /^good night$/
     Then the file "/tmp/eyaml_puppettest.2" should match /^and good luck$/
@@ -18,7 +18,7 @@ Feature: eyaml hiera integration
   Scenario: verify puppet and facter for correct hash merge with incorrect fact
     Given I set FACTER_fact to "not-existcity"
     When I run `rm -f /tmp/eyaml_puppettest.* 2>/dev/null`
-    When I run `puppet apply --confdir ./puppet-hiera-merge --node_name_value localhost puppet-hiera-merge/manifests/init.pp`
+    When I run `puppet apply --disable_warnings deprecations --confdir ./puppet-hiera-merge --node_name_value localhost puppet-hiera-merge/manifests/init.pp`
     Then the output should contain "/tmp/eyaml_puppettest"
     Then the file "/tmp/eyaml_puppettest.1" should match /^good night$/
     Then the file "/tmp/eyaml_puppettest.2" should match /^great to see you$/
@@ -29,7 +29,7 @@ Feature: eyaml hiera integration
   Scenario: verify puppet and facter for correct hash merge
     Given I set FACTER_fact to "city"
     When I run `rm -f /tmp/eyaml_puppettest.* 2>/dev/null`
-    When I run `puppet apply --confdir ./puppet-hiera-merge --node_name_value localhost puppet-hiera-merge/manifests/init.pp`
+    When I run `puppet apply --disable_warnings deprecations --confdir ./puppet-hiera-merge --node_name_value localhost puppet-hiera-merge/manifests/init.pp`
     Then the output should contain "/tmp/eyaml_puppettest"
     Then the file "/tmp/eyaml_puppettest.1" should match /^rise and shine$/
     Then the file "/tmp/eyaml_puppettest.2" should match /^break a leg$/

@@ -9,3 +9,10 @@ tmp/
 .ruby-version
 .ruby-gemset
 Gemfile.lock
+.*.sw?
+vendor/
+.bundle/
+features/sandbox/puppet-hiera-merge/reports
+features/sandbox/puppet-hiera-merge/state
+features/sandbox/puppet/reports
+features/sandbox/puppet/state
