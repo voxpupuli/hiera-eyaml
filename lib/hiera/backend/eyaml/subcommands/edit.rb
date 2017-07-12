@@ -3,6 +3,7 @@ require 'hiera/backend/eyaml/highlinehelper'
 require 'hiera/backend/eyaml/options'
 require 'hiera/backend/eyaml/parser/parser'
 require 'hiera/backend/eyaml/subcommand'
+require 'hiera/backend/eyaml/parser/encrypted_tokens'
 
 class Hiera
   module Backend
@@ -69,6 +70,8 @@ eos
 
           def self.execute
             editor = EditHelper.find_editor
+
+            Parser::EncToken.set_encrypt_unchanged(false)
 
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]

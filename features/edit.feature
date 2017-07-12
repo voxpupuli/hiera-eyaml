@@ -116,6 +116,18 @@ Feature: eyaml editing
     When I run `eyaml edit test_edit.eyaml`
     Then the stderr should contain "No changes detected"
 
+  Scenario: not modifying the plaintext should result in no encryption
+    Given my EDITOR is set to "sed -i.bak s/simple_array/test_array/g"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit -t test_input.eyaml`
+    Then the output should not contain "PKCS7 encrypt"
+
+  Scenario: modifying the plaintext should result in an encryption
+    Given my EDITOR is set to "sed -i.bak s/value6/value7/g"
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    When I run `eyaml edit -t test_input.eyaml`
+    Then the output should contain "PKCS7 encrypt"
+
   Scenario: editing but not modifying a eyaml file with --no-preamble should be detected
     Given my EDITOR is set to "/usr/bin/env true"
     When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`

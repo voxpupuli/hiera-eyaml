@@ -10,6 +10,8 @@ class Hiera
     module Eyaml
       module Parser
         class EncToken < Token
+          @@tokens_map = Hash.new()
+          @@encrypt_unchanged = true
           attr_reader :format, :cipher, :encryptor, :indentation, :plain_text, :id
           def self.encrypted_value(format, encryption_scheme, cipher, match, indentation = '')
             decryptor = Encryptor.find encryption_scheme
@@ -21,6 +23,23 @@ class Hiera
             cipher = encryptor.encode( encryptor.encrypt plain_text )
             id_number = id.nil? ? nil : id.gsub(/\(|\)/, "").to_i
             EncToken.new(format, plain_text, encryptor, cipher, match, indentation, id_number)
+          end
+          def self.plain_text_value(format, plain_text, encryption_scheme, match, id, indentation = '')
+            encryptor = Encryptor.find encryption_scheme
+            id_number = id.gsub(/\(|\)/,"").to_i unless id.nil?
+            EncToken.new(format, plain_text, encryptor, "", match, indentation, id_number)
+          end
+
+          def self.tokens_map
+            return @@tokens_map
+          end
+
+          def self.set_encrypt_unchanged(encrypt_unchanged)
+            @@encrypt_unchanged = encrypt_unchanged
+          end
+
+          def self.encrypt_unchanged
+            return @@encrypt_unchanged
           end
 
           def initialize(format, plain_text, encryptor, cipher, match = '', indentation = '', id = nil)
@@ -63,6 +82,10 @@ class Hiera
             label_string = label.nil? ? '' : "#{label}: "
             format = args[:format].nil? ? @format : args[:format]
             index = args[:index].nil? ? '' : "(#{args[:index]})"
+            if @@encrypt_unchanged == false
+              EncToken.tokens_map[index] = @plain_text
+            end
+
             case format
               when :block
                 chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
@@ -123,6 +146,13 @@ class Hiera
           end
           def create_token(string)
             md = @regex.match(string)
+            if (EncToken.encrypt_unchanged == false)
+              unless md[1].nil?
+                if md[3] == EncToken.tokens_map[md[1]]
+                  return EncToken.plain_text_value(:string, md[3], md[2], string, md[1])
+                end
+              end
+            end
             EncToken.decrypted_value(:string, md[3], md[2], string, md[1])
           end
         end
@@ -133,6 +163,13 @@ class Hiera
           end
           def create_token(string)
             md = @regex.match(string)
+            if (EncToken.encrypt_unchanged == false)
+              unless md[2].nil?
+                if md[4] == EncToken.tokens_map[md[2]]
+                  return EncToken.plain_text_value(:string, md[4], md[3], string, md[2])
+                end
+              end
+            end
             EncToken.decrypted_value(:block, md[4], md[3], string, md[2], md[1])
             EncToken.decrypted_value(:block, md[4], md[3], string, md[2], md[1])
           end
