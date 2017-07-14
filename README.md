@@ -234,6 +234,9 @@ In Hiera 3, hierarchy levels don't have a backend assigned to them, and Hiera lo
     # If using the pkcs7 encryptor (default)
     :pkcs7_private_key: /path/to/private_key.pkcs7.pem
     :pkcs7_public_key:  /path/to/public_key.pkcs7.pem
+
+    # Optionally cache decrypted data (default: false)
+    :cache_decrypted: false
 ```
 
 Then, edit your hiera yaml files, and insert your encrypted values. The default eyaml file extension is .eyaml, however this can be configured in the :eyaml block to set :extension,
