@@ -342,7 +342,7 @@ This is a list of available plugins:
    in conjunction with puppet, as it requires entry of a password over a terminal.
  - [hiera-eyaml-kms](https://github.com/adenot/hiera-eyaml-kms) - Encryption using AWS Key Management Service (KMS)
  
-How-To's:
+### How-To's:
 
  - [How to use different Hiera/Eyaml keys for different environments using the AWS Parameter Store to store the encryption keys for Hiera/Eyaml](https://gist.github.com/FransUrbo/88b26033cb513a8aa569bd5392a427b1).
 
