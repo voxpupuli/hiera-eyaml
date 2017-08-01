@@ -1,7 +1,7 @@
 Hiera eyaml
 ===========
 
-[![Build Status](https://travis-ci.org/TomPoulton/hiera-eyaml.png?branch=master)](https://travis-ci.org/TomPoulton/hiera-eyaml)
+[![Build Status](https://travis-ci.org/voxpupuli/hiera-eyaml.png?branch=master)](https://travis-ci.org/voxpupuli/hiera-eyaml)
 
 hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
 to be used by Puppet.
@@ -341,7 +341,10 @@ This is a list of available plugins:
    Note that this plugin mandates the user enter a password. It is useful for non-automated scenarios, and is not advised to be used
    in conjunction with puppet, as it requires entry of a password over a terminal.
  - [hiera-eyaml-kms](https://github.com/adenot/hiera-eyaml-kms) - Encryption using AWS Key Management Service (KMS)
+ 
+How-To's:
 
+ - [How to use different Hiera/Eyaml keys for different environments using the AWS Parameter Store to store the encryption keys for Hiera/Eyaml](https://gist.github.com/FransUrbo/88b26033cb513a8aa569bd5392a427b1).
 
 Notes
 -----
