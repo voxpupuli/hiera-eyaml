@@ -26,7 +26,7 @@ class Hiera
           end
 
           def self.prefix
-            '#|'
+            '# |'
           end
 
           def self.preamble
@@ -35,8 +35,8 @@ class Hiera
             }).collect{|name| Encryptor.find(name).tag}
 
             preamble = <<-eos
-This is eyaml edit mode. This text (lines starting with #{self.prefix} at the top of the
-file) will be removed when you save and exit.
+This is eyaml edit mode. This text (lines starting with #{self.prefix} at the top of
+the file) will be removed when you save and exit.
  - To edit encrypted values, change the content of the DEC(<num>)::PKCS7[]!
    block#{(tags.size>1) ? " (or #{tags.drop(1).collect {|tag| "DEC(<num>)::#{tag}[]!" }.join(' or ')})." : '.' }
    WARNING: DO NOT change the number in the parentheses.
