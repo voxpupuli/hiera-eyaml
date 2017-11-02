@@ -26,3 +26,5 @@ branches:
   only:
     - master
     - /^v\d/
+before_install:
+  - gem install bundler
