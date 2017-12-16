@@ -10,18 +10,10 @@ class test::run {
     content => hiera("encrypted_string"),
   }
 
-  # This is ugly, but cross-compatibility between early puppet 3 manifests and puppet 4
-  # manifests is basically non-existent.  Assuming we support both...
-  if ($::puppetversion =~ /^4/){
-    file { "/tmp/eyaml_puppettest.3":
-      ensure => present,
-      content => inline_template("<%= scope.compiler.loaders.private_environment_loader.load(:function,'hiera').call(scope, 'encrypted_string')  %>"),
-    }
-  } else {
-    file { "/tmp/eyaml_puppettest.3":
-      ensure => present,
-      content => inline_template("<%= scope.function_hiera(['encrypted_string'])  %>"),
-    }
+  # Ugly hack to call hiera() from puppet >= 4
+  file { "/tmp/eyaml_puppettest.3":
+    ensure => present,
+    content => inline_template("<%= scope.compiler.loaders.private_environment_loader.load(:function,'hiera').call(scope, 'encrypted_string')  %>"),
   }
 
   file { "/tmp/eyaml_puppettest.4":
