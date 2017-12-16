@@ -171,7 +171,6 @@ class Hiera
               end
             end
             EncToken.decrypted_value(:block, md[4], md[3], string, md[2], md[1])
-            EncToken.decrypted_value(:block, md[4], md[3], string, md[2], md[1])
           end
         end
 
