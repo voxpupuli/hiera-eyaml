@@ -61,11 +61,18 @@ class Hiera
                 decrypted = tokens.map{ |token| token.to_decrypted }
                 decrypted.join
               else
+                yamled = false
                 decrypted = tokens.map{ |token|
                   case token.class.name
                     when /::EncToken$/
-                      token.plain_text
+                      if (yamled) then
+                        yamled = false
+                        token.to_plain_text.match(/[\r\n]/) ? "|\n  " + token.to_plain_text.gsub(/([\r\n]+)/, '\1  ') : token.to_plain_text
+                      else
+                        token.to_plain_text
+                      end
                     else
+                      yamled = true
                       token.match
                   end
                 }
