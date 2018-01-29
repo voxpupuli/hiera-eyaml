@@ -139,7 +139,7 @@ Feature: eyaml editing
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
     When I run `eyaml edit --encrypt-only test_input.eyaml`
     Then the output should not match /DEC\(\d+\)/
-    And the output should match /encrypted_string: ENC\[PKCS7,[^]]+\]/
+    And the output should match /encrypted_string: ENC\[PKCS7,[^\]]+\]/
 
   Scenario: encrypt-only mode should encrypt new values
     Given my EDITOR is set to "./append.sh test_new_values.yaml"
