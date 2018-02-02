@@ -15,9 +15,9 @@ class Hiera
           def self.options
             [{ :name => :no_preamble,
                :description => "Don't prefix edit sessions with the informative preamble" },
-             {:name => :encrypt_only,
-              :description => "Don't try to decrypt before editing.",
-              :short => 'y'}
+             {:name => :no_decrypt,
+              :short => "-d",
+              :description => "Do not decrypt existing encrypted content. New content marked properly will be encrypted."}
             ]
           end
 
@@ -77,7 +77,8 @@ eos
 
             Parser::EncToken.set_encrypt_unchanged(false)
 
-            if Eyaml::Options[:encrypt_only]
+            # The 'no_' option has special handling - bypass that and just check if a flag was set.
+            if Eyaml::Options[:no_decrypt_given]
               decrypted_input = Eyaml::Options[:input_data]
               decrypted_file_content = Eyaml::Options[:no_preamble] ? decrypted_input : (self.preamble + decrypted_input)
             else

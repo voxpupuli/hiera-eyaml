@@ -134,32 +134,32 @@ Feature: eyaml editing
     When I run `eyaml edit --no-preamble test_edit.eyaml`
     Then the stderr should contain "No changes detected"
 
-  Scenario: encrypt-only mode should not decrypt input
+  Scenario: no-decrypt mode should not decrypt input
     Given my EDITOR is set to "/bin/cat"
     When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
-    When I run `eyaml edit --encrypt-only test_input.eyaml`
+    When I run `eyaml edit --no-decrypt test_input.eyaml`
     Then the output should not match /DEC\(\d+\)/
     And the output should match /encrypted_string: ENC\[PKCS7,[^\]]+\]/
 
-  Scenario: encrypt-only mode should encrypt new values
+  Scenario: no-decrypt mode should encrypt new values
     Given my EDITOR is set to "./append.sh test_new_values.yaml"
     When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
-    When I run `eyaml edit -y test_edit.eyaml`
+    When I run `eyaml edit -d test_edit.eyaml`
     When I run `eyaml decrypt -e test_edit.eyaml`
     Then the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
 
-  Scenario: encrypt-only mode should not modify existing values
+  Scenario: no-decrypt mode should not modify existing values
     Given my EDITOR is set to "./append.sh test_new_values.yaml"
     When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
-    When I run `eyaml edit -y test_edit.eyaml`
+    When I run `eyaml edit -d test_edit.eyaml`
     When I run `cat test_edit.eyaml`
     Then the output should contain "encrypted_string: ENC[PKCS7,MIIBiQYJKoZIhvcNAQcDoIIBejCCAXYCAQAxggEhMIIBHQIBADAFMAACAQAwDQYJKoZIhvcNAQEBBQAEggEAgld+rftjW8WmMwTJLX/3Kk9hQv9ZUufsieijxhnCo3gtR/6xaKdMC4wpYM9Eck7FFdmjz2XnJK9o5rlvjW5ZBH3u2A3tphs6cgy7HzsfrsJvw1Mc+CLSNL35MVi/YvNCxezn+rXn28NW8NntByoLTzZnd6iGxSBk4S7Z7XwvdQWuUjXy0muEeAUYtS/eppNZYdyeMpzE9oHmfMM+zwdOYzc/nfwvnoLHGP+sv6KmnzCyNtqyrdvCIn+m+ljPWpGvj410Q52Xili1Scgi+ALJf4xiEnD5c5YjEkYY8uUe4etCDYZ/aXp9RGvZiHD8Le6jz34fcWbLZlQacCfgcyY8AzBMBgkqhkiG9w0BBwEwHQYJYIZIAWUDBAEqBBD4CRz8QLvbtgRx/NTxEnpfgCBLQD1ei8KAcd0LTT7sezZPt6LQnLxPuwx5StflI5xOgA==]"
 
-  Scenario: encrypt-only mode should succeed even if keyfile is unreadable
+  Scenario: no-decrypt mode should succeed even if keyfile is unreadable
     Given my EDITOR is set to "/bin/cat"
     When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
-    When I run `eyaml edit -y --pkcs7-private-key=not_a_keyfile test_edit.eyaml`
+    When I run `eyaml edit -d --pkcs7-private-key=not_a_keyfile test_edit.eyaml`
     Then the exit status should be 0
     And the stderr should not contain "No such file or directory"
     And the output should not match /DEC\(\d+\)/
