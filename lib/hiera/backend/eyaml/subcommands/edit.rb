@@ -14,7 +14,11 @@ class Hiera
 
           def self.options
             [{ :name => :no_preamble,
-               :description => "Don't prefix edit sessions with the informative preamble" }]
+               :description => "Don't prefix edit sessions with the informative preamble" },
+             {:name => :no_decrypt,
+              :short => "-d",
+              :description => "Do not decrypt existing encrypted content. New content marked properly will be encrypted."}
+            ]
           end
 
           def self.description
@@ -73,10 +77,16 @@ eos
 
             Parser::EncToken.set_encrypt_unchanged(false)
 
-            encrypted_parser = Parser::ParserFactory.encrypted_parser
-            tokens = encrypted_parser.parse Eyaml::Options[:input_data]
-            decrypted_input = tokens.each_with_index.to_a.map{|(t,index)| t.to_decrypted :index => index}.join
-            decrypted_file_content = Eyaml::Options[:no_preamble] ? decrypted_input : (self.preamble + decrypted_input)
+            # The 'no_' option has special handling - bypass that and just check if a flag was set.
+            if Eyaml::Options[:no_decrypt_given]
+              decrypted_input = Eyaml::Options[:input_data]
+              decrypted_file_content = Eyaml::Options[:no_preamble] ? decrypted_input : (self.preamble + decrypted_input)
+            else
+              encrypted_parser = Parser::ParserFactory.encrypted_parser
+              tokens = encrypted_parser.parse Eyaml::Options[:input_data]
+              decrypted_input = tokens.each_with_index.to_a.map{|(t,index)| t.to_decrypted :index => index}.join
+              decrypted_file_content = Eyaml::Options[:no_preamble] ? decrypted_input : (self.preamble + decrypted_input)
+            end
 
             begin
               decrypted_file = EditHelper.write_tempfile decrypted_file_content unless decrypted_file
