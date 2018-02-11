@@ -92,6 +92,9 @@ The permissions for this folder should allow the puppet user (normally 'puppet')
     -r-------- 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
 
 
+Basic usage
+-----------
+
 ### Encryption
 
 To encrypt something, you only need the public_key, so distribute that to people creating hiera properties
@@ -114,12 +117,13 @@ To test decryption you can also use the eyaml tool if you have both keys
     $ eyaml decrypt -f filename               # Decrypt a file
     $ eyaml decrypt -s 'ENC[PKCS7,.....]'     # Decrypt a string
 
-### Editing eyaml files
+### Editing files with a mixture of eyaml-encrypted and plain-text content
 
-Once you have created a few eyaml files, with a mixture of encrypted and non-encrypted properties, 
-you can edit the encrypted values in place, using the special edit mode of the eyaml utility. Edit
-mode opens a decrypted copy of the eyaml file in your `$EDITOR` and will encrypt and modified values
-when you exit the editor.
+This is, perhaps, the most common use of eyaml where you have created a few
+eyaml files, with a mixture of encrypted and non-encrypted properties, you can
+edit the encrypted values in place, using the special edit mode of the eyaml
+utility. Edit mode opens a decrypted copy of the eyaml file in your `$EDITOR`
+and will encrypt and modified values when you exit the editor.
 
     $ eyaml edit filename.eyaml         # Edit an eyaml file in place
 
@@ -160,6 +164,24 @@ omit the number in brackets for new values. If any duplicate IDs are found then 
 by the eyaml tool.
 
     some_new_key: DEC::PKCS7[a new value to encrypt]!
+
+### Encrypting an entire file
+
+While not as common, sometimes you need to encrypt an entire file.  Maybe this
+file is binary data that isn't meant for loading into an editor.  One example
+might be a Kerberos keytab file.  No problem!  Just encrypt the entire file:
+
+    $ eyaml encrypt -f filename
+
+As with encrypting short strings on the command-line, the encrypted equivalent
+will be sent to stdout as an ASCII text string and thus now plays nice with
+your editor.  Notice that the file itself, however, remains unchanged.  The
+output is presented in two blocks: once as a single, long string and once in
+a nice line-wrapped form.  Copy the one of your preference, starting with the
+`ENC[` and ending at the matching `]`.  Paste this into your Puppet or Hiera
+file just like any other eyaml string and your done.  If the file is rather
+large, you may wish to use a helper like `xclip` to copy the stdout directly to
+your clipboard.
 
 
 Hiera
