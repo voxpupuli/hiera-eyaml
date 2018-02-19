@@ -24,6 +24,9 @@ class Hiera
             :keysize => { :desc => "Key size used for encryption",
                           :type => :integer,
                           :default => 2048 },
+            :digest  => { :desc => "Hash function used for PKCS7",
+                          :type => :string,
+                          :default => "SHA256"},
           }
 
           self.tag = "PKCS7"
@@ -71,6 +74,7 @@ class Hiera
             private_key = self.option :private_key
             subject = self.option :subject
             keysize = self.option :keysize
+            digest = self.option :digest
 
             key = OpenSSL::PKey::RSA.new(keysize)
             EncryptHelper.ensure_key_dir_exists private_key
@@ -98,7 +102,7 @@ class Hiera
             cert.add_extension ef.create_extension("authorityKeyIdentifier",
                                                    "keyid:always,issuer:always")
 
-            cert.sign key, OpenSSL::Digest::SHA1.new
+            cert.sign key, OpenSSL::Digest.new(digest)
 
             EncryptHelper.ensure_key_dir_exists public_key
             EncryptHelper.write_important_file :filename => public_key, :content => cert.to_pem
