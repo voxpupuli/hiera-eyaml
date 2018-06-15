@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # ToDo: Remove as 'rake install' task will build and install the latest gem?
 
