@@ -86,7 +86,7 @@ class Hiera
           me = self
           all = self.all_options
 
-          options = Trollop::options do
+          options = Optimist::options do
 
             version "Hiera-eyaml version " + Hiera::Backend::Eyaml::VERSION.to_s
             banner ["eyaml #{me.prettyname}: #{me.description}", me.helptext, "Options:"].compact.join("\n\n")
