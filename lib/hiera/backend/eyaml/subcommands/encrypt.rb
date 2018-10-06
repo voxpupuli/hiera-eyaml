@@ -47,8 +47,8 @@ class Hiera
 
           def self.validate options
             sources = [:password, :string, :file, :stdin, :eyaml].collect {|x| x if options[x]}.compact
-            Trollop::die "You must specify a source" if sources.count.zero?
-            Trollop::die "You can only specify one of (#{sources.join(', ')})" if sources.count > 1
+            Optimist::die "You must specify a source" if sources.count.zero?
+            Optimist::die "You can only specify one of (#{sources.join(', ')})" if sources.count > 1
             options[:source] = sources.first
 
             options[:input_data] = case options[:source]

@@ -1,4 +1,4 @@
-require 'trollop'
+require 'optimist'
 require 'hiera/backend/eyaml'
 require 'hiera/backend/eyaml/logginghelper'
 require 'hiera/backend/eyaml/utils'
