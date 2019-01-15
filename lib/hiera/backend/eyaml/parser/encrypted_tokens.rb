@@ -44,7 +44,7 @@ class Hiera
 
           def initialize(format, plain_text, encryptor, cipher, match = '', indentation = '', id = nil)
             @format = format
-            @plain_text = plain_text
+            @plain_text = Utils.convert_to_utf_8( plain_text )
             @encryptor = encryptor
             @cipher = cipher
             @indentation = indentation
