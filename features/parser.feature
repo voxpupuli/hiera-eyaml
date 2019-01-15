@@ -20,6 +20,7 @@ Feature: Parser
     Then token 2 should be a EncToken
     Then token 2 should start with "ENC[PKCS7,MIIBiQYJKoZIhvcNAQ"
     Then token 2 should decrypt to start with "planet of the apes"
+    Then token 2 should decrypt to a string with UTF-8 encodings
 
   Scenario: Parse decrypted yaml
     Given I make a parser instance with the DEC regexs

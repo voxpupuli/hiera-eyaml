@@ -42,6 +42,11 @@ Then /^token (\d+) should decrypt to start with "(.*)"$/ do |index, plain|
   token.plain_text.should =~ /^#{Regexp.escape(plain)}/
 end
 
+Then /^token (\d+) should decrypt to a string with UTF-8 encodings$/ do |index|
+  token = @tokens[index.to_i - 1]
+  token.plain_text.encoding.to_s.should == 'UTF-8'
+end
+
 And /^map it to index decrypted values$/ do
   @decrypted = @tokens.each_with_index.to_a.map{ |(t, index)|
     t.to_decrypted :index => index

@@ -60,12 +60,9 @@ class Hiera
           orig_encoding = string.encoding
           return string if orig_encoding == Encoding::UTF_8
 
-          string_copy = string.dup
-          # Attempt to use the default_external encoding as the starting point for Binary encoding.
-          string_copy.force_encoding(Encoding.default_external) if orig_encoding == Encoding::BINARY
-          return string_copy.encode(Encoding::UTF_8)
+          return string.dup.force_encoding(Encoding::UTF_8)
         rescue EncodingError => detail
-          warn "Unable to encode to \"Encoding::UTF_8\" using the origional \"#{orig_encoding}\""
+          warn "Unable to encode to \"Encoding::UTF_8\" using the original \"#{orig_encoding}\""
           return string
         end
       end
