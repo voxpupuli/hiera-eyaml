@@ -50,12 +50,21 @@ class Hiera
             candidates << candidate.to_s.split('::').last if parent_class.const_get(candidate).class.to_s == "Class"
           end
           candidates
-        end 
+        end
 
         def self.hiera?
           "hiera".eql? Eyaml::Options[:source]
         end
 
+        def self.convert_to_utf_8 string
+          orig_encoding = string.encoding
+          return string if orig_encoding == Encoding::UTF_8
+
+          return string.dup.force_encoding(Encoding::UTF_8)
+        rescue EncodingError => detail
+          warn "Unable to encode to \"Encoding::UTF_8\" using the original \"#{orig_encoding}\""
+          return string
+        end
       end
     end
   end

@@ -6,7 +6,7 @@ sudo: false
 before_install:
   - bundle -v
   - rm Gemfile.lock || true
-  - gem update --system
+  - gem update --system $RUBYGEMS_VERSION
   - gem update bundler
   - gem --version
   - bundle -v
@@ -19,7 +19,7 @@ script:
 matrix:
   include:
     - rvm: 2.1.9
-      env: PUPPET_VERSION="~> 4.0"
+      env: PUPPET_VERSION="~> 4.0" RUBYGEMS_VERSION=2.7.8
     - rvm: 2.4.2
       env: PUPPET_VERSION="~> 5.0"
 notifications:
