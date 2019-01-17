@@ -33,3 +33,11 @@ branches:
   only:
     - master
     - /^v\d/
+deploy:
+  provider: rubygems
+  api_key:
+    secure: 'W6a8A3KfxNydnbK4qhpL4S4KBUnadw8eGr1s8vqeOc8gXlc/qkj/DET9jWpgaEsdnEN/ALJL0WEksYJCHDpdeJv1qKaidFg5dC5l+qZ5gdVHRoKKVFkVlt8WDHe5UdP+bI2vUHWQ/1c04P92+jU9SJ0afTU1xUFn4d3AWCgwmdk='
+  gem: hiera-eyaml
+  on:
+    tags: true
+    repo: voxpupuli/hiera-eyaml

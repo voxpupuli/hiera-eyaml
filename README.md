@@ -2,6 +2,8 @@ Hiera eyaml
 ===========
 
 [![Build Status](https://travis-ci.org/voxpupuli/hiera-eyaml.png?branch=master)](https://travis-ci.org/voxpupuli/hiera-eyaml)
+[![Gem Version](https://img.shields.io/gem/v/hiera-eyaml.svg)](https://rubygems.org/gems/hiera-eyaml)
+[![Gem Downloads](https://img.shields.io/gem/dt/hiera-eyaml.svg)](https://rubygems.org/gems/hiera-eyaml)
 
 hiera-eyaml is a backend for Hiera that provides per-value encryption of sensitive data within yaml files 
 to be used by Puppet.
