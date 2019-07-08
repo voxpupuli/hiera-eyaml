@@ -42,13 +42,9 @@ class Hiera
         def self.execute
 
           executor = Eyaml::Options[:executor]
-          begin
-            result = executor.execute
-            puts result unless result.nil?
-          rescue Exception => e
-            LoggingHelper.warn e.message
-            LoggingHelper.debug e.backtrace.join("\n")
-          end
+
+          result = executor.execute
+          puts result unless result.nil?
 
         end
 
