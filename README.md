@@ -366,6 +366,8 @@ This is a list of available plugins:
    in conjunction with puppet, as it requires entry of a password over a terminal.
  - [hiera-eyaml-kms](https://github.com/adenot/hiera-eyaml-kms) - Encryption using AWS Key Management Service (KMS)
  - [hiera-eyaml-gkms](https://github.com/craigwatson/hiera-eyaml-gkms) - Encryption using Google Cloud KMS
+ - [hiera-eyaml-vault](https://github.com/crayfishx/hiera-eyaml-vault) - Use the transit secrets engine from Vault for providing encryption.
+
 
 ### How-To's:
 
