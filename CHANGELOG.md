@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.1.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.1.0) (2019-11-11)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.0.0...v3.1.0)
+
+**Implemented enhancements:**
+
+- Should be able to `edit` a new file [\#84](https://github.com/voxpupuli/hiera-eyaml/issues/84)
+- Cache key strings. [\#191](https://github.com/voxpupuli/hiera-eyaml/pull/191) ([mkulke](https://github.com/mkulke))
+
+**Closed issues:**
+
+- Decryption errors should return error code. [\#282](https://github.com/voxpupuli/hiera-eyaml/issues/282)
+- Release a new version [\#271](https://github.com/voxpupuli/hiera-eyaml/issues/271)
+
+**Merged pull requests:**
+
+- \(docs\) Update README with reference to hiera-eyaml-vault [\#287](https://github.com/voxpupuli/hiera-eyaml/pull/287) ([crayfishx](https://github.com/crayfishx))
+- fix: don't handle cli exceptions early [\#283](https://github.com/voxpupuli/hiera-eyaml/pull/283) ([stuart-warren](https://github.com/stuart-warren))
+- Adding doc for Google KMS plugin [\#279](https://github.com/voxpupuli/hiera-eyaml/pull/279) ([craigwatson](https://github.com/craigwatson))
+- catch failed decryption and print a helpful message [\#144](https://github.com/voxpupuli/hiera-eyaml/pull/144) ([GeoffWilliams](https://github.com/GeoffWilliams))
+
 ## [v3.0.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.0.0) (2019-01-17)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v2.1.0...v3.0.0)
