@@ -38,8 +38,8 @@ class Hiera
             public_key = self.option :public_key
             raise StandardError, "pkcs7_public_key is not defined" unless public_key
 
-            @public_key_pem ||= File.read public_key
-            public_key_x509 = OpenSSL::X509::Certificate.new( @public_key_pem )
+            public_key_pem = File.read public_key 
+            public_key_x509 = OpenSSL::X509::Certificate.new( public_key_pem )
 
             cipher = OpenSSL::Cipher::AES.new(256, :CBC)
             OpenSSL::PKCS7::encrypt([public_key_x509], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
@@ -54,11 +54,11 @@ class Hiera
             raise StandardError, "pkcs7_public_key is not defined" unless public_key
             raise StandardError, "pkcs7_private_key is not defined" unless private_key
 
-            @private_key_pem ||= File.read private_key
-            private_key_rsa = OpenSSL::PKey::RSA.new( @private_key_pem )
+            private_key_pem = File.read private_key
+            private_key_rsa = OpenSSL::PKey::RSA.new( private_key_pem )
 
-            @public_key_pem ||= File.read public_key
-            public_key_x509 = OpenSSL::X509::Certificate.new( @public_key_pem )
+            public_key_pem = File.read public_key
+            public_key_x509 = OpenSSL::X509::Certificate.new( public_key_pem )
 
             pkcs7 = OpenSSL::PKCS7.new( ciphertext )
             pkcs7.decrypt(private_key_rsa, public_key_x509)
