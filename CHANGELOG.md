@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.1.1](https://github.com/voxpupuli/hiera-eyaml/tree/v3.1.1) (2019-11-12)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.1.0...v3.1.1)
+
+**Merged pull requests:**
+
+- Revert "Cache key strings." [\#290](https://github.com/voxpupuli/hiera-eyaml/pull/290) ([alexjfisher](https://github.com/alexjfisher))
+
 ## [v3.1.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.1.0) (2019-11-11)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.0.0...v3.1.0)
