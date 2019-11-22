@@ -1,0 +1,17 @@
+---
+:backends:
+  - eyaml
+  - yaml
+
+:hierarchy:
+  - environments/%{environment}/%{module_name}
+
+:yaml:
+  :datadir: ./puppet-envvar
+  
+:logger: console
+
+:eyaml:
+  :datadir: ./puppet-envvar
+  :pkcs7_private_key_env_var: EYAML_PRIVATE_KEY
+  :pkcs7_public_key_env_var: EYAML_PUBLIC_KEY

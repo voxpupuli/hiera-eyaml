@@ -18,6 +18,10 @@ class Hiera
             :public_key => { :desc => "Path to public key",  
                              :type => :string, 
                              :default => "./keys/public_key.pkcs7.pem" },
+            :private_key_env_var => { :desc => "Name of environment variable to read private key from",
+                                      :type => :string },
+            :public_key_env_var => { :desc => "Name of environment variable to read public key from",
+                                      :type => :string },
             :subject => { :desc => "Subject to use for certificate when creating keys",
                           :type => :string,
                           :default => "/" },
@@ -36,9 +40,18 @@ class Hiera
             LoggingHelper::trace 'PKCS7 encrypt'
 
             public_key = self.option :public_key
-            raise StandardError, "pkcs7_public_key is not defined" unless public_key
+            public_key_env_var = self.option :public_key_env_var
+            raise StandardError, "pkcs7_public_key is not defined" unless public_key or public_key_env_var
 
-            public_key_pem = File.read public_key 
+            if public_key and public_key_env_var
+              warn "both public_key and public_key_env_var specified, using public_key"
+            end
+
+            if public_key_env_var and ENV[public_key_env_var]
+              public_key_pem = ENV[public_key_env_var]
+            else
+              public_key_pem = File.read public_key
+            end
             public_key_x509 = OpenSSL::X509::Certificate.new( public_key_pem )
 
             cipher = OpenSSL::Cipher::AES.new(256, :CBC)
@@ -51,13 +64,30 @@ class Hiera
 
             public_key = self.option :public_key
             private_key = self.option :private_key
-            raise StandardError, "pkcs7_public_key is not defined" unless public_key
-            raise StandardError, "pkcs7_private_key is not defined" unless private_key
+            public_key_env_var = self.option :public_key_env_var
+            private_key_env_var = self.option :private_key_env_var
+            raise StandardError, "pkcs7_public_key is not defined" unless public_key or public_key_env_var
+            raise StandardError, "pkcs7_private_key is not defined" unless private_key or private_key_env_var
 
-            private_key_pem = File.read private_key
+            if public_key and public_key_env_var
+              warn "both public_key and public_key_env_var specified, using public_key"
+            end
+            if private_key and private_key_env_var
+              warn "both private_key and private_key_env_var specified, using private_key"
+            end
+
+            if private_key_env_var and ENV[private_key_env_var]
+              private_key_pem = ENV[private_key_env_var]
+            else
+              private_key_pem = File.read private_key
+            end
             private_key_rsa = OpenSSL::PKey::RSA.new( private_key_pem )
 
-            public_key_pem = File.read public_key
+            if public_key_env_var and ENV[public_key_env_var]
+              public_key_pem = ENV[public_key_env_var]
+            else
+              public_key_pem = File.read public_key
+            end
             public_key_x509 = OpenSSL::X509::Certificate.new( public_key_pem )
 
             pkcs7 = OpenSSL::PKCS7.new( ciphertext )
