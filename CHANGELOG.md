@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.2.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.0) (2020-01-30)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.1.1...v3.2.0)
+
+**Implemented enhancements:**
+
+- Permit reading private key from environment variable [\#294](https://github.com/voxpupuli/hiera-eyaml/pull/294) ([nferch](https://github.com/nferch))
+
+**Fixed bugs:**
+
+- Version 3.1.0 does not clear the private/public key when options are changed [\#289](https://github.com/voxpupuli/hiera-eyaml/issues/289)
+
+**Merged pull requests:**
+
+- \(doc\) Correct order for config file precedence [\#295](https://github.com/voxpupuli/hiera-eyaml/pull/295) ([crayfishx](https://github.com/crayfishx))
+- \(maint\) Update Gemfile and README for Ruby 2.5/2.4 [\#293](https://github.com/voxpupuli/hiera-eyaml/pull/293) ([glennsarti](https://github.com/glennsarti))
+
 ## [v3.1.1](https://github.com/voxpupuli/hiera-eyaml/tree/v3.1.1) (2019-11-12)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.1.0...v3.1.1)
