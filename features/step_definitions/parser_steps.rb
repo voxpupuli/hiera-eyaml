@@ -17,6 +17,22 @@ end
 And /^I configure the keypair$/ do
   Hiera::Backend::Eyaml::Options[:pkcs7_public_key] = "features/sandbox/keys/public_key.pkcs7.pem"
   Hiera::Backend::Eyaml::Options[:pkcs7_private_key] = "features/sandbox/keys/private_key.pkcs7.pem"
+  Hiera::Backend::Eyaml::Options[:pkcs7_public_key_env_var] = nil
+  Hiera::Backend::Eyaml::Options[:pkcs7_private_key_env_var] = nil
+  ENV.delete("EYAML_PUBLIC_KEY")
+  ENV.delete("EYAML_PRIVATE_KEY")
+end
+
+And /^I configure the keypair using envvars$/ do
+  Hiera::Backend::Eyaml::Options[:pkcs7_public_key] = nil
+  Hiera::Backend::Eyaml::Options[:pkcs7_private_key] = nil
+  Hiera::Backend::Eyaml::Options[:pkcs7_public_key_env_var] = "EYAML_PUBLIC_KEY"
+  Hiera::Backend::Eyaml::Options[:pkcs7_private_key_env_var] = "EYAML_PRIVATE_KEY"
+end
+
+And /^I load the keypair into envvars$/ do
+  ENV["EYAML_PUBLIC_KEY"] = File.read "features/sandbox/keys/public_key.pkcs7.pem"
+  ENV["EYAML_PRIVATE_KEY"] = File.read "features/sandbox/keys/private_key.pkcs7.pem"
 end
 
 When /^I parse the content$/ do

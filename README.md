@@ -93,6 +93,8 @@ The permissions for this folder should allow the puppet user (normally 'puppet')
     -r-------- 1 puppet puppet 1.7K Sep 24 16:24 private_key.pkcs7.pem
     -r-------- 1 puppet puppet 1.1K Sep 24 16:24 public_key.pkcs7.pem
 
+You may also load the keypair into an environment variable and use the `pkcs7_private_key_env_var` and `pkcs7_public_key_env_var` options to specify the environment variable names to avoid writing the secret key to disk.
+
 
 Basic usage
 -----------
@@ -203,7 +205,7 @@ Hierarchy levels that use eyaml must set the following keys:
 * `lookup_key` (must be set to `eyaml_lookup_key`).
 * `path`/`paths`/`glob`/`globs` (choose one).
 * `datadir` (can be omitted if you've set a default).
-* `options` — a hash of eyaml-specific settings; by default, this should include `pkcs7_private_key` and `pkcs7_public_key`, but alternate encryption plugins use alternate options. Anything from the old `:eyaml` config section (except `datadir`) goes here.
+* `options` — a hash of eyaml-specific settings; by default, this should include `pkcs7_private_key` and `pkcs7_public_key`, or `pkcs7_public_key_env_var` and `pkcs7_private_key_env_var`, but alternate encryption plugins use alternate options. Anything from the old `:eyaml` config section (except `datadir`) goes here.
 
     You do not need to specify key names as `:symbols`; normal strings are fine.
 

@@ -5,8 +5,20 @@ Feature: eyaml hiera integration
   I want to verify that hiera-eyaml works within puppet and hiera
 
   Scenario: verify puppet with hiera can use hiera-eyaml to decrypt data
-    When I run `rm -f /tmp/eyaml_puppettest.* 2>/dev/null`
+    When I run `bash -c 'rm -f /tmp/eyaml_puppettest.*' 2>/dev/null`
     When I run `puppet apply --disable_warnings deprecations --confdir ./puppet --node_name_value localhost puppet/manifests/init.pp`
+    Then the output should contain "/tmp/eyaml_puppettest"
+    Then the file "/tmp/eyaml_puppettest.1" should match /^good night$/
+    Then the file "/tmp/eyaml_puppettest.2" should match /^and good luck$/
+    Then the file "/tmp/eyaml_puppettest.3" should match /^and good luck$/
+    Then the file "/tmp/eyaml_puppettest.4" should match /^and good luck$/
+    Then the file "/tmp/eyaml_puppettest.5" should match /^gangs of new york$/
+
+
+  Scenario: verify puppet with hiera can use hiera-eyaml to decrypt data with keys as environment variables
+    Given I load the keypair into envvars
+    When I run `bash -c 'rm -f /tmp/eyaml_puppettest.*' 2>/dev/null`
+    When I run `puppet apply --disable_warnings deprecations --confdir ./puppet-envvar --node_name_value localhost puppet-envvar/manifests/init.pp`
     Then the output should contain "/tmp/eyaml_puppettest"
     Then the file "/tmp/eyaml_puppettest.1" should match /^good night$/
     Then the file "/tmp/eyaml_puppettest.2" should match /^and good luck$/
@@ -17,7 +29,7 @@ Feature: eyaml hiera integration
 
   Scenario: verify puppet and facter for correct hash merge with incorrect fact
     Given I set FACTER_fact to "not-existcity"
-    When I run `rm -f /tmp/eyaml_puppettest.* 2>/dev/null`
+    When I run `bash -c 'rm -f /tmp/eyaml_puppettest.*' 2>/dev/null`
     When I run `puppet apply --disable_warnings deprecations --confdir ./puppet-hiera-merge --node_name_value localhost puppet-hiera-merge/manifests/init.pp`
     Then the output should contain "/tmp/eyaml_puppettest"
     Then the file "/tmp/eyaml_puppettest.1" should match /^good night$/
@@ -28,7 +40,7 @@ Feature: eyaml hiera integration
 
   Scenario: verify puppet and facter for correct hash merge
     Given I set FACTER_fact to "city"
-    When I run `rm -f /tmp/eyaml_puppettest.* 2>/dev/null`
+    When I run `bash -c 'rm -f /tmp/eyaml_puppettest.*' 2>/dev/null`
     When I run `puppet apply --disable_warnings deprecations --confdir ./puppet-hiera-merge --node_name_value localhost puppet-hiera-merge/manifests/init.pp`
     Then the output should contain "/tmp/eyaml_puppettest"
     Then the file "/tmp/eyaml_puppettest.1" should match /^rise and shine$/

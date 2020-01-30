@@ -22,6 +22,19 @@ Feature: Parser
     Then token 2 should decrypt to start with "planet of the apes"
     Then token 2 should decrypt to a string with UTF-8 encodings
 
+  Scenario: Parse encrypted yaml with keypair as envvars
+    Given I make a parser instance with the ENC regexs
+    And I configure the keypair using envvars
+    And I load the keypair into envvars
+    And I load a file called test_input.yaml
+    When I parse the content
+    Then I should have 35 tokens
+    Then token 1 should be a NonMatchToken
+    Then token 2 should be a EncToken
+    Then token 2 should start with "ENC[PKCS7,MIIBiQYJKoZIhvcNAQ"
+    Then token 2 should decrypt to start with "planet of the apes"
+    Then token 2 should decrypt to a string with UTF-8 encodings
+
   Scenario: Parse decrypted yaml
     Given I make a parser instance with the DEC regexs
     And I load a file called test_plain.yaml
