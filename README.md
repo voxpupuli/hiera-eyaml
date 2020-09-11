@@ -187,6 +187,105 @@ file just like any other eyaml string and your done.  If the file is rather
 large, you may wish to use a helper like `xclip` to copy the stdout directly to
 your clipboard.
 
+### Encrypting multiline values
+
+Encrypting multiline values has a few extra steps. The following is a step-by-step example showing you how to encrypt multiline values while keeping a valid YAML file.
+
+- Copy the YAML text below to a file named `multiline_example.eyaml`
+```
+---
+accounts::key_sets:
+  dummy:
+    private: |
+    ---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----
+    Comment: "dummy-key-hiera-eyaml-issue-rsa-key-20200911"
+    P2/56wAAANwAAAA3aWYtbW9kbntzaWdue3JzYS1wa2NzMS1zaGExfSxlbmNyeXB0e3JzYS
+    1wa2NzMXYyLW9hZXB9fQAAAARub25lAAAAjQAAAIkAAAAGJQAAAP93ZtrMIRZutZ/SZUyw
+    JWwyI4YxNvr5tBt9UnSJ7K0+rQAAAQDohO1ykUahsogS+ymM6o9WEmdROJZpWShCqdv8Dj
+    2roQAAAIDG1G8hY90Xlz/YiFhDZLLWAAAAgOzMWTfAlHbJ4AdEhG5uU/EAAACA+1/AlcSr
+    QEPM5xLW0unCsQ==
+    ---- END SSH2 ENCRYPTED PRIVATE KEY ----
+```
+
+- Use `edit` to ...
+  - prepend `DEC::PKCS7[    ` before the first line,
+  - remove two whitespaces in front of the multiline value,
+  - and append `]!` to the last line of the multiline value.
+
+`eyaml edit multiline_example.eyaml`
+```
+---
+accounts::key_sets:
+  dummy:
+    private: >
+    DEC::PKCS7[    ---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----
+    Comment: "dummy-key-hiera-eyaml-issue-rsa-key-20170123"
+    P2/56wAAANwAAAA3aWYtbW9kbntzaWdue3JzYS1wa2NzMS1zaGExfSxlbmNyeXB0e3JzYS
+    1wa2NzMXYyLW9hZXB9fQAAAARub25lAAAAjQAAAIkAAAAGJQAAAP93ZtrMIRZutZ/SZUyw
+    JWwyI4YxNvr5tBt9UnSJ7K0+rQAAAQDohO1ykUahsogS+ymM6o9WEmdROJZpWShCqdv8Dj
+    2roQAAAIDG1G8hY90Xlz/YiFhDZLLWAAAAgOzMWTfAlHbJ4AdEhG5uU/EAAACA+1/AlcSr
+    QEPM5xLW0unCsQ==
+    ---- END SSH2 ENCRYPTED PRIVATE KEY ----]!
+```
+```
+# resulting encrypted file
+---
+accounts::key_sets:
+  dummy:
+    private: >
+    ENC[PKCS7,MIIDTQYJKoZIhvcNAQcDoIIDPjCCAzoCAQAxggEhMIIBHQIBADAFMAACAQEw
+    DQYJKoZIhvcNAQEBBQAEggEAXH7xB1xuzoMAqA/3jSXO0ZUR6+UCb3DsTTj3
+    Lsrcx5oQBnJ/ml7GfBCPxBKfArZunLcnxmSk4hECKXdfgKsVjAa++JQWvtEm
+    HUNTFqvwd76Ku+nMfI9c8g+X+l6obLjzWfJdg3t6Ja7CJKl8UNFtSmbfYKVi
+    nZ0xBubgdY4plLAFcZyD5/A/lNFqwb051TRLbZOIRRfLUlRL7RNkKRC59Aog
+    S5aJXjmqx6vRzFifNK0JFZvYHGD75TiHJ5LFjg4rjgFd43AnK8iNo773ZWP2
+    48Gly5Zx7qVQDCDDi1YBgNFb0NIBQw+kWy7HcPH2REvPnXu/HV2FWvDP3Ond
+    yr2EbTCCAg4GCSqGSIb3DQEHATAdBglghkgBZQMEASoEEH+CjZJ1gKfaQIrr
+    N5zef7OAggHgBmRVsfaoiNEOzhmHZ5SxxZztmpBNtLv7mteaSqSL5o0TtKQh
+    SDgxBhaQmlL51+JM1Jsnvqm57ikZhj7Vtek/vr5DhYhWs0AxttH5rNaw0zKU
+    4bMppVu+SNKCtT+2Qw31x/S7gF7yVl+mwmXhq3qAj9ExWRX3d/8/zTuC61Io
+    f+7O6YUOucZ/m/YPrQnC5v7bDSKlIf1aFaKqukjM3QO8FZlAOHGPvRuWV2Om
+    QIgxQE6F8r+bTkW3KiVIx5FEIthRZ90VS3tz/2wjj77svddBhlid9ov/0ard
+    GGVNGsl1BFpLqxC0mpZXz237cL/aM58naqmX52J6YmC0xQM3DNmahWlYx1HV
+    J/Ogk12pOYPLJB/09OuoHPzKC4WfpB9B7wAC6pghRkO/84cOw6rgSdbzze5W
+    WMPvo181Y74BSBKhJDdO3lWYmEcDyx4TEsMUlpxd9PBDcOHqf9qHviXrwGzO
+    oSm2bUV0Fum5ueU+D2vu3mO0yIQ6fwyvDZLBRjfJV7K/PyDz81feWT6+g38t
+    AC27c0h8wk9b7HYfqG28nZE7F13qrhwCKnOaYLglsmbszNpRrBhfo1IHF6oM
+    YZRZrnrGQg5qQcxMsLq37RAfRgkY0rRLs78EEAhkf4NDxw0A/ovt]
+```
+  - *Notice:* Make sure to use four whitespaces after `DEC::PKCS7[`. `eyaml` always prepends two whitespaces ([#219](https://github.com/voxpupuli/hiera-eyaml/issues/219)).
+  - The number of whitespaces is relative to the values indentation level. Encrypting a value (e.g.) one level higher would require only two whitespaces.
+- Edit the encrypted file using (e.g.) `vim` and re-add the two whitespaces. Without them it's not parsed as valid YAML.
+
+`vim multiline_example.eyaml`
+```
+# encrypted file
+---
+accounts::key_sets:
+  dummy:
+    private: >
+      ENC[PKCS7,MIIDTQYJKoZIhvcNAQcDoIIDPjCCAzoCAQAxggEhMIIBHQIBADAFMAACAQEw
+      DQYJKoZIhvcNAQEBBQAEggEAXH7xB1xuzoMAqA/3jSXO0ZUR6+UCb3DsTTj3
+      Lsrcx5oQBnJ/ml7GfBCPxBKfArZunLcnxmSk4hECKXdfgKsVjAa++JQWvtEm
+      HUNTFqvwd76Ku+nMfI9c8g+X+l6obLjzWfJdg3t6Ja7CJKl8UNFtSmbfYKVi
+      nZ0xBubgdY4plLAFcZyD5/A/lNFqwb051TRLbZOIRRfLUlRL7RNkKRC59Aog
+      S5aJXjmqx6vRzFifNK0JFZvYHGD75TiHJ5LFjg4rjgFd43AnK8iNo773ZWP2
+      48Gly5Zx7qVQDCDDi1YBgNFb0NIBQw+kWy7HcPH2REvPnXu/HV2FWvDP3Ond
+      yr2EbTCCAg4GCSqGSIb3DQEHATAdBglghkgBZQMEASoEEH+CjZJ1gKfaQIrr
+      N5zef7OAggHgBmRVsfaoiNEOzhmHZ5SxxZztmpBNtLv7mteaSqSL5o0TtKQh
+      SDgxBhaQmlL51+JM1Jsnvqm57ikZhj7Vtek/vr5DhYhWs0AxttH5rNaw0zKU
+      4bMppVu+SNKCtT+2Qw31x/S7gF7yVl+mwmXhq3qAj9ExWRX3d/8/zTuC61Io
+      f+7O6YUOucZ/m/YPrQnC5v7bDSKlIf1aFaKqukjM3QO8FZlAOHGPvRuWV2Om
+      QIgxQE6F8r+bTkW3KiVIx5FEIthRZ90VS3tz/2wjj77svddBhlid9ov/0ard
+      GGVNGsl1BFpLqxC0mpZXz237cL/aM58naqmX52J6YmC0xQM3DNmahWlYx1HV
+      J/Ogk12pOYPLJB/09OuoHPzKC4WfpB9B7wAC6pghRkO/84cOw6rgSdbzze5W
+      WMPvo181Y74BSBKhJDdO3lWYmEcDyx4TEsMUlpxd9PBDcOHqf9qHviXrwGzO
+      oSm2bUV0Fum5ueU+D2vu3mO0yIQ6fwyvDZLBRjfJV7K/PyDz81feWT6+g38t
+      AC27c0h8wk9b7HYfqG28nZE7F13qrhwCKnOaYLglsmbszNpRrBhfo1IHF6oM
+      YZRZrnrGQg5qQcxMsLq37RAfRgkY0rRLs78EEAhkf4NDxw0A/ovt]
+```
+- Test with `eyaml decrypt -f multiline_example.eyaml` and compare the output to the plaintext.
+
 
 Hiera
 -----
