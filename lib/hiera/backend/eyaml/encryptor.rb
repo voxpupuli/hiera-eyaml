@@ -22,7 +22,7 @@ class Hiera
         end
 
         def self.encode binary_string
-          Base64.encode64(binary_string).strip  
+          Base64.strict_encode64(binary_string)
         end
 
         def self.decode string

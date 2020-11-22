@@ -59,16 +59,12 @@ class Hiera
             encryption_method = args[:change_encryption]
             if encryption_method != nil
               @encryptor = Encryptor.find encryption_method
-              @cipher = Base64.encode64(@encryptor.encrypt @plain_text).strip
+              @cipher = Base64.strict_encode64(@encryptor.encrypt(@plain_text))
             end
             case format
               when :block
-                # strip any white space
-                @cipher = @cipher.gsub(/[ \t]/, "")
-                # normalize indentation
-                ciphertext = @cipher.gsub(/[\n\r]/, "\n" + @indentation)
                 chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
-                "#{label_string}#{chevron}" + @indentation + "ENC[#{@encryptor.tag},#{ciphertext}]"
+                "#{label_string}#{chevron}" + @indentation + "ENC[#{@encryptor.tag},#{@cipher}]".scan(/.{1,60}/).join("\n" + @indentation)
               when :string
                 ciphertext = @cipher.gsub(/[\n\r]/, "")
                 "#{label_string}ENC[#{@encryptor.tag},#{ciphertext}]"
