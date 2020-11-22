@@ -14,7 +14,7 @@ class Hiera
 
         def self.find encryption_scheme = nil
           encryption_scheme = Eyaml.default_encryption_scheme if encryption_scheme.nil?
-          require "hiera/backend/eyaml/encryptors/#{File.basename encryption_scheme.downcase}"          
+          require "hiera/backend/eyaml/encryptors/#{File.basename encryption_scheme.downcase}"
           encryptor_module = Module.const_get('Hiera').const_get('Backend').const_get('Eyaml').const_get('Encryptors')
           encryptor_class = Utils.find_closest_class :parent_class => encryptor_module, :class_name => encryption_scheme
           raise StandardError, "Could not find hiera-eyaml encryptor: #{encryption_scheme}. Try gem install hiera-eyaml-#{encryption_scheme.downcase} ?" if encryptor_class.nil?
@@ -29,7 +29,7 @@ class Hiera
           Base64.decode64(string)
         end
 
-        def self.encrypt *args 
+        def self.encrypt *args
           raise StandardError, "encrypt() not defined for encryptor plugin: #{self}"
         end
 
@@ -80,4 +80,3 @@ class Hiera
     end
   end
 end
-
