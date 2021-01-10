@@ -20,7 +20,7 @@ group :development do
   gem "hiera-eyaml-plaintext"
   gem "puppet", ENV['PUPPET_VERSION'] || default_puppet_restriction
   gem 'json_pure', '<= 2.0.1' if RUBY_VERSION < '2.0.0'
-  if RUBY_VERSION >= '2.2.2'
+  if RUBY_VERSION >= '2.5.0'
     gem 'github_changelog_generator',  :require => false, :git => 'https://github.com/voxpupuli/github-changelog-generator', :branch => 'voxpupuli_essential_fixes'
     gem "activesupport", activesupport_restriction
   end
