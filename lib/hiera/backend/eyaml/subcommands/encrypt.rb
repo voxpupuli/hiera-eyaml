@@ -11,12 +11,12 @@ class Hiera
         class Encrypt < Subcommand
 
           def self.options
-            [{:name => :password, 
-              :description => "Source input is a password entered on the terminal", 
+            [{:name => :password,
+              :description => "Source input is a password entered on the terminal",
               :short => 'p'},
              {:name => :string,
               :description => "Source input is a string provided as an argument",
-              :short => 's', 
+              :short => 's',
               :type => :string},
              {:name => :file,
               :description => "Source input is a regular file",
@@ -78,7 +78,7 @@ class Hiera
               else
                 encryptor = Encryptor.find
                 ciphertext = encryptor.encode( encryptor.encrypt(Eyaml::Options[:input_data]) )
-                token = Parser::EncToken.new(:block, Eyaml::Options[:input_data], encryptor, ciphertext, nil, '    ')
+                token = Parser::EncToken.new(:block, Eyaml::Options[:input_data], encryptor, ciphertext, nil, '  ')
                 case Eyaml::Options[:output]
                   when "block"
                     token.to_encrypted :label => Eyaml::Options[:label], :use_chevron => !Eyaml::Options[:label].nil?, :format => :block
