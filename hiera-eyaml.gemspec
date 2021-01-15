@@ -18,5 +18,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency('optimist')
-  gem.add_dependency('highline', '~> 1.6.19')
+  gem.add_dependency('highline')
 end
