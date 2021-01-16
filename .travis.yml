@@ -18,11 +18,11 @@ script:
   bundle exec cucumber -f progress
 matrix:
   include:
-    - rvm: 2.1.9
-      env: PUPPET_VERSION="~> 4.0" RUBYGEMS_VERSION=2.7.8
-    - rvm: 2.4.2
-      env: PUPPET_VERSION="~> 5.0"
-    - rvm: 2.5.7
+    - rvm: 2.5
+      env: PUPPET_VERSION="~> 6.0"
+    - rvm: 2.6
+      env: PUPPET_VERSION="~> 6.0"
+    - rvm: 2.7
       env: PUPPET_VERSION="~> 6.0"
 notifications:
   email: false
