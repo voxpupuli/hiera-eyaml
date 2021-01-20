@@ -16,3 +16,4 @@ features/sandbox/puppet-hiera-merge/reports
 features/sandbox/puppet-hiera-merge/state
 features/sandbox/puppet/reports
 features/sandbox/puppet/state
+.vendor/

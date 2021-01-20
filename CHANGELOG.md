@@ -2,7 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v3.2.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.0) (2020-01-30)
+## [v3.2.1](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.1) (2021-01-17)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.2.0...v3.2.1)
+
+**Fixed bugs:**
+
+- Fix block folding [\#307](https://github.com/voxpupuli/hiera-eyaml/pull/307) ([kenyon](https://github.com/kenyon))
+- add step-by-step how-to encrypting multiline values [\#304](https://github.com/voxpupuli/hiera-eyaml/pull/304) ([kBite](https://github.com/kBite))
+
+**Closed issues:**
+
+- eyaml edit should produce evenly folded blocks. [\#281](https://github.com/voxpupuli/hiera-eyaml/issues/281)
+- Support version 4 hiera config [\#213](https://github.com/voxpupuli/hiera-eyaml/issues/213)
+
+**Merged pull requests:**
+
+- gemspec: fix repo url / Drop Puppet 4/5 tests [\#311](https://github.com/voxpupuli/hiera-eyaml/pull/311) ([bastelfreak](https://github.com/bastelfreak))
+- Unpin highline [\#310](https://github.com/voxpupuli/hiera-eyaml/pull/310) ([lucywyman](https://github.com/lucywyman))
+
+## [v3.2.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.0) (2020-01-31)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.1.1...v3.2.0)
 
@@ -122,7 +141,10 @@ This is the first release after this project was migrated to Vox Pupuli.
 - \(docs\) Update README with instructions for using Hiera 5 [\#229](https://github.com/voxpupuli/hiera-eyaml/pull/229) ([nfagerlund](https://github.com/nfagerlund))
 - Attempt to resolve Travis CI issues [\#220](https://github.com/voxpupuli/hiera-eyaml/pull/220) ([rnelson0](https://github.com/rnelson0))
 - Make it clear that the ID and parens must be deleted, not just the ID [\#188](https://github.com/voxpupuli/hiera-eyaml/pull/188) ([sdotz](https://github.com/sdotz))
+- Refactor highline import [\#187](https://github.com/voxpupuli/hiera-eyaml/pull/187) ([petems](https://github.com/petems))
+- Adding hiera-eyaml-kms plugin to readme file [\#184](https://github.com/voxpupuli/hiera-eyaml/pull/184) ([adenot](https://github.com/adenot))
 - Make output of `eyaml decrypt` valid yaml with multiline values. [\#183](https://github.com/voxpupuli/hiera-eyaml/pull/183) ([peculater](https://github.com/peculater))
+- Add testing support for puppet 4 [\#181](https://github.com/voxpupuli/hiera-eyaml/pull/181) ([peculater](https://github.com/peculater))
 
 ## v2.1.0 (2016-03-02)
 
