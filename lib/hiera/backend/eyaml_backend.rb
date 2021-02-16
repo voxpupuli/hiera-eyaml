@@ -99,7 +99,7 @@ class Hiera
       end
 
       def encrypted?(data)
-        /.*ENC\[.*?\]/ =~ data ? true : false
+        /.*ENC\[.*\]/ =~ data ? true : false
       end
 
       def parse_answer(data, scope, extra_data={})
