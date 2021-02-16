@@ -2,12 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v3.2.1](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.1) (2021-01-17)
+## [v3.2.1](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.1) (2021-02-16)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.2.0...v3.2.1)
 
 **Fixed bugs:**
 
+- remove question mark from regex in encrypted? method [\#313](https://github.com/voxpupuli/hiera-eyaml/pull/313) ([mcka1n](https://github.com/mcka1n))
 - Fix block folding [\#307](https://github.com/voxpupuli/hiera-eyaml/pull/307) ([kenyon](https://github.com/kenyon))
 - add step-by-step how-to encrypting multiline values [\#304](https://github.com/voxpupuli/hiera-eyaml/pull/304) ([kBite](https://github.com/kBite))
 
@@ -18,6 +19,7 @@ All notable changes to this project will be documented in this file.
 
 **Merged pull requests:**
 
+- migrate CI to github actions [\#315](https://github.com/voxpupuli/hiera-eyaml/pull/315) ([bastelfreak](https://github.com/bastelfreak))
 - gemspec: fix repo url / Drop Puppet 4/5 tests [\#311](https://github.com/voxpupuli/hiera-eyaml/pull/311) ([bastelfreak](https://github.com/bastelfreak))
 - Unpin highline [\#310](https://github.com/voxpupuli/hiera-eyaml/pull/310) ([lucywyman](https://github.com/lucywyman))
 
