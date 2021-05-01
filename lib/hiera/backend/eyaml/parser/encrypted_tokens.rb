@@ -65,6 +65,7 @@ class Hiera
             end
             case format
             when :block
+              @cipher = @cipher.gsub(/\s/, '')
               chevron = args[:use_chevron].nil? || args[:use_chevron] ? ">\n" : ''
               "#{label_string}#{chevron}" + @indentation + "ENC[#{@encryptor.tag},#{@cipher}]".scan(/.{1,60}/).join("\n" + @indentation)
             when :string
