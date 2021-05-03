@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.2.2](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.2) (2021-05-03)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.2.1...v3.2.2)
+
+**Fixed bugs:**
+
+- Using `3.2.1` for editing an eyaml created with `3.2.0` will mess up formatting [\#318](https://github.com/voxpupuli/hiera-eyaml/issues/318)
+- Fix block formatting when editing [\#319](https://github.com/voxpupuli/hiera-eyaml/pull/319) ([kenyon](https://github.com/kenyon))
+
+**Closed issues:**
+
+- Concerns about the encrypted? method [\#316](https://github.com/voxpupuli/hiera-eyaml/issues/316)
+
 ## [v3.2.1](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.1) (2021-02-16)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.2.0...v3.2.1)
