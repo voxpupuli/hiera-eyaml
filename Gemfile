@@ -8,7 +8,7 @@ group :development do
   gem "rspec-expectations", '~> 3.1.0'
   gem "hiera-eyaml-plaintext"
   gem "puppet", ENV['PUPPET_VERSION'] || '>= 7'
-  gem 'github_changelog_generator', :require => false, :git => 'https://github.com/voxpupuli/github-changelog-generator', :branch => 'voxpupuli_essential_fixes'
+  gem 'github_changelog_generator'
   gem "activesupport"
 end
 
