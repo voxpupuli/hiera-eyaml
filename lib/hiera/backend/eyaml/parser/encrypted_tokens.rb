@@ -108,7 +108,7 @@ class Hiera
 
         class EncHieraTokenType < EncTokenType
           def initialize
-            @regex = %r{ENC\[(\w+,)?([a-zA-Z0-9+/ =\n]+?)\]}
+            @regex = %r{ENC\[(\w+,)?([a-zA-Z0-9+/ =\n]*?)\]}
             @string_token_type = EncStringTokenType.new
           end
 
@@ -119,7 +119,7 @@ class Hiera
 
         class EncStringTokenType < EncTokenType
           def initialize
-            @regex = %r{ENC\[(\w+,)?([a-zA-Z0-9+/=]+?)\]}
+            @regex = %r{ENC\[(\w+,)?([a-zA-Z0-9+/=]*?)\]}
           end
 
           def create_token(string)
