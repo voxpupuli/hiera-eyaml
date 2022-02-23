@@ -8,7 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Hiera::Backend::Eyaml::VERSION
   gem.description   = "Hiera backend for decrypting encrypted yaml properties"
   gem.summary       = "OpenSSL Encryption backend for Hiera"
-  gem.author        = "Tom Poulton"
+  gem.author        = "Vox Pupuli"
+  gem.email         = "voxpupuli@groups.io"
   gem.license       = "MIT"
 
   gem.homepage      = "https://github.com/voxpupuli/hiera-eyaml/"
@@ -19,4 +20,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency('optimist')
   gem.add_dependency('highline')
+
+  gem.required_ruby_version = '>= 2.5.0'
 end
