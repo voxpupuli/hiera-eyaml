@@ -2,12 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v3.2.3](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.3) (2022-02-23)
+## [v3.3.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.3.0) (2022-05-20)
 
-[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.2.2...v3.2.3)
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.2.2...v3.3.0)
+
+**Implemented enhancements:**
+
+- Build gem during CI [\#330](https://github.com/voxpupuli/hiera-eyaml/pull/330) ([bastelfreak](https://github.com/bastelfreak))
+- Add more Ruby/Puppet versions to CI matrix [\#326](https://github.com/voxpupuli/hiera-eyaml/pull/326) ([bastelfreak](https://github.com/bastelfreak))
 
 **Fixed bugs:**
 
+- Repair ruby 3.1.x compability with backwards compability. Bumped vers… [\#329](https://github.com/voxpupuli/hiera-eyaml/pull/329) ([mmachner](https://github.com/mmachner))
 - Fix an "undefined method" error with rubygems \>= 3.3.0 [\#327](https://github.com/voxpupuli/hiera-eyaml/pull/327) ([davidsansome](https://github.com/davidsansome))
 
 ## [v3.2.2](https://github.com/voxpupuli/hiera-eyaml/tree/v3.2.2) (2021-05-03)

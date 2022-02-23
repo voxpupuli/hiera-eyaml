@@ -21,5 +21,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency('optimist')
   gem.add_dependency('highline')
 
-  gem.required_ruby_version = '>= 2.5.0'
+  gem.required_ruby_version = '>= 2.5.0', ' < 4'
 end

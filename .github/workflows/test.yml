@@ -4,6 +4,9 @@ on:
   - pull_request
   - push
 
+env:
+  BUNDLE_WITHOUT: release
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -36,10 +39,13 @@ jobs:
           - ruby: "2.5"
             puppet: "https://github.com/puppetlabs/puppet.git#main"
     env:
-      BUNDLE_WITHOUT: release
       PUPPET_VERSION: ${{ matrix.puppet }}
+      COVERAGE: ${{ matrix.coverage }}
     name: "Ruby ${{ matrix.ruby }} - Puppet ${{ matrix.puppet }}"
     steps:
+      - name: Enable coverage reporting on Ruby 3.1
+        if: matrix.puppet == '~> 7.0' && matrix.ruby == '3.1'
+        run: echo 'COVERAGE=yes' >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - name: Install expect
         run: sudo apt-get install expect
@@ -48,7 +54,9 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - name: Build gem
+      - name: spec tests
+        run: bundle exec rake features
+      - name: Verify gem builds
         run: gem build *.gemspec
       - name: Run tests
         run: bundle exec cucumber -f progress
