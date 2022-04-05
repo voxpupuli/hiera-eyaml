@@ -32,8 +32,8 @@ class Hiera
           [index].flatten.each do |source|
             specs = gem_version >= Gem::Version.new("1.6.0") ? source.latest_specs(true) : source.latest_specs
 
-            specs.each do |stub|
-              spec = gem_version >= Gem::Version.new("3.3.0") ? stub.to_spec : stub
+            specs.each do |spec|
+              spec = spec.to_spec if spec.respond_to?(:to_spec)
               next if @@plugins.include? spec
 
               dependency = spec.dependencies.find { |d| d.name == "hiera-eyaml" }
