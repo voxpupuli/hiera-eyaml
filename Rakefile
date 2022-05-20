@@ -1,4 +1,34 @@
+begin
+  require 'simplecov'
+  require 'simplecov-console'
+  require 'codecov'
+rescue LoadError
+else
+  SimpleCov.start do
+    track_files 'lib/**/*.rb'
+
+    add_filter '/spec'
+
+    enable_coverage :branch
+
+    # do not track vendored files
+    add_filter '/vendor'
+    add_filter '/.vendor'
+  end
+
+  SimpleCov.formatters = [
+    SimpleCov::Formatter::Console,
+    SimpleCov::Formatter::Codecov,
+  ]
+end
 require "bundler/gem_tasks"
+
+# https://cucumber.io/docs/tools/ruby/
+# https://stackoverflow.com/questions/6473419/using-simplecov-to-display-cucumber-code-coverage
+require 'cucumber/rake/task'
+Cucumber::Rake::Task.new(:features) do |t|
+  t.cucumber_opts = "--format progress" # Any valid command line option can go here.
+end
 
 begin
   require 'github_changelog_generator/task'

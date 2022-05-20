@@ -29,3 +29,8 @@ end
 group :test do
   gem "rake"
 end
+
+group :coverage, optional: ENV['COVERAGE'] != 'yes' do
+  gem 'simplecov-console', :require => false
+  gem 'codecov', :require => false
+end
