@@ -27,5 +27,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+      - name: Build gem
+        run: gem build *.gemspec
       - name: Run tests
         run: bundle exec cucumber -f progress
