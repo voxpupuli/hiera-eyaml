@@ -14,10 +14,31 @@ jobs:
           - "2.5"
           - "2.6"
           - "2.7"
+          - "3.0"
+          - "3.1"
+        puppet:
+          - "~> 7.0"
+          - "~> 6.0"
+          - "https://github.com/puppetlabs/puppet.git#main"
+        exclude:
+          - ruby: "2.6"
+            puppet: "~> 7.0"
+          - ruby: "2.5"
+            puppet: "~> 7.0"
+
+          - ruby: "3.1"
+            puppet: "~> 6.0"
+          - ruby: "3.0"
+            puppet: "~> 6.0"
+
+          - ruby: "2.6"
+            puppet: "https://github.com/puppetlabs/puppet.git#main"
+          - ruby: "2.5"
+            puppet: "https://github.com/puppetlabs/puppet.git#main"
     env:
       BUNDLE_WITHOUT: release
-      PUPPET_VERSION: "~> 6.0"
-    name: Ruby ${{ matrix.ruby }}
+      PUPPET_VERSION: ${{ matrix.puppet }}
+    name: "Ruby ${{ matrix.ruby }} - Puppet ${{ matrix.puppet }}"
     steps:
       - uses: actions/checkout@v2
       - name: Install expect
