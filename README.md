@@ -71,7 +71,7 @@ Setup
 
     $ gem install hiera-eyaml
     
-#### Aptitude (Ubuntu 18.04+)
+#### Apt (Ubuntu 18.04+)
 
     $ sudo apt install hiera-eyaml
 
