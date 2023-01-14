@@ -67,7 +67,13 @@ Setup
 
 ### Installing hiera-eyaml
 
+#### RubyGems
+
     $ gem install hiera-eyaml
+    
+#### Apt (Ubuntu 18.04+)
+
+    $ sudo apt install hiera-eyaml
 
 ### Installing hiera-eyaml for the new [puppet-server](https://github.com/puppetlabs/puppet-server)
 
