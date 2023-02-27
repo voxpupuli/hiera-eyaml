@@ -59,7 +59,7 @@ eos
             Optimist::die "You must specify an eyaml file" if ARGV.empty?
             options[:source] = :eyaml
             options[:eyaml] = ARGV.shift
-            if File.exists? options[:eyaml]
+            if File.exist? options[:eyaml]
               begin
                 options[:input_data] = File.read options[:eyaml]
               rescue

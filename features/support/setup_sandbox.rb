@@ -12,7 +12,7 @@ class SetupSandbox
       write_mode = "wb" if extension == "bin"
       File.open(test_file, write_mode) {|input_file|
         input_file.puts contents
-      } unless File.exists?( test_file )
+      } unless File.exist?( test_file )
       File.chmod(0755, test_file) if extension == "sh"
     end
 

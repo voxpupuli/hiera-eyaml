@@ -31,7 +31,7 @@ class Hiera
           debug("Looking for data source #{source}")
           eyaml_file = Backend.datafile(:eyaml, scope, source, extension) || next
 
-          next unless File.exists?(eyaml_file)
+          next unless File.exist?(eyaml_file)
 
           data = @cache.read(eyaml_file, Hash) do |data|
             YAML.load(data) || {}
