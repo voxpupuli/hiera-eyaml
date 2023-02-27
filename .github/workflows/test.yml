@@ -21,7 +21,7 @@ jobs:
           - "3.1"
         puppet:
           - "~> 7.0"
-          - "~> 6.0"
+          - "~> 6.29"
           - "https://github.com/puppetlabs/puppet.git#main"
         exclude:
           - ruby: "2.6"
@@ -30,9 +30,9 @@ jobs:
             puppet: "~> 7.0"
 
           - ruby: "3.1"
-            puppet: "~> 6.0"
+            puppet: "~> 6.29"
           - ruby: "3.0"
-            puppet: "~> 6.0"
+            puppet: "~> 6.29"
 
           - ruby: "2.6"
             puppet: "https://github.com/puppetlabs/puppet.git#main"
