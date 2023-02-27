@@ -46,7 +46,7 @@ jobs:
       - name: Enable coverage reporting on Ruby 3.1
         if: matrix.puppet == '~> 7.0' && matrix.ruby == '3.1'
         run: echo 'COVERAGE=yes' >> $GITHUB_ENV
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install expect
         run: sudo apt-get install expect
       - name: Install Ruby ${{ matrix.ruby }}
