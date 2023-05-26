@@ -69,7 +69,7 @@ jobs:
       - name: spec tests
         run: bundle exec rake features
       - name: Verify gem builds
-        run: gem build *.gemspec
+        run: gem build --strict --verbose *.gemspec
       - name: Run tests
         run: bundle exec cucumber -f progress
 
