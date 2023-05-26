@@ -32,6 +32,9 @@ end
 
 begin
   require 'github_changelog_generator/task'
+rescue LoadError
+  # Do nothing if no required gem installed
+else
   GitHubChangelogGenerator::RakeTask.new :changelog do |config|
     version = Hiera::Backend::Eyaml::VERSION
     config.future_release = "v#{version}" if version =~ /^\d+\.\d+.\d+$/
@@ -40,5 +43,17 @@ begin
     config.user = 'voxpupuli'
     config.project = 'hiera-eyaml'
   end
+end
+
+begin
+  require 'rubocop/rake_task'
 rescue LoadError
+  # Do nothing if no required gem installed
+else
+  RuboCop::RakeTask.new(:rubocop) do |task|
+    # These make the rubocop experience maybe slightly less terrible
+    task.options = ['--display-cop-names', '--display-style-guide', '--extra-details']
+    # Use Rubocop's Github Actions formatter if possible
+    task.formatters << 'github' if ENV['GITHUB_ACTIONS'] == 'true'
+  end
 end

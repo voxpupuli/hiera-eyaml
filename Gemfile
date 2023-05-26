@@ -19,15 +19,14 @@ gemspec
 group :development do
   gem "aruba", '~> 0.6.2'
   gem "cucumber", '~> 1.1'
-  gem "rspec-expectations", '~> 3.1.0'
   gem "hiera-eyaml-plaintext"
   gem 'puppet', *location_for(ENV['PUPPET_VERSION']) if ENV['PUPPET_VERSION']
-  gem 'github_changelog_generator'
   gem "activesupport"
 end
 
-group :test do
-  gem "rake"
+group :release do
+  gem 'faraday-retry', require: false
+  gem 'github_changelog_generator', require: false
 end
 
 group :coverage, optional: ENV['COVERAGE'] != 'yes' do
