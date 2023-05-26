@@ -1,8 +1,10 @@
 name: Test
 
 on:
-  - pull_request
-  - push
+  pull_request: {}
+  push:
+    branches:
+      - master
 
 env:
   BUNDLE_WITHOUT: release
@@ -63,3 +65,11 @@ jobs:
         run: gem build *.gemspec
       - name: Run tests
         run: bundle exec cucumber -f progress
+
+  tests:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    name: Test suite
+    steps:
+      - run: echo Test suite completed
