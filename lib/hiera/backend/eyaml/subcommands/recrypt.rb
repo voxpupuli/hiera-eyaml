@@ -6,28 +6,26 @@ class Hiera
   module Backend
     module Eyaml
       module Subcommands
-
         class Recrypt < Subcommand
-
           def self.options
             [
-                 {:name          => :change_encryption,
-                  :description   => "Specify the new encryption method that should be used for the file",
-                  :short         => 'd',
-                  :default       => "pkcs7"}
-             ]
+              { name: :change_encryption,
+                description: 'Specify the new encryption method that should be used for the file',
+                short: 'd',
+                default: 'pkcs7', },
+            ]
           end
 
           def self.description
-            "recrypt an eyaml file"
+            'recrypt an eyaml file'
           end
 
           def self.helptext
-            "Usage: eyaml recrypt [options] <some-eyaml-file>"
+            'Usage: eyaml recrypt [options] <some-eyaml-file>'
           end
 
-          def self.validate options
-            Optimist::die "You must specify an eyaml file" if ARGV.empty?
+          def self.validate(options)
+            Optimist.die 'You must specify an eyaml file' if ARGV.empty?
             options[:source] = :eyaml
             options[:eyaml] = ARGV.shift
             options[:input_data] = File.read options[:eyaml]
@@ -35,27 +33,22 @@ class Hiera
             options
           end
 
-          def self.execute 
-
+          def self.execute
             encrypted_parser = Parser::ParserFactory.encrypted_parser
             tokens = encrypted_parser.parse Eyaml::Options[:input_data]
-            decrypted_input = tokens.each_with_index.to_a.map{|(t,index)| t.to_decrypted :index => index}.join
+            decrypted_input = tokens.each_with_index.to_a.map { |(t, index)| t.to_decrypted index: index }.join
 
             decrypted_parser = Parser::ParserFactory.decrypted_parser
             edited_tokens = decrypted_parser.parse(decrypted_input)
 
-            encrypted_output = edited_tokens.map{ |t| t.to_encrypted({:change_encryption => @change_encryption}) }.join
+            encrypted_output = edited_tokens.map { |t| t.to_encrypted({ change_encryption: @change_encryption }) }.join
 
             filename = Eyaml::Options[:eyaml]
-            File.open("#{filename}", 'w') { |file|
-              file.write encrypted_output
-            }
+            File.write("#{filename}", encrypted_output)
 
             nil
           end
-
         end
-
       end
     end
   end

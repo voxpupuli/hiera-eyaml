@@ -5,46 +5,41 @@ class Hiera
   module Backend
     module Eyaml
       module Subcommands
-
         class Help < Subcommand
-
           def self.options
             []
           end
 
           def self.description
-            "this page"
+            'this page'
           end
 
           def self.execute
+            puts <<~EOS
+              Welcome to eyaml #{Eyaml::VERSION}#{' '}
 
-            puts <<-EOS
-Welcome to eyaml #{Eyaml::VERSION} 
+              Usage:
+              eyaml subcommand [global-opts] [subcommand-opts]
 
-Usage:
-eyaml subcommand [global-opts] [subcommand-opts]
+              Available subcommands:
+              #{Eyaml.subcommands.collect do |command|
+                command_class = Subcommands.const_get(Utils.camelcase(command))
+                format '%15s: %-65s', command.downcase, command_class.description unless command_class.hidden?
+              end.compact.join("\n")}
 
-Available subcommands:
-#{Eyaml.subcommands.collect {|command|
-  command_class = Subcommands.const_get(Utils.camelcase command)
-  sprintf "%15s: %-65s", command.downcase, command_class.description unless command_class.hidden?
-}.compact.join("\n")}
+              For more help on an individual command, use --help on that command
 
-For more help on an individual command, use --help on that command
-
-Installed Plugins:
-#{Plugins.plugins.collect {|plugin| 
-  "\t" + plugin.name.split("hiera-eyaml-").last
-}.join("\n")}
-EOS
+              Installed Plugins:
+              #{Plugins.plugins.collect do |plugin| # {' '}
+                "\t" + plugin.name.split('hiera-eyaml-').last
+              end.join("\n")}
+            EOS
           end
 
           def self.hidden?
             true
           end
-
         end
-
       end
     end
   end
