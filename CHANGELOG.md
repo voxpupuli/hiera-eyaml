@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.4.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.4.0) (2023-05-26)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.3.0...v3.4.0)
+
+**Implemented enhancements:**
+
+- Add Puppet 8 to CI matrix [\#349](https://github.com/voxpupuli/hiera-eyaml/pull/349) ([bastelfreak](https://github.com/bastelfreak))
+- Add Ruby 3.2 support [\#340](https://github.com/voxpupuli/hiera-eyaml/pull/340) ([pschrammel](https://github.com/pschrammel))
+
+**Fixed bugs:**
+
+- Puppet 7: Ensure we test against 7.24 or newer [\#347](https://github.com/voxpupuli/hiera-eyaml/pull/347) ([bastelfreak](https://github.com/bastelfreak))
+- Run puppet main branch on Ruby 3.1 and newer [\#346](https://github.com/voxpupuli/hiera-eyaml/pull/346) ([bastelfreak](https://github.com/bastelfreak))
+
+**Closed issues:**
+
+- Encrypt yaml file on my workstation and push to git [\#344](https://github.com/voxpupuli/hiera-eyaml/issues/344)
+- hiera lookup arbitrary hierachy level [\#185](https://github.com/voxpupuli/hiera-eyaml/issues/185)
+
+**Merged pull requests:**
+
+- Apply Vox Pupuli CI best practices [\#345](https://github.com/voxpupuli/hiera-eyaml/pull/345) ([bastelfreak](https://github.com/bastelfreak))
+- Bump actions/checkout from 2 to 3 [\#343](https://github.com/voxpupuli/hiera-eyaml/pull/343) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add dependabot for gems and github actions [\#342](https://github.com/voxpupuli/hiera-eyaml/pull/342) ([bastelfreak](https://github.com/bastelfreak))
+- CI: Ensure we use Puppet 6.29 or newer [\#341](https://github.com/voxpupuli/hiera-eyaml/pull/341) ([bastelfreak](https://github.com/bastelfreak))
+- README: Add apt to installation methods [\#338](https://github.com/voxpupuli/hiera-eyaml/pull/338) ([AntoineSebert](https://github.com/AntoineSebert))
+
 ## [v3.3.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.3.0) (2022-05-20)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.2.2...v3.3.0)
