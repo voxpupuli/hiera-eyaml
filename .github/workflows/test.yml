@@ -1,8 +1,10 @@
 name: Test
 
 on:
-  - pull_request
-  - push
+  pull_request: {}
+  push:
+    branches:
+      - master
 
 env:
   BUNDLE_WITHOUT: release
@@ -21,14 +23,14 @@ jobs:
           - "3.1"
           - "3.2"
         puppet:
-          - "~> 7.0"
+          - "~> 7.24"
           - "~> 6.29"
           - "https://github.com/puppetlabs/puppet.git#main"
         exclude:
           - ruby: "2.6"
-            puppet: "~> 7.0"
+            puppet: "~> 7.24"
           - ruby: "2.5"
-            puppet: "~> 7.0"
+            puppet: "~> 7.24"
 
           - ruby: "3.2"
             puppet: "~> 6.29"
@@ -37,6 +39,10 @@ jobs:
           - ruby: "3.0"
             puppet: "~> 6.29"
 
+          - ruby: "3.0"
+            puppet: "https://github.com/puppetlabs/puppet.git#main"
+          - ruby: "2.7"
+            puppet: "https://github.com/puppetlabs/puppet.git#main"
           - ruby: "2.6"
             puppet: "https://github.com/puppetlabs/puppet.git#main"
           - ruby: "2.5"
@@ -63,3 +69,11 @@ jobs:
         run: gem build *.gemspec
       - name: Run tests
         run: bundle exec cucumber -f progress
+
+  tests:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    name: Test suite
+    steps:
+      - run: echo Test suite completed
