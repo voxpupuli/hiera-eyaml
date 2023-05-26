@@ -39,6 +39,10 @@ jobs:
           - ruby: "3.0"
             puppet: "~> 6.29"
 
+          - ruby: "3.0"
+            puppet: "https://github.com/puppetlabs/puppet.git#main"
+          - ruby: "2.7"
+            puppet: "https://github.com/puppetlabs/puppet.git#main"
           - ruby: "2.6"
             puppet: "https://github.com/puppetlabs/puppet.git#main"
           - ruby: "2.5"
