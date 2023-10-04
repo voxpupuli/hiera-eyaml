@@ -35,7 +35,7 @@ class Hiera
         
         def self.load_config_file
           config = { :options => {}, :sources => [] }
-          [ "/etc/eyaml/config.yaml", "#{ENV['HOME']}/.eyaml/config.yaml", "#{ENV['EYAML_CONFIG']}" ].each do |config_file|
+          [ "/etc/eyaml/config.yaml", "#{ENV['HOME']}/.eyaml/config.yaml", ".eyaml/config.yaml", "#{ENV['EYAML_CONFIG']}" ].each do |config_file|
             begin
               yaml_contents = YAML.load_file(config_file)
               config[:options].merge! yaml_contents
