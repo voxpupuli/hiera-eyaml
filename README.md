@@ -415,7 +415,11 @@ Configuration file for eyaml
 
 Default parameters for the eyaml command line tool can be provided by creating a configuration YAML file.
 
-Config files will be read first from `~/.eyaml/config.yaml`, then from `/etc/eyaml/config.yaml` and finally by anything referenced in the `EYAML_CONFIG` environment variable
+Config files will be read in following order:
+* first from system-wide `/etc/eyaml/config.yaml`
+* then from user home directory `~/.eyaml/config.yaml`
+* then from current working directory `.eyaml/config.yaml`
+* finally by anything referenced in the `EYAML_CONFIG` environment variable
 
 The file takes any long form argument that you can provide on the command line. For example, to override the pkcs7 keys:
 ```yaml
