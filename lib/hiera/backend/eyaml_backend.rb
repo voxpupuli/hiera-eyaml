@@ -9,15 +9,14 @@ require 'yaml'
 class Hiera
   module Backend
     class Eyaml_backend
-
       attr_reader :extension
 
       def initialize(cache = nil)
-        debug("Hiera eYAML backend starting")
+        debug('Hiera eYAML backend starting')
 
         @decrypted_cache = {}
         @cache     = cache || Filecache.new
-        @extension = Config[:eyaml][:extension] || "eyaml"
+        @extension = Config[:eyaml][:extension] || 'eyaml'
       end
 
       def lookup(key, scope, order_override, resolution_type)
@@ -54,20 +53,28 @@ class Hiera
           new_answer = parse_answer(data[key], scope)
           case resolution_type
           when :array
-            raise Exception, "Hiera type mismatch: expected Array and got #{new_answer.class}" unless new_answer.kind_of? Array or new_answer.kind_of? String
+            unless new_answer.is_a? Array or new_answer.is_a? String
+              raise Exception,
+                    "Hiera type mismatch: expected Array and got #{new_answer.class}"
+            end
+
             answer ||= []
             answer << new_answer
           when :hash
-            raise Exception, "Hiera type mismatch: expected Hash and got #{new_answer.class}" unless new_answer.kind_of? Hash
+            unless new_answer.is_a? Hash
+              raise Exception,
+                    "Hiera type mismatch: expected Hash and got #{new_answer.class}"
+            end
+
             answer ||= {}
-            answer = Backend.merge_answer(new_answer,answer)
+            answer = Backend.merge_answer(new_answer, answer)
           else
             answer = new_answer
             break
           end
         end
 
-        return answer
+        answer
       end
 
       private
@@ -78,19 +85,18 @@ class Hiera
 
       def decrypt(data)
         if encrypted?(data)
-          debug("Attempting to decrypt")
+          debug('Attempting to decrypt')
           begin
             parser = Eyaml::Parser::ParserFactory.hiera_backend_parser
             tokens = parser.parse(data)
-            decrypted = tokens.map{ |token| token.to_plain_text }
+            decrypted = tokens.map { |token| token.to_plain_text }
             plaintext = decrypted.join
           rescue OpenSSL::PKCS7::PKCS7Error => e
-            debug("Caught exception: #{e.class}, #{e.message}\n"\
+            debug("Caught exception: #{e.class}, #{e.message}\n" \
                   "#{e.backtrace.join("\n")}")
-            raise "Hiera-eyaml decryption failed, check the "\
-              "encrypted data matches the key you are using.\n"\
-              "Raw message from system: #{e.message}"
-
+            raise 'Hiera-eyaml decryption failed, check the ' \
+                  "encrypted data matches the key you are using.\n" \
+                  "Raw message from system: #{e.message}"
           end
           plaintext.chomp
         else
@@ -99,14 +105,14 @@ class Hiera
       end
 
       def encrypted?(data)
-        /.*ENC\[.*\]/ =~ data ? true : false
+        /.*ENC\[.*\]/.match?(data) ? true : false
       end
 
-      def parse_answer(data, scope, extra_data={})
+      def parse_answer(data, scope, extra_data = {})
         if data.is_a?(Numeric) or data.is_a?(TrueClass) or data.is_a?(FalseClass)
-          return data
+          data
         elsif data.is_a?(String)
-          return parse_string(data, scope, extra_data)
+          parse_string(data, scope, extra_data)
         elsif data.is_a?(Hash)
           answer = {}
           data.each_pair do |key, val|
@@ -114,14 +120,14 @@ class Hiera
             answer[interpolated_key] = parse_answer(val, scope, extra_data)
           end
 
-          return answer
+          answer
         elsif data.is_a?(Array)
           answer = []
           data.each do |item|
             answer << parse_answer(item, scope, extra_data)
           end
 
-          return answer
+          answer
         end
       end
 
@@ -132,18 +138,18 @@ class Hiera
           debug("Set option: #{key} = #{parsed_value}")
         end
 
-        Eyaml::Options[:source] = "hiera"
+        Eyaml::Options[:source] = 'hiera'
       end
 
-      def parse_string(data, scope, extra_data={})
+      def parse_string(data, scope, extra_data = {})
         if Eyaml::Options[:cache_decrypted]
-          if not @decrypted_cache.include?(data)
-            decrypted_data = decrypt(data)
-            debug("Adding data to decrypted cache")
-            @decrypted_cache[data] = decrypted_data
-          else
-            debug("Retrieving data from decrypted cache")
+          if @decrypted_cache.include?(data)
+            debug('Retrieving data from decrypted cache')
             decrypted_data = @decrypted_cache[data]
+          else
+            decrypted_data = decrypt(data)
+            debug('Adding data to decrypted cache')
+            @decrypted_cache[data] = decrypted_data
           end
         else
           decrypted_data = decrypt(data)

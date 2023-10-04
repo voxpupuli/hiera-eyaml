@@ -4,15 +4,13 @@ class Hiera
   module Backend
     module Eyaml
       module Subcommands
-
         class Createkeys < Subcommand
-
-          def self.options 
+          def self.options
             []
           end
 
           def self.description
-            "create a set of keys with which to encrypt/decrypt eyaml data"
+            'create a set of keys with which to encrypt/decrypt eyaml data'
           end
 
           def self.execute
@@ -20,9 +18,7 @@ class Hiera
             encryptor.create_keys
             nil
           end
-
         end
-
       end
     end
   end
