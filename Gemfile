@@ -18,8 +18,8 @@ gemspec
 
 group :development do
   gem 'activesupport'
-  gem 'aruba', '~> 0.6.2'
-  gem 'cucumber', '~> 1.1'
+  gem 'aruba', '~> 2.1'
+  gem 'cucumber', '~> 8'
   gem 'hiera-eyaml-plaintext'
   gem 'puppet', *location_for(ENV['PUPPET_VERSION']) if ENV['PUPPET_VERSION']
 end

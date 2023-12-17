@@ -38,17 +38,21 @@ class Hiera
 
             public_key = option :public_key
             public_key_env_var = option :public_key_env_var
-            raise StandardError, 'pkcs7_public_key is not defined' unless public_key or public_key_env_var
 
             if public_key and public_key_env_var
               warn 'both public_key and public_key_env_var specified, using public_key'
             end
 
-            public_key_pem = if public_key_env_var and ENV[public_key_env_var]
-                               ENV[public_key_env_var]
-                             else
-                               File.read public_key
-                             end
+            if public_key_env_var
+              raise StandardError, "env #{public_key_env_var} is not set" unless ENV[public_key_env_var]
+              public_key_pem = ENV[public_key_env_var]
+            elsif public_key
+              raise StandardError, "file #{public_key} does not exist" unless File.exist? public_key
+              public_key_pem = File.read public_key
+            else
+              raise StandardError, 'pkcs7_public_key is not defined' unless public_key or public_key_env_var
+            end
+
             public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')

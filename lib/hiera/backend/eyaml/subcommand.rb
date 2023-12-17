@@ -33,8 +33,13 @@ class Hiera
 
         def self.load_config_file
           config = { options: {}, sources: [] }
-          ['/etc/eyaml/config.yaml', "#{ENV.fetch('HOME', nil)}/.eyaml/config.yaml", '.eyaml/config.yaml',
-           "#{ENV.fetch('EYAML_CONFIG', nil)}",].each do |config_file|
+          config_paths = [
+            '/etc/eyaml/config.yaml',
+            "#{ENV.fetch('HOME', nil)}/.eyaml/config.yaml",
+            '.eyaml/config.yaml',
+            "#{ENV.fetch('EYAML_CONFIG', nil)}",
+          ]
+          config_paths.each do |config_file|
             next unless config_file and File.file? config_file
 
             begin
