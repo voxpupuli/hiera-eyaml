@@ -40,7 +40,7 @@ class Hiera
             public_key_env_var = option :public_key_env_var
 
             if public_key and public_key_env_var
-              warn 'both public_key and public_key_env_var specified, using public_key'
+              warn 'both public_key and public_key_env_var specified, using public_key_env_var'
             end
 
             if public_key_env_var
@@ -70,10 +70,10 @@ class Hiera
             raise StandardError, 'pkcs7_private_key is not defined' unless private_key or private_key_env_var
 
             if public_key and public_key_env_var
-              warn 'both public_key and public_key_env_var specified, using public_key'
+              warn 'both public_key and public_key_env_var specified, using public_key_env_var'
             end
             if private_key and private_key_env_var
-              warn 'both private_key and private_key_env_var specified, using private_key'
+              warn 'both private_key and private_key_env_var specified, using private_key_env_var'
             end
 
             private_key_pem = if private_key_env_var and ENV[private_key_env_var]
