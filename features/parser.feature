@@ -37,6 +37,8 @@ Feature: Parser
 
   Scenario: Parse decrypted yaml
     Given I make a parser instance with the DEC regexs
+    And I configure the keypair using envvars
+    And I load the keypair into envvars
     And I load a file called test_plain.yaml
     When I parse the content
     Then I should have 2 tokens
@@ -45,6 +47,8 @@ Feature: Parser
 
   Scenario: Parse decrypted yaml with index
     Given I make a parser instance with the DEC regexs
+    And I configure the keypair using envvars
+    And I load the keypair into envvars
     And I load a file called test_plain_with_index.yaml
     When I parse the content
     Then I should have 5 tokens
@@ -57,6 +61,8 @@ Feature: Parser
 
   Scenario: Output indexed decryption tokens
     Given I make a parser instance with the ENC regexs
+    And I configure the keypair using envvars
+    And I load the keypair into envvars
     And I load a file called test_input.yaml
     When I parse the content
     And map it to index decrypted values

@@ -1,3 +1,3 @@
 Given(/^I set FACTER_(.*?) to "(.*?)"$/) do |facter, value|
-  ENV["FACTER_#{facter}"] = value
+  set_environment_variable "FACTER_#{facter}", value
 end

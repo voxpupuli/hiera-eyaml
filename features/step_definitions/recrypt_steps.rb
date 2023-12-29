@@ -15,7 +15,7 @@ And(/^I recrypt it twice$/) do
 end
 
 Then(/the recrypted tokens should match/) do
-  @tokens.size.to_i.should == @tokens_check.size.to_i
+  expect(@tokens.size).to eq (@tokens_check.size.to_i)
 end
 
 Then(/the recrypted decrypted content should match/) do
@@ -29,5 +29,5 @@ end
 Then(/^the tokens at (\d+) should match/) do |index|
   decrypted1 = @tokens[index.to_i]
   decrypted2 = @tokens_check[index.to_i]
-  decrypted1.to_decrypted.should == decrypted2.to_decrypted
+  expect(decrypted1.to_decrypted).to eq (decrypted2.to_decrypted)
 end

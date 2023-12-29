@@ -33,22 +33,11 @@ class Hiera
 
           self.tag = 'PKCS7'
 
+
           def self.encrypt(plaintext)
             LoggingHelper.trace 'PKCS7 encrypt'
 
-            public_key = option :public_key
-            public_key_env_var = option :public_key_env_var
-            raise StandardError, 'pkcs7_public_key is not defined' unless public_key or public_key_env_var
-
-            if public_key and public_key_env_var
-              warn 'both public_key and public_key_env_var specified, using public_key'
-            end
-
-            public_key_pem = if public_key_env_var and ENV[public_key_env_var]
-                               ENV[public_key_env_var]
-                             else
-                               File.read public_key
-                             end
+            public_key_pem = self.load_public_key_pem()
             public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')
@@ -58,32 +47,10 @@ class Hiera
           def self.decrypt(ciphertext)
             LoggingHelper.trace 'PKCS7 decrypt'
 
-            public_key = option :public_key
-            private_key = option :private_key
-            public_key_env_var = option :public_key_env_var
-            private_key_env_var = option :private_key_env_var
-            raise StandardError, 'pkcs7_public_key is not defined' unless public_key or public_key_env_var
-            raise StandardError, 'pkcs7_private_key is not defined' unless private_key or private_key_env_var
-
-            if public_key and public_key_env_var
-              warn 'both public_key and public_key_env_var specified, using public_key'
-            end
-            if private_key and private_key_env_var
-              warn 'both private_key and private_key_env_var specified, using private_key'
-            end
-
-            private_key_pem = if private_key_env_var and ENV[private_key_env_var]
-                                ENV[private_key_env_var]
-                              else
-                                File.read private_key
-                              end
+            private_key_pem = self.load_private_key_pem()
             private_key_rsa = OpenSSL::PKey::RSA.new(private_key_pem)
 
-            public_key_pem = if public_key_env_var and ENV[public_key_env_var]
-                               ENV[public_key_env_var]
-                             else
-                               File.read public_key
-                             end
+            public_key_pem = self.load_public_key_pem()
             public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
 
             pkcs7 = OpenSSL::PKCS7.new(ciphertext)
@@ -132,6 +99,38 @@ class Hiera
             EncryptHelper.write_important_file filename: public_key, content: cert.to_pem
             LoggingHelper.info 'Keys created OK'
           end
+
+          protected
+
+          def self.load_ANY_key_pem(optname_key, optname_env_var)
+            opt_key = option (optname_key.to_sym)
+            opt_key_env_var = option (optname_env_var.to_sym)
+
+            if opt_key and opt_key_env_var
+              warn "both #{optname_key} and #{optname_env_var} specified, using #{optname_env_var}"
+            end
+
+            if opt_key_env_var
+              raise StandardError, "env #{opt_key_env_var} is not set" unless ENV[opt_key_env_var]
+              opt_key_pem = ENV[opt_key_env_var]
+            elsif opt_key
+              raise StandardError, "file #{opt_key} does not exist" unless File.exist? opt_key
+              opt_key_pem = File.read opt_key
+            else
+              raise StandardError, "pkcs7_#{optname_key} is not defined" unless opt_key or opt_key_env_var
+            end
+
+            return opt_key_pem
+          end
+
+          def self.load_public_key_pem
+            return self.load_ANY_key_pem('public_key', 'public_key_env_var')
+          end
+
+          def self.load_private_key_pem
+            return self.load_ANY_key_pem('private_key', 'private_key_env_var')
+          end
+
         end
       end
     end

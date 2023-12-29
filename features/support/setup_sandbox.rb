@@ -1,8 +1,9 @@
 require 'fileutils'
 
 class SetupSandbox
-  def self.create_files(test_files)
+  def self.create_files(destdir, test_files)
     test_files.each do |test_file, contents|
+      test_file = File.join(destdir, test_file)
       extension = test_file.split('.').last
       target_dir = File.dirname(test_file)
       FileUtils.mkdir_p(target_dir) unless File.directory?(target_dir)

@@ -2,7 +2,7 @@ rubylib = (ENV['RUBYLIB'] || '').split(File::PATH_SEPARATOR)
 rubylib.unshift %(#{File.dirname(__FILE__) + '/../../lib'})
 ENV['RUBYLIB'] = rubylib.uniq.join(File::PATH_SEPARATOR)
 require 'rubygems'
-require 'aruba/config'
+require 'aruba'
 require 'aruba/cucumber'
 require 'fileutils'
 require 'pathname'
@@ -24,19 +24,22 @@ Dir.glob('features/sandbox/**/*', File::FNM_DOTMATCH).each do |file_name|
   test_files[file_name] = file_contents
 end
 
-# ENV['EDITOR']="/bin/cat"
-
 Aruba.configure do |config|
-  config.before_cmd do |_cmd|
-    SetupSandbox.create_files test_files
-    # when executing, resolve the SANDBOX_HOME into a real HOME
-    ENV['HOME'] = Pathname.new(ENV.fetch('SANDBOX_HOME', nil)).realpath.to_s
+  # A number of checks require absolute paths.
+  config.allow_absolute_paths = true
+  # Setup the test environment.
+  config.before :command do |cmd|
+    SetupSandbox.create_files aruba.config.working_directory, test_files
   end
 end
 
 Before do
+  home_dir = 'clean_home'
   # set to a non-existant home in order so rogue configs don't confuse
-  ENV['SANDBOX_HOME'] = 'clean_home'
-  ENV['EYAML_CONFIG'] = nil
+  #set_environment_variable 'HOME', home_dir
+  ## But it must be an absolute path for other code
+  # e.g. puppet will throw: "Error: Could not initialize global default settings: non-absolute home"
+  set_environment_variable 'HOME', expand_path(home_dir)
+  set_environment_variable 'EYAML_CONFIG', ''
   @aruba_timeout_seconds = 30
 end
