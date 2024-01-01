@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.5.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.5.0) (2024-01-01)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.4.0...v3.5.0)
+
+**Breaking changes:**
+
+- Drop Ruby 2.5 support [\#351](https://github.com/voxpupuli/hiera-eyaml/pull/351) ([bastelfreak](https://github.com/bastelfreak))
+
+**Implemented enhancements:**
+
+- Load configuration file from working directory [\#356](https://github.com/voxpupuli/hiera-eyaml/pull/356) ([micmax93](https://github.com/micmax93))
+- Update gems and introduce rubocop [\#353](https://github.com/voxpupuli/hiera-eyaml/pull/353) ([bastelfreak](https://github.com/bastelfreak))
+
+**Closed issues:**
+
+- Remote Code Execution vulnerability in the hiera-eyaml tool [\#354](https://github.com/voxpupuli/hiera-eyaml/issues/354)
+
+**Merged pull requests:**
+
+- fix: upgrade to aruba-2/cucumber-8 [\#360](https://github.com/voxpupuli/hiera-eyaml/pull/360) ([robbat2](https://github.com/robbat2))
+- Drop EoL Puppet 6 testing [\#358](https://github.com/voxpupuli/hiera-eyaml/pull/358) ([bastelfreak](https://github.com/bastelfreak))
+- rubocop: autofix [\#357](https://github.com/voxpupuli/hiera-eyaml/pull/357) ([bastelfreak](https://github.com/bastelfreak))
+- Bump actions/checkout from 3 to 4 [\#355](https://github.com/voxpupuli/hiera-eyaml/pull/355) ([dependabot[bot]](https://github.com/apps/dependabot))
+- CI: Build gems with strictness and verbosity [\#348](https://github.com/voxpupuli/hiera-eyaml/pull/348) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [v3.4.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.4.0) (2023-05-26)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.3.0...v3.4.0)
