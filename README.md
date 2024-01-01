@@ -33,7 +33,7 @@ Unlike `hiera-gpg`, `hiera-eyaml`:
  - encrypts the value of each key individually (this means that `git diff` is meaningful)
  - includes a command line tool for encrypting, decrypting, editing and rotating keys (makes it almost as
    easy as using clear text files)
- - uses basic asymmetric encryption (PKCS#7) by default (doesn't require any native libraries that need to
+ - uses PKCS#7 encryption (RSA-2048 keypair and AES-256-CBC as a cipher) by default (doesn't require any native libraries that need to
    be compiled & allows users without the private key to encrypt values that the puppet master can decrypt)
  - has a pluggable encryption framework (e.g. GPG encryption ([hiera-eyaml-gpg](https://github.com/sihil/hiera-eyaml-gpg)) can be used
    if you have the need for multiple keys and easier key rotation)
@@ -70,7 +70,7 @@ Setup
 #### RubyGems
 
     $ gem install hiera-eyaml
-    
+
 #### Apt (Ubuntu 18.04+)
 
     $ sudo apt install hiera-eyaml
