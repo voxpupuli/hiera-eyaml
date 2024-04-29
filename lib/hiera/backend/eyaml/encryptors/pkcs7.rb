@@ -20,25 +20,26 @@ class Hiera
                                    type: :string, },
             public_key_env_var: { desc: 'Name of environment variable to read public key from',
                                   type: :string, },
-            subject: { desc: 'Subject to use for certificate when creating keys',
-                       type: :string,
-                       default: '/', },
             keysize: { desc: 'Key size used for encryption',
                        type: :integer,
                        default: 2048, },
-            digest: { desc: 'Hash function used for PKCS7',
-                      type: :string,
-                      default: 'SHA256', },
           }
 
           self.tag = 'PKCS7'
-
+          # The public certificate serial could be any number,
+          # but the tests encrypted data were signed with a certificate with the
+          # serial number 0. It was later changed to 1 in f9fde79,
+          # but tests data were not re-generated.
+          X509_SERIAL_NUMBER = 0
 
           def self.encrypt(plaintext)
             LoggingHelper.trace 'PKCS7 encrypt'
 
             public_key_pem = self.load_public_key_pem()
-            public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
+            public_key_rsa = OpenSSL::PKey::RSA.new(public_key_pem)
+            public_key_x509 = OpenSSL::X509::Certificate.new
+            public_key_x509.serial = Pkcs7::X509_SERIAL_NUMBER
+            public_key_x509.public_key = public_key_rsa.public_key
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')
             OpenSSL::PKCS7.encrypt([public_key_x509], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
@@ -56,8 +57,9 @@ class Hiera
             if Gem::Version::new(OpenSSL::VERSION) >= Gem::Version::new('2.2.0')
               public_key_x509 = nil
             else
-              public_key_pem = self.load_public_key_pem()
-              public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
+              public_key_x509 = OpenSSL::X509::Certificate.new
+              public_key_x509.serial = Pkcs7::X509_SERIAL_NUMBER
+              public_key_x509.public_key = private_key_rsa.public_key
             end
 
             pkcs7 = OpenSSL::PKCS7.new(ciphertext)
@@ -65,45 +67,19 @@ class Hiera
           end
 
           def self.create_keys
-            # Try to do equivalent of:
-            # openssl req -x509 -nodes -days 100000 -newkey rsa:2048 -keyout privatekey.pem -out publickey.pem -subj '/'
-
-            public_key = option :public_key
+            # Equivalent of:
+            # openssl genrsa -out private_key.pem 2048
+            # openssl rsa -in private_key.pem -pubout -out public_key.pem
             private_key = option :private_key
-            subject = option :subject
+            public_key = option :public_key
             keysize = option :keysize
-            digest = option :digest
 
             key = OpenSSL::PKey::RSA.new(keysize)
             EncryptHelper.ensure_key_dir_exists private_key
             EncryptHelper.write_important_file filename: private_key, content: key.to_pem, mode: 0o600
 
-            cert = OpenSSL::X509::Certificate.new
-            cert.subject = OpenSSL::X509::Name.parse(subject)
-            cert.serial = 1
-            cert.version = 2
-            cert.not_before = Time.now
-            cert.not_after = if 1.size == 8 # 64bit
-                               Time.now + (50 * 365 * 24 * 60 * 60)
-                             else                                  # 32bit
-                               Time.at(0x7fffffff)
-                             end
-            cert.public_key = key.public_key
-
-            ef = OpenSSL::X509::ExtensionFactory.new
-            ef.subject_certificate = cert
-            ef.issuer_certificate = cert
-            cert.extensions = [
-              ef.create_extension('basicConstraints', 'CA:TRUE', true),
-              ef.create_extension('subjectKeyIdentifier', 'hash'),
-            ]
-            cert.add_extension ef.create_extension('authorityKeyIdentifier',
-                                                   'keyid:always,issuer:always')
-
-            cert.sign key, OpenSSL::Digest.new(digest)
-
             EncryptHelper.ensure_key_dir_exists public_key
-            EncryptHelper.write_important_file filename: public_key, content: cert.to_pem
+            EncryptHelper.write_important_file filename: public_key, content: key.public_key.to_pem
             LoggingHelper.info 'Keys created OK'
           end
 
