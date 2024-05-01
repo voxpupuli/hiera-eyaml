@@ -16,7 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         ruby:
-          - "2.6"
           - "2.7"
           - "3.0"
           - "3.1"
@@ -30,17 +29,9 @@ jobs:
             puppet: "~> 8.0"
           - ruby: "2.7"
             puppet: "~> 8.0"
-          - ruby: "2.6"
-            puppet: "~> 8.0"
-
-          - ruby: "2.6"
-            puppet: "~> 7.24"
-
           - ruby: "3.0"
             puppet: "https://github.com/puppetlabs/puppet.git#main"
           - ruby: "2.7"
-            puppet: "https://github.com/puppetlabs/puppet.git#main"
-          - ruby: "2.6"
             puppet: "https://github.com/puppetlabs/puppet.git#main"
     env:
       PUPPET_VERSION: ${{ matrix.puppet }}
