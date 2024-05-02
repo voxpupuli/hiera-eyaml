@@ -31,9 +31,13 @@ class Hiera
             LoggingHelper.trace 'PKCS7 encrypt'
 
             public_key_pem = self.load_public_key_pem()
-            public_key_rsa = OpenSSL::PKey::RSA.new(public_key_pem)
-            public_key_x509 = OpenSSL::X509::Certificate.new
-            public_key_x509.public_key = public_key_rsa.public_key
+            if /BEGIN CERTIFICATE/.match(public_key_pem) != nil
+              public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
+            elsif /BEGIN PUBLIC KEY/.match(public_key_pem) != nil
+              public_key_rsa = OpenSSL::PKey::RSA.new(public_key_pem)
+              public_key_x509 = OpenSSL::X509::Certificate.new
+              public_key_x509.public_key = public_key_rsa.public_key
+            end
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')
             OpenSSL::PKCS7.encrypt([public_key_x509], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
