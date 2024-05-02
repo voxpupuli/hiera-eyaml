@@ -51,16 +51,9 @@ class Hiera
 
             pkcs7 = OpenSSL::PKCS7.new(ciphertext)
 
-            # Since ruby-openssl 2.2.0, it is possible to call OpenSSL::PKCS7#decrypt
-            # with the private key only. Reference:
-            # https://github.com/ruby/openssl/pull/183
-            if Gem::Version::new(OpenSSL::VERSION) >= Gem::Version::new('2.2.0')
-              public_key_x509 = nil
-            else
-              public_key_x509 = OpenSSL::X509::Certificate.new
-              public_key_x509.serial = pkcs7.recipients[0].serial
-              public_key_x509.public_key = private_key_rsa.public_key
-            end
+            public_key_x509 = OpenSSL::X509::Certificate.new
+            public_key_x509.serial = pkcs7.recipients[0].serial
+            public_key_x509.public_key = private_key_rsa.public_key
 
             pkcs7.decrypt(private_key_rsa, public_key_x509)
           end
