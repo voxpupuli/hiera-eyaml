@@ -10,6 +10,19 @@ env:
   BUNDLE_WITHOUT: release
 
 jobs:
+  rubocop:
+    env:
+      BUNDLE_WITHOUT: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - name: Run Rubocop
+        run: bundle exec rake rubocop
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -59,6 +72,7 @@ jobs:
 
   tests:
     needs:
+      - rubocop
       - test
     runs-on: ubuntu-latest
     name: Test suite
