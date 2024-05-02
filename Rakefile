@@ -21,7 +21,6 @@ else
     SimpleCov::Formatter::Codecov,
   ]
 end
-require 'bundler/gem_tasks'
 
 # https://cucumber.io/docs/tools/ruby/
 # https://stackoverflow.com/questions/6473419/using-simplecov-to-display-cucumber-code-coverage
