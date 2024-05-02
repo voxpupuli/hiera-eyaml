@@ -1,7 +1,7 @@
 # Hiera eyaml
 
 
-[![License](https://img.shields.io/github/license/voxpupuli/hiera-eyaml.svg)](https://github.com/voxpupuli/hiera-eyaml/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/voxpupuli/hiera-eyaml.svg)](https://github.com/voxpupuli/hiera-eyaml/blob/master/LICENSE.txt)
 [![Test](https://github.com/voxpupuli/hiera-eyaml/actions/workflows/test.yml/badge.svg)](https://github.com/voxpupuli/hiera-eyaml/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/voxpupuli/hiera-eyaml/branch/master/graph/badge.svg)](https://codecov.io/gh/voxpupuli/hiera-eyaml)
 [![Release](https://github.com/voxpupuli/hiera-eyaml/actions/workflows/release.yml/badge.svg)](https://github.com/voxpupuli/hiera-eyaml/actions/workflows/release.yml)
@@ -12,7 +12,7 @@ hiera-eyaml is a backend for Hiera that provides per-value encryption of sensiti
 to be used by Puppet.
 
 -------------------------
-:new: **hiera-eyaml is now part of voxpupuli**
+:new: **hiera-eyaml is now part of Vox Pupuli**
 
 hiera-eyaml has a new home https://github.com/voxpupuli/hiera-eyaml.
 
@@ -35,7 +35,7 @@ Unlike `hiera-gpg`, `hiera-eyaml`:
    easy as using clear text files)
  - uses basic asymmetric encryption (PKCS#7) by default (doesn't require any native libraries that need to
    be compiled & allows users without the private key to encrypt values that the puppet master can decrypt)
- - has a pluggable encryption framework (e.g. GPG encryption ([hiera-eyaml-gpg](https://github.com/sihil/hiera-eyaml-gpg)) can be used
+ - has a pluggable encryption framework (e.g. GPG encryption ([hiera-eyaml-gpg](https://github.com/voxpupuli/hiera-eyaml-gpg)) can be used
    if you have the need for multiple keys and easier key rotation)
 
 The Hiera eyaml backend uses yaml formatted files with the .eyaml extension. The encrypted strings are prefixed with the encryption
@@ -70,14 +70,34 @@ Setup
 #### RubyGems
 
     $ gem install hiera-eyaml
-    
+
 #### Apt (Ubuntu 18.04+)
 
     $ sudo apt install hiera-eyaml
 
-### Installing hiera-eyaml for the new [puppet-server](https://github.com/puppetlabs/puppet-server)
+### Installing hiera-eyaml for [puppetserver](https://github.com/puppetlabs/puppetserver)
 
-    $ puppetserver gem install hiera-eyaml
+All commands need to be executed as root. Puppet Enterprise vendors hiera-eyaml
+already, so you don't need to install it there.
+
+```sh
+puppetserver gem install hiera-eyaml
+```
+
+or via puppet:
+
+```sh
+puppet resource package hiera-eyaml ensure=installed provider=puppetserver_gem
+```
+
+or via Puppet DSL:
+
+```puppet
+package { 'hiera-eyaml':
+  ensure   => 'installed',
+  provider => 'puppetserver_gem',
+}
+```
 
 ### Generate keys
 
@@ -503,7 +523,7 @@ Issues
 
 If you have found a bug then please raise an issue here on github.
 
-Some of us hang out on #hiera-eyaml on freenode, please drop by if you want to say hi or have a question.
+Some of us hang out on #voxpupuli on [Libera.Chat](https://libera.chat/), please drop by if you want to say hi or have a question.
 
 
 Tests
