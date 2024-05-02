@@ -28,7 +28,7 @@ Aruba.configure do |config|
   # A number of checks require absolute paths.
   config.allow_absolute_paths = true
   # Setup the test environment.
-  config.before :command do |cmd|
+  config.before :command do |_cmd|
     SetupSandbox.create_files aruba.config.working_directory, test_files
   end
 end
@@ -36,7 +36,7 @@ end
 Before do
   home_dir = 'clean_home'
   # set to a non-existant home in order so rogue configs don't confuse
-  #set_environment_variable 'HOME', home_dir
+  # set_environment_variable 'HOME', home_dir
   ## But it must be an absolute path for other code
   # e.g. puppet will throw: "Error: Could not initialize global default settings: non-absolute home"
   set_environment_variable 'HOME', expand_path(home_dir)

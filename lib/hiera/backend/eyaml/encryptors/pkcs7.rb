@@ -33,11 +33,10 @@ class Hiera
 
           self.tag = 'PKCS7'
 
-
           def self.encrypt(plaintext)
             LoggingHelper.trace 'PKCS7 encrypt'
 
-            public_key_pem = self.load_public_key_pem()
+            public_key_pem = load_public_key_pem
             public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')
@@ -47,10 +46,10 @@ class Hiera
           def self.decrypt(ciphertext)
             LoggingHelper.trace 'PKCS7 decrypt'
 
-            private_key_pem = self.load_private_key_pem()
+            private_key_pem = load_private_key_pem
             private_key_rsa = OpenSSL::PKey::RSA.new(private_key_pem)
 
-            public_key_pem = self.load_public_key_pem()
+            public_key_pem = load_public_key_pem
             public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
 
             pkcs7 = OpenSSL::PKCS7.new(ciphertext)
@@ -100,11 +99,9 @@ class Hiera
             LoggingHelper.info 'Keys created OK'
           end
 
-          protected
-
           def self.load_ANY_key_pem(optname_key, optname_env_var)
-            opt_key = option (optname_key.to_sym)
-            opt_key_env_var = option (optname_env_var.to_sym)
+            opt_key = option(optname_key.to_sym)
+            opt_key_env_var = option(optname_env_var.to_sym)
 
             if opt_key and opt_key_env_var
               warn "both #{optname_key} and #{optname_env_var} specified, using #{optname_env_var}"
@@ -112,25 +109,26 @@ class Hiera
 
             if opt_key_env_var
               raise StandardError, "env #{opt_key_env_var} is not set" unless ENV[opt_key_env_var]
-              opt_key_pem = ENV[opt_key_env_var]
+
+              opt_key_pem = ENV.fetch(opt_key_env_var, nil)
             elsif opt_key
               raise StandardError, "file #{opt_key} does not exist" unless File.exist? opt_key
+
               opt_key_pem = File.read opt_key
             else
               raise StandardError, "pkcs7_#{optname_key} is not defined" unless opt_key or opt_key_env_var
             end
 
-            return opt_key_pem
+            opt_key_pem
           end
 
           def self.load_public_key_pem
-            return self.load_ANY_key_pem('public_key', 'public_key_env_var')
+            load_ANY_key_pem('public_key', 'public_key_env_var')
           end
 
           def self.load_private_key_pem
-            return self.load_ANY_key_pem('private_key', 'private_key_env_var')
+            load_ANY_key_pem('private_key', 'private_key_env_var')
           end
-
         end
       end
     end

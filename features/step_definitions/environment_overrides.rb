@@ -14,6 +14,7 @@ end
 Given(/^my PATH contains "(.*?)"$/) do |path_value|
   abspath = expand_path(path_value)
   return if ENV['PATH'].start_with? abspath
+
   paths = [path_value] + ENV['PATH'].split(File::PATH_SEPARATOR)
   ENV['PATH'] = paths.join(File::PATH_SEPARATOR)
   prepend_environment_variable 'PATH', abspath + File::PATH_SEPARATOR

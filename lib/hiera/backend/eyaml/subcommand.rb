@@ -39,9 +39,9 @@ class Hiera
           config_paths += ['/etc/eyaml/config.yaml']
           # Home directory
           env_home = ENV.fetch('HOME', nil)
-          config_paths += [ "#{env_home}/.eyaml/config.yaml" ] if env_home
+          config_paths += ["#{env_home}/.eyaml/config.yaml"] if env_home
           # Relative to current directory
-          config_paths += [ ".eyaml/config.yaml" ]
+          config_paths += ['.eyaml/config.yaml']
           # Explicit ENV variable.
           env_eyaml_config = ENV.fetch('EYAML_CONFIG', nil)
           config_paths += [env_eyaml_config] if env_eyaml_config
