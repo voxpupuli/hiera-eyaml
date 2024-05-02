@@ -23,8 +23,8 @@ And(/^I configure the keypair$/) do
   # fake ENV state and the real ENV state.
   delete_environment_variable 'EYAML_PUBLIC_KEY'
   delete_environment_variable 'EYAML_PRIVATE_KEY'
-  ENV['EYAML_PUBLIC_KEY']=''
-  ENV['EYAML_PRIVATE_KEY']=''
+  ENV['EYAML_PUBLIC_KEY'] = ''
+  ENV['EYAML_PRIVATE_KEY'] = ''
 end
 
 And(/^I configure the keypair using envvars$/) do
@@ -53,8 +53,8 @@ And(/^I load the keypair into envvars$/) do
   # fake ENV state and the real ENV state.
   set_environment_variable 'EYAML_PUBLIC_KEY', pubkey
   set_environment_variable 'EYAML_PRIVATE_KEY', privkey
-  ENV['EYAML_PUBLIC_KEY']=pubkey
-  ENV['EYAML_PRIVATE_KEY']=privkey
+  ENV['EYAML_PUBLIC_KEY'] = pubkey
+  ENV['EYAML_PRIVATE_KEY'] = privkey
 end
 
 When(/^I parse the content$/) do
@@ -62,7 +62,7 @@ When(/^I parse the content$/) do
 end
 
 Then(/^I should have (\d+) tokens?$/) do |number_of_tokens|
-  expect(@tokens.size).to eq (number_of_tokens.to_i)
+  expect(@tokens.size).to eq(number_of_tokens.to_i)
 end
 
 Then(/^token (\d+) should be a (.*)$/) do |index, class_name|
@@ -98,5 +98,5 @@ end
 
 Then(/^token (\d+) id should be (\d+)$/) do |index, token_id|
   token = @tokens[index.to_i - 1]
-  expect(token.id).to eq (token_id.to_i)
+  expect(token.id).to eq(token_id.to_i)
 end
