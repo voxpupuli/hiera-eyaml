@@ -26,11 +26,6 @@ class Hiera
           }
 
           self.tag = 'PKCS7'
-          # The public certificate serial could be any number,
-          # but the tests encrypted data were signed with a certificate with the
-          # serial number 0. It was later changed to 1 in f9fde79,
-          # but tests data were not re-generated.
-          X509_SERIAL_NUMBER = 0
 
           def self.encrypt(plaintext)
             LoggingHelper.trace 'PKCS7 encrypt'
@@ -38,7 +33,6 @@ class Hiera
             public_key_pem = self.load_public_key_pem()
             public_key_rsa = OpenSSL::PKey::RSA.new(public_key_pem)
             public_key_x509 = OpenSSL::X509::Certificate.new
-            public_key_x509.serial = Pkcs7::X509_SERIAL_NUMBER
             public_key_x509.public_key = public_key_rsa.public_key
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')
@@ -51,6 +45,8 @@ class Hiera
             private_key_pem = self.load_private_key_pem()
             private_key_rsa = OpenSSL::PKey::RSA.new(private_key_pem)
 
+            pkcs7 = OpenSSL::PKCS7.new(ciphertext)
+
             # Since ruby-openssl 2.2.0, it is possible to call OpenSSL::PKCS7#decrypt
             # with the private key only. Reference:
             # https://github.com/ruby/openssl/pull/183
@@ -58,11 +54,10 @@ class Hiera
               public_key_x509 = nil
             else
               public_key_x509 = OpenSSL::X509::Certificate.new
-              public_key_x509.serial = Pkcs7::X509_SERIAL_NUMBER
+              public_key_x509.serial = pkcs7.recipients[0].serial
               public_key_x509.public_key = private_key_rsa.public_key
             end
 
-            pkcs7 = OpenSSL::PKCS7.new(ciphertext)
             pkcs7.decrypt(private_key_rsa, public_key_x509)
           end
 
