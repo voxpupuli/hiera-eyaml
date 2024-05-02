@@ -29,5 +29,5 @@ Gem::Specification.new do |gem|
   # 2.21 requires Ruby 2.7
   gem.add_development_dependency 'rubocop-rspec', '~> 2.20.0'
 
-  gem.required_ruby_version = '>= 2.6', ' < 4'
+  gem.required_ruby_version = '>= 2.7', ' < 4'
 end
