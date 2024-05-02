@@ -42,7 +42,7 @@ jobs:
     name: "Ruby ${{ matrix.ruby }} - Puppet ${{ matrix.puppet }}"
     steps:
       - name: Enable coverage reporting on Ruby 3.1
-        if: matrix.puppet == '~> 7.0' && matrix.ruby == '3.1'
+        if: matrix.puppet == '~> 7.24' && matrix.ruby == '3.1'
         run: echo 'COVERAGE=yes' >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - name: Install expect
