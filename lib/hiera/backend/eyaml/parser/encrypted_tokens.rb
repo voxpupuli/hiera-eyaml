@@ -66,7 +66,7 @@ class Hiera
             case format
             when :block
               @cipher = @cipher.gsub(/\s/, '')
-              chevron = args[:use_chevron].nil? || args[:use_chevron] ? ">\n" : ''
+              chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
               "#{label_string}#{chevron}" + @indentation + "ENC[#{@encryptor.tag},#{@cipher}]".scan(/.{1,60}/).join("\n" + @indentation)
             when :string
               ciphertext = @cipher.gsub(/[\n\r]/, '')
@@ -85,7 +85,7 @@ class Hiera
 
             case format
             when :block
-              chevron = args[:use_chevron].nil? || args[:use_chevron] ? ">\n" : ''
+              chevron = (args[:use_chevron].nil? || args[:use_chevron]) ? ">\n" : ''
               "#{label_string}#{chevron}" + indentation + "DEC#{index}::#{@encryptor.tag}[" + @plain_text + ']!'
             when :string
               "#{label_string}DEC#{index}::#{@encryptor.tag}[" + @plain_text + ']!'
