@@ -1,40 +1,8 @@
 ---
 inherit_from: .rubocop_todo.yml
 
-require:
-  - rubocop-performance
-  - rubocop-rake
-  - rubocop-rspec
-
-AllCops:
-  NewCops: enable
-  DisplayCopNames: true
-  ExtraDetails: true
-  DisplayStyleGuide: true
-  TargetRubyVersion: '2.7'
-  Exclude:
-  - vendor/**/*
-  - .vendor/**/*
-
-# this currently doesn't work with the way we handle our secrets
-Gemspec/RequireMFA:
-  Enabled: false
-
-# current Vox Pupuli default is to use `add_development_dependency` in the gemspec
-Gemspec/DevelopmentDependencies:
-  Enabled: false
-
-Style/TrailingCommaInHashLiteral:
-  Enabled: True
-  EnforcedStyleForMultiline: consistent_comma
-
-Style/TrailingCommaInArrayLiteral:
-  Enabled: True
-  EnforcedStyleForMultiline: consistent_comma
-
-Style/TrailingCommaInArguments:
-  Enabled: True
-  EnforcedStyleForMultiline: comma
+inherit_gem:
+  voxpupuli-rubocop: rubocop.yml
 
 Metrics:
   Enabled: false

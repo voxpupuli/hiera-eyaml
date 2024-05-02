@@ -17,17 +17,11 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
 
   gem.add_runtime_dependency 'highline', '~> 2.1'
-  gem.add_runtime_dependency 'optimist', '~> 3.0', '>= 3.0.1'
+  gem.add_runtime_dependency 'optimist', '~> 3.1'
 
-  gem.add_development_dependency 'rake', '~> 13.0', '>= 13.0.6'
-  # 1.51 requires Ruby 2.7
-  gem.add_development_dependency 'rubocop', '~> 1.50.0'
-  # 1.18 requires Ruby 2.7
-  gem.add_development_dependency 'rspec-expectations', '~> 3.12.3'
-  gem.add_development_dependency 'rubocop-performance', '~> 1.17', '>= 1.17.1'
-  gem.add_development_dependency 'rubocop-rake', '~> 0.6.0'
-  # 2.21 requires Ruby 2.7
-  gem.add_development_dependency 'rubocop-rspec', '~> 2.20.0'
+  gem.add_development_dependency 'rake', '~> 13.2', '>= 13.2.1'
+  gem.add_development_dependency 'rspec-expectations', '~> 3.13'
+  gem.add_development_dependency 'voxpupuli-rubocop', '2.6.0'
 
   gem.required_ruby_version = '>= 2.7', ' < 4'
 end

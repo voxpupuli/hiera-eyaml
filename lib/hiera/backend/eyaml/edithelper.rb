@@ -15,7 +15,7 @@ class Hiera
             editor = editor.dup if editor.frozen? # values from ENV are frozen
             editor.gsub!(/([^\\]|^)~/, '\1' + ENV.fetch('HOME', nil)) # replace ~ with home unless escaped
             editor.gsub!(/(^|[^\\])"/, '\1') # remove unescaped quotes during processing
-            editor.gsub!(/\\ /, ' ') # unescape spaces since we quote paths
+            editor.gsub!('\\ ', ' ') # unescape spaces since we quote paths
             pieces = editor.split(' ')
             paths = # get possible paths, starting with longest
               pieces.each_with_index.map do |_, x|

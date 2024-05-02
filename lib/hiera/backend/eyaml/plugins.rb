@@ -25,10 +25,10 @@ class Hiera
         def self.find
           gem_version = Gem::Version.new(Gem::VERSION)
           this_version = Gem::Version.create(Hiera::Backend::Eyaml::VERSION)
-          index = gem_version >= Gem::Version.new('1.8.0') ? Gem::Specification : Gem.source_index
+          index = (gem_version >= Gem::Version.new('1.8.0')) ? Gem::Specification : Gem.source_index
 
           [index].flatten.each do |source|
-            specs = gem_version >= Gem::Version.new('1.6.0') ? source.latest_specs(true) : source.latest_specs
+            specs = (gem_version >= Gem::Version.new('1.6.0')) ? source.latest_specs(true) : source.latest_specs
 
             specs.each do |spec|
               spec = spec.to_spec if spec.respond_to?(:to_spec)

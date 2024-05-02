@@ -77,7 +77,7 @@ class Hiera
             cert.not_before = Time.now
             cert.not_after = if 1.size == 8 # 64bit
                                Time.now + (50 * 365 * 24 * 60 * 60)
-                             else                                  # 32bit
+                             else # 32bit
                                Time.at(0x7fffffff)
                              end
             cert.public_key = key.public_key
