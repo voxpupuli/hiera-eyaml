@@ -143,7 +143,7 @@ Use the -l parameter to pass in a label for the encrypted value,
 
 ### Decryption
 
-To decrypt something, you need the public_key and the private_key.
+To decrypt something, you need the private_key.
 
 To test decryption you can also use the eyaml tool if you have both keys
 
