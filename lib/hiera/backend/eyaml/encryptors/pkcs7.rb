@@ -43,6 +43,8 @@ class Hiera
               public_key_rsa = OpenSSL::PKey::RSA.new(public_key_pem)
               public_key_x509 = OpenSSL::X509::Certificate.new
               public_key_x509.public_key = public_key_rsa.public_key
+            else
+              raise StandardError, "file #{public_key_pem} cannot be used to encrypt - invalid public key format"
             end
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')
