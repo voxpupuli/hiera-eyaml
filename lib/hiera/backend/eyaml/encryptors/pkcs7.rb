@@ -55,6 +55,7 @@ class Hiera
 
             public_key_x509 = OpenSSL::X509::Certificate.new
             public_key_x509.serial = pkcs7.recipients[0].serial
+            public_key_x509.issuer = pkcs7.recipients[0].issuer
             public_key_x509.public_key = private_key_rsa.public_key
 
             pkcs7.decrypt(private_key_rsa, public_key_x509)
