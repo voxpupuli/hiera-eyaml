@@ -37,7 +37,15 @@ class Hiera
             LoggingHelper.trace 'PKCS7 encrypt'
 
             public_key_pem = load_public_key_pem
-            public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
+            if public_key_pem.include? 'BEGIN CERTIFICATE'
+              public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
+            elsif public_key_pem.include? 'BEGIN PUBLIC KEY'
+              public_key_rsa = OpenSSL::PKey::RSA.new(public_key_pem)
+              public_key_x509 = OpenSSL::X509::Certificate.new
+              public_key_x509.public_key = public_key_rsa.public_key
+            else
+              raise StandardError, "file #{public_key_pem} cannot be used to encrypt - invalid public key format"
+            end
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')
             OpenSSL::PKCS7.encrypt([public_key_x509], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
