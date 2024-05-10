@@ -51,10 +51,13 @@ class Hiera
             private_key_pem = load_private_key_pem
             private_key_rsa = OpenSSL::PKey::RSA.new(private_key_pem)
 
-            public_key_pem = load_public_key_pem
-            public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
-
             pkcs7 = OpenSSL::PKCS7.new(ciphertext)
+
+            public_key_x509 = OpenSSL::X509::Certificate.new
+            public_key_x509.serial = pkcs7.recipients[0].serial
+            public_key_x509.issuer = pkcs7.recipients[0].issuer
+            public_key_x509.public_key = private_key_rsa.public_key
+
             pkcs7.decrypt(private_key_rsa, public_key_x509)
           end
 
