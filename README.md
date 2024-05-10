@@ -145,7 +145,7 @@ Use the -l parameter to pass in a label for the encrypted value,
 
 To decrypt something, you need the private_key.
 
-To test decryption you can also use the eyaml tool if you have both keys
+To test decryption you can use the eyaml tool
 
     $ eyaml decrypt -f filename               # Decrypt a file
     $ eyaml decrypt -s 'ENC[PKCS7,.....]'     # Decrypt a string
