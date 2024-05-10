@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v4.1.0](https://github.com/voxpupuli/hiera-eyaml/tree/v4.1.0) (2024-05-10)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v4.0.0...v4.1.0)
+
+**Implemented enhancements:**
+
+- Remove public key requirement to decrypt [\#378](https://github.com/voxpupuli/hiera-eyaml/pull/378) ([cmd-ntrf](https://github.com/cmd-ntrf))
+
 ## [v4.0.0](https://github.com/voxpupuli/hiera-eyaml/tree/v4.0.0) (2024-05-10)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.4.0...v4.0.0)
