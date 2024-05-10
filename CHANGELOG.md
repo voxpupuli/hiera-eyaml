@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v4.0.0](https://github.com/voxpupuli/hiera-eyaml/tree/v4.0.0) (2024-05-10)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.4.0...v4.0.0)
+
+**Breaking changes:**
+
+- Drop support for ruby 2.6 [\#366](https://github.com/voxpupuli/hiera-eyaml/pull/366) ([cmd-ntrf](https://github.com/cmd-ntrf))
+- Drop EoL Puppet 6 testing [\#358](https://github.com/voxpupuli/hiera-eyaml/pull/358) ([bastelfreak](https://github.com/bastelfreak))
+- Drop Ruby 2.5 support [\#351](https://github.com/voxpupuli/hiera-eyaml/pull/351) ([bastelfreak](https://github.com/bastelfreak))
+
+**Implemented enhancements:**
+
+- Remove non-essential public certificate attributes [\#380](https://github.com/voxpupuli/hiera-eyaml/pull/380) ([cmd-ntrf](https://github.com/cmd-ntrf))
+- Add support to encrypt with an RSA public key [\#379](https://github.com/voxpupuli/hiera-eyaml/pull/379) ([cmd-ntrf](https://github.com/cmd-ntrf))
+- Add more jruby interpreter to CI [\#376](https://github.com/voxpupuli/hiera-eyaml/pull/376) ([bastelfreak](https://github.com/bastelfreak))
+- CI: Allow newer aruba/cucumber versions [\#373](https://github.com/voxpupuli/hiera-eyaml/pull/373) ([bastelfreak](https://github.com/bastelfreak))
+- rubocop: lint for Ruby 2.7 [\#370](https://github.com/voxpupuli/hiera-eyaml/pull/370) ([bastelfreak](https://github.com/bastelfreak))
+- Load configuration file from working directory [\#356](https://github.com/voxpupuli/hiera-eyaml/pull/356) ([micmax93](https://github.com/micmax93))
+- Update gems and introduce rubocop [\#353](https://github.com/voxpupuli/hiera-eyaml/pull/353) ([bastelfreak](https://github.com/bastelfreak))
+
+**Fixed bugs:**
+
+- CI: fix coverage reporting [\#374](https://github.com/voxpupuli/hiera-eyaml/pull/374) ([bastelfreak](https://github.com/bastelfreak))
+
+**Merged pull requests:**
+
+- rubocop: switch to voxpupuli-rubocop [\#372](https://github.com/voxpupuli/hiera-eyaml/pull/372) ([bastelfreak](https://github.com/bastelfreak))
+- Drop Ruby 2.6 leftovers in CI config [\#369](https://github.com/voxpupuli/hiera-eyaml/pull/369) ([bastelfreak](https://github.com/bastelfreak))
+- README.md: Refactor markdown, cleanup links [\#368](https://github.com/voxpupuli/hiera-eyaml/pull/368) ([bastelfreak](https://github.com/bastelfreak))
+- fix: upgrade to aruba-2/cucumber-8 [\#360](https://github.com/voxpupuli/hiera-eyaml/pull/360) ([robbat2](https://github.com/robbat2))
+- rubocop: autofix [\#357](https://github.com/voxpupuli/hiera-eyaml/pull/357) ([bastelfreak](https://github.com/bastelfreak))
+- CI: Build gems with strictness and verbosity [\#348](https://github.com/voxpupuli/hiera-eyaml/pull/348) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [v3.4.0](https://github.com/voxpupuli/hiera-eyaml/tree/v3.4.0) (2023-05-26)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v3.3.0...v3.4.0)
@@ -24,7 +57,6 @@ All notable changes to this project will be documented in this file.
 **Merged pull requests:**
 
 - Apply Vox Pupuli CI best practices [\#345](https://github.com/voxpupuli/hiera-eyaml/pull/345) ([bastelfreak](https://github.com/bastelfreak))
-- Bump actions/checkout from 2 to 3 [\#343](https://github.com/voxpupuli/hiera-eyaml/pull/343) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Add dependabot for gems and github actions [\#342](https://github.com/voxpupuli/hiera-eyaml/pull/342) ([bastelfreak](https://github.com/bastelfreak))
 - CI: Ensure we use Puppet 6.29 or newer [\#341](https://github.com/voxpupuli/hiera-eyaml/pull/341) ([bastelfreak](https://github.com/bastelfreak))
 - README: Add apt to installation methods [\#338](https://github.com/voxpupuli/hiera-eyaml/pull/338) ([AntoineSebert](https://github.com/AntoineSebert))
