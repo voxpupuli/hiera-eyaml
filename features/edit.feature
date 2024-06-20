@@ -66,6 +66,7 @@ Feature: eyaml editing
     When I run `eyaml edit non-existant-file.eyaml`
     When I run `eyaml decrypt -e non-existant-file.eyaml`
     Then the output should not match /#| This is eyaml edit mode/
+    And the output should match /new_key0: DEC::PKCS7\[\]\!/
     And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
 
@@ -99,6 +100,7 @@ Feature: eyaml editing
     When I run `eyaml edit test_input.eyaml`
     When I run `eyaml decrypt -e test_input.eyaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/
+    And the output should match /new_key0: DEC::PKCS7\[\]\!/
     And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
     And the output should match /multi_encryption: DEC::PLAINTEXT\[jammy\]\! DEC::PKCS7\[dodger\]!/
@@ -146,7 +148,8 @@ Feature: eyaml editing
     When I run `bash -c 'cp test_edit.yaml test_edit.eyaml'`
     When I run `eyaml edit -d test_edit.eyaml`
     When I run `eyaml decrypt -e test_edit.eyaml`
-    Then the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
+    Then the output should match /new_key0: DEC::PKCS7\[\]\!/
+    And the output should match /new_key1: DEC::PKCS7\[new value one\]\!/
     And the output should match /new_key2: DEC::PKCS7\[new value two\]\!/
 
   Scenario: no-decrypt mode should not modify existing values
