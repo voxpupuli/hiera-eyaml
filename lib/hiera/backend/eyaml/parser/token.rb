@@ -37,7 +37,7 @@ class Hiera
 
         class NonMatchToken < Token
           def initialize(non_match)
-            super(non_match)
+            super
           end
 
           def to_encrypted(_args = {})

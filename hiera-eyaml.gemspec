@@ -21,7 +21,7 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'rake', '~> 13.2', '>= 13.2.1'
   gem.add_development_dependency 'rspec-expectations', '~> 3.13'
-  gem.add_development_dependency 'voxpupuli-rubocop', '2.6.0'
+  gem.add_development_dependency 'voxpupuli-rubocop', '~> 2.8.0'
 
   gem.required_ruby_version = '>= 2.7', ' < 4'
 end
