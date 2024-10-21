@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v4.1.0](https://github.com/voxpupuli/hiera-eyaml/tree/v4.1.0) (2024-05-10)
+## [v4.2.0](https://github.com/voxpupuli/hiera-eyaml/tree/v4.2.0) (2024-10-21)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v4.1.0...v4.2.0)
+
+**Implemented enhancements:**
+
+- highline: Allow 3.x [\#385](https://github.com/voxpupuli/hiera-eyaml/pull/385) ([bastelfreak](https://github.com/bastelfreak))
+
+**Merged pull requests:**
+
+- voxpupuli-rubocop: Fix version pinning, update 2.6-\>2.8 [\#384](https://github.com/voxpupuli/hiera-eyaml/pull/384) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v4.1.0](https://github.com/voxpupuli/hiera-eyaml/tree/v4.1.0) (2024-05-13)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v4.0.0...v4.1.0)
 
