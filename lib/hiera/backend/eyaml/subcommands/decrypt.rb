@@ -81,6 +81,17 @@ class Hiera
               decrypted.join
             end
           end
+
+          def self.print_out(string)
+            case Eyaml::Options[:source]
+            when :eyaml
+              # Be sure the output ends with a newline, since YAML is a text format.
+              puts string
+            else
+              # Print the exact result.
+              print string
+            end
+          end
         end
       end
     end
