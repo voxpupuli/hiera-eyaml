@@ -6,11 +6,11 @@ Feature: eyaml encrypting
 
   Scenario: encrypt a simple string
     When I run `eyaml encrypt -o string -s some_string`
-    Then the output should match /ENC\[PKCS7,(.*?)\]$/
+    Then the output should match /\AENC\[PKCS7,(.*?)\]\Z/
 
   Scenario: encrypt a simple file
     When I run `eyaml encrypt -o string -f test_input.txt`
-    Then the output should match /ENC\[PKCS7,(.*?)\]$/
+    Then the output should match /\AENC\[PKCS7,(.*?)\]\Z/
 
   Scenario: encrypt a eyaml file
     When I run `eyaml encrypt --eyaml test_plain.yaml`
@@ -18,19 +18,21 @@ Feature: eyaml encrypting
 
   Scenario: encrypt a binary file
     When I run `eyaml encrypt -o string -f test_input.bin`
-    Then the output should match /ENC\[PKCS7,(.*?)\]$/
+    Then the output should match /\AENC\[PKCS7,(.*?)\]\Z/
 
   Scenario: encrypt a password
     When I run `./supply_password.sh eyaml encrypt -o string -p`
-    Then the file "password.output" should match /ENC\[PKCS7,(.*?)\]/
+    # For some reason, delimiting this regex via /.../ does not work (the test
+    # fails to match).
+    Then the file "password.output" should match %r{\AENC\[PKCS7,(.*?)\]\Z}
 
   Scenario: encrypt using STDIN
     When I run `./pipe_string.sh encrypt_me eyaml encrypt -o string --stdin`
-    Then the output should match /ENC\[PKCS7,(.*?)\]$/
+    Then the output should match /\AENC\[PKCS7,(.*?)\]\Z/
 
   Scenario: encrypt as string with a label
     When I run `eyaml encrypt -o string -s secret_thing -l db-password`
-    Then the output should match /db-password: ENC\[PKCS7,(.*?)\]$/
+    Then the output should match /\Adb-password: ENC\[PKCS7,(.*?)\]\Z/
 
   Scenario: encrypt as block with a label
     When I run `eyaml encrypt -o block -s secret_thing -l db-password`
