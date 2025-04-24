@@ -90,6 +90,18 @@ class Hiera
               end
             end
           end
+
+          def self.print_out(string)
+            case Eyaml::Options[:output]
+            when 'string'
+              # Do not include a newline, so that 'eyaml decrypt' of the
+              # output returns the original input.
+              print string
+            else
+              # The output is a text file, so ensure there is a final newline.
+              puts string
+            end
+          end
         end
       end
     end

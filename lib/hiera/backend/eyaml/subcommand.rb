@@ -135,6 +135,10 @@ class Hiera
           options
         end
 
+        def self.print_out(string)
+          print string
+        end
+
         def self.validate(args)
           args
         end

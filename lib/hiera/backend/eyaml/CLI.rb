@@ -42,7 +42,7 @@ class Hiera
           executor = Eyaml::Options[:executor]
 
           result = executor.execute
-          puts result unless result.nil?
+          executor.print_out(result) unless result.nil?
         end
       end
     end
