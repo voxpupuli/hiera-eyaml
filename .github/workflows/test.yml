@@ -38,6 +38,7 @@ jobs:
           - "~> 8.0"
           - "~> 7.24"
           - "https://github.com/puppetlabs/puppet.git#main"
+          - "https://github.com/openvoxproject/puppet.git#main"
         exclude:
           - ruby: "3.0"
             puppet: "~> 8.0"
@@ -48,6 +49,12 @@ jobs:
             puppet: "https://github.com/puppetlabs/puppet.git#main"
           - ruby: "2.7"
             puppet: "https://github.com/puppetlabs/puppet.git#main"
+
+          - ruby: "3.0"
+            puppet: "https://github.com/openvoxproject/puppet.git#main"
+          - ruby: "2.7"
+            puppet: "https://github.com/openvoxproject/puppet.git#main"
+
     env:
       PUPPET_VERSION: ${{ matrix.puppet }}
       COVERAGE: ${{ matrix.coverage }}
