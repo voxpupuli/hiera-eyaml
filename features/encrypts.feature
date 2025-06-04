@@ -22,9 +22,9 @@ Feature: eyaml encrypting
 
   Scenario: encrypt a password
     When I run `eyaml encrypt -o string -p` interactively
-    And I wait for stdout to contain "Enter password: "
+    And I wait for stderr to contain "Enter password: "
     And I type "secretme"
-    Then the output should match /ENC\[PKCS7,(.*?)\]/
+    Then the stdout should match /\AENC\[PKCS7,(.*?)\]$/
 
   Scenario: encrypt using STDIN
     When I run `eyaml encrypt -o string --stdin` interactively
