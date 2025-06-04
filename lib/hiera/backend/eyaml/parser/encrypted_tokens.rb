@@ -146,9 +146,7 @@ class Hiera
 
           def create_token(string)
             md = @regex.match(string)
-            if EncToken.encrypt_unchanged == false && !md[1].nil? && (md[3] == EncToken.tokens_map[md[1]])
-              return EncToken.plain_text_value(:string, md[3], md[2], string, md[1])
-            end
+            return EncToken.plain_text_value(:string, md[3], md[2], string, md[1]) if EncToken.encrypt_unchanged == false && !md[1].nil? && (md[3] == EncToken.tokens_map[md[1]])
 
             EncToken.decrypted_value(:string, md[3], md[2], string, md[1])
           end
@@ -161,9 +159,7 @@ class Hiera
 
           def create_token(string)
             md = @regex.match(string)
-            if EncToken.encrypt_unchanged == false && !md[2].nil? && (md[4] == EncToken.tokens_map[md[2]])
-              return EncToken.plain_text_value(:string, md[4], md[3], string, md[2])
-            end
+            return EncToken.plain_text_value(:string, md[4], md[3], string, md[2]) if EncToken.encrypt_unchanged == false && !md[2].nil? && (md[4] == EncToken.tokens_map[md[2]])
 
             EncToken.decrypted_value(:block, md[4], md[3], string, md[2], md[1])
           end

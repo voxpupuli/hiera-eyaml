@@ -60,7 +60,7 @@ class Hiera
           return string if orig_encoding == Encoding::UTF_8
 
           string.dup.force_encoding(Encoding::UTF_8)
-        rescue EncodingError => e
+        rescue EncodingError
           warn "Unable to encode to \"Encoding::UTF_8\" using the original \"#{orig_encoding}\""
           string
         end

@@ -5,7 +5,6 @@ class Hiera
         class TokenType
           attr_reader :regex
 
-          @regex
           def create_token(_string)
             raise 'Abstract method called'
           end

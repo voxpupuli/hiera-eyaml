@@ -6,3 +6,6 @@ inherit_gem:
 
 Metrics:
   Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false

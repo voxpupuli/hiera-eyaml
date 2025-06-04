@@ -15,8 +15,7 @@ test_files = {}
 Dir.glob('features/sandbox/**/*', File::FNM_DOTMATCH).each do |file_name|
   next unless File.file? file_name
 
-  read_mode = 'r'
-  read_mode = 'rb' if /\.bin$/.match?(file_name)
+  'rb' if /\.bin$/.match?(file_name)
   file = File.open(file_name, 'r')
   file_contents = file.read
   file.close

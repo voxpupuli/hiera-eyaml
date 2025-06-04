@@ -16,12 +16,12 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.require_paths = ['lib']
 
-  gem.add_runtime_dependency 'highline', '>= 2.1', '< 4'
-  gem.add_runtime_dependency 'optimist', '~> 3.1'
+  gem.add_dependency 'highline', '>= 2.1', '< 4'
+  gem.add_dependency 'optimist', '~> 3.1'
 
   gem.add_development_dependency 'rake', '~> 13.2', '>= 13.2.1'
   gem.add_development_dependency 'rspec-expectations', '~> 3.13'
-  gem.add_development_dependency 'voxpupuli-rubocop', '~> 2.8.0'
+  gem.add_development_dependency 'voxpupuli-rubocop', '~> 3.1.0'
 
   gem.required_ruby_version = '>= 2.7', ' < 4'
 end

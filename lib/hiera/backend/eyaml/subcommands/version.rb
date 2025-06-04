@@ -15,8 +15,6 @@ class Hiera
           end
 
           def self.execute
-            plugin_versions = {}
-
             Eyaml::LoggingHelper.info "hiera-eyaml (core): #{Eyaml::VERSION}"
 
             Plugins.plugins.each do |plugin|
