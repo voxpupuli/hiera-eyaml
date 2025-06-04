@@ -20,7 +20,6 @@ class Hiera
           end
 
           def self.execute
-            subcommands = Eyaml.subcommands
             puts <<~EOS
               Unknown subcommand#{': ' + Eyaml.subcommand if Eyaml.subcommand}
 

@@ -86,7 +86,7 @@ class Hiera
         def self.find(commandname = 'unknown_command')
           begin
             require "hiera/backend/eyaml/subcommands/#{commandname.downcase}"
-          rescue Exception => e
+          rescue Exception
             require 'hiera/backend/eyaml/subcommands/unknown_command'
             return Hiera::Backend::Eyaml::Subcommands::UnknownCommand
           end

@@ -50,7 +50,7 @@ class Hiera
           if hiera?
             Hiera.send(hiera_loglevel, message) if threshold.nil? or Eyaml.verbosity_level > threshold
           elsif threshold.nil? or Eyaml.verbosity_level > threshold
-            STDERR.puts self.colorize( message, cli_color )
+            STDERR.puts self.colorize(message, cli_color)
           end
         end
 

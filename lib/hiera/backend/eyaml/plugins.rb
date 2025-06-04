@@ -37,7 +37,6 @@ class Hiera
               dependency = spec.dependencies.find { |d| d.name == 'hiera-eyaml' }
               next if dependency && !dependency.requirement.satisfied_by?(this_version)
 
-              file = nil
               file = if gem_version >= Gem::Version.new('1.8.0')
                        spec.matches_for_glob('**/eyaml_init.rb').first
                      else

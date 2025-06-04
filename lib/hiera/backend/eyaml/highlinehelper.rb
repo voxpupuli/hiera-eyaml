@@ -10,11 +10,7 @@ class Hiera
 
         def self.confirm?(message)
           result = ask("#{message} (y/N): ")
-          if result.downcase == 'y' or result.downcase == 'yes'
-            true
-          else
-            false
-          end
+          %w[y yes].include?(result.downcase) || false
         end
       end
     end
