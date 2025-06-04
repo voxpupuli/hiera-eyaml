@@ -26,7 +26,7 @@ end
 # https://stackoverflow.com/questions/6473419/using-simplecov-to-display-cucumber-code-coverage
 require 'cucumber/rake/task'
 Cucumber::Rake::Task.new(:features) do |t|
-  t.cucumber_opts = %w[--format progress] # Any valid command line option can go here.
+  t.cucumber_opts = %w[--format progress --strict] # Any valid command line option can go here.
 end
 
 begin
