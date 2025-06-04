@@ -1,4 +1,4 @@
-#!/usr/bin/expect -f
+#!/usr/bin/env expect
 log_file password.output
 
 spawn bash -c "[lindex $argv]"
