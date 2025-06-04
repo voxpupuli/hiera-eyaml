@@ -21,11 +21,15 @@ Feature: eyaml encrypting
     Then the output should match /ENC\[PKCS7,(.*?)\]$/
 
   Scenario: encrypt a password
-    When I run `./supply_password.sh eyaml encrypt -o string -p`
-    Then the file "password.output" should match /ENC\[PKCS7,(.*?)\]/
+    When I run `eyaml encrypt -o string -p` interactively
+    And I wait for stdout to contain "Enter password: "
+    And I type "secretme"
+    Then the output should match /ENC\[PKCS7,(.*?)\]/
 
   Scenario: encrypt using STDIN
-    When I run `./pipe_string.sh encrypt_me eyaml encrypt -o string --stdin`
+    When I run `eyaml encrypt -o string --stdin` interactively
+    And I type "encrypt_me"
+    And I close the stdin stream
     Then the output should match /ENC\[PKCS7,(.*?)\]$/
 
   Scenario: encrypt as string with a label

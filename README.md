@@ -535,7 +535,6 @@ In order to run the tests, simply run `cucumber` in the top level directory of t
 
 You'll need to have a few requirements installed:
 
-  * `expect` (via yum/apt-get or system package)
   * `aruba` (gem)
   * `cucumber` (gem)
   * `puppet` (gem)
