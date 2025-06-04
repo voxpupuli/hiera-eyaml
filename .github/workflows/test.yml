@@ -1,3 +1,4 @@
+---
 name: Test
 
 on:
@@ -13,7 +14,7 @@ jobs:
   rubocop:
     env:
       BUNDLE_WITHOUT: release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Ruby ${{ matrix.ruby }}
@@ -24,7 +25,7 @@ jobs:
       - name: Run Rubocop
         run: bundle exec rake rubocop
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -35,27 +36,33 @@ jobs:
           - "3.2"
           - "3.3"
           - jruby-9.4
-        puppet:
-          - "~> 8.0"
-          - "~> 7.24"
-          - "https://github.com/puppetlabs/puppet.git#main"
+        openvox:
+          - "~> 8"
+          - "~> 7"
+          - "https://github.com/OpenVoxProject/puppet.git#main"
         exclude:
           - ruby: "3.0"
-            puppet: "~> 8.0"
+            openvox: "~> 8"
           - ruby: "2.7"
-            puppet: "~> 8.0"
+            openvox: "~> 8"
 
           - ruby: "3.0"
-            puppet: "https://github.com/puppetlabs/puppet.git#main"
+            openvox: "https://github.com/openvoxlabs/puppet.git#main"
           - ruby: "2.7"
-            puppet: "https://github.com/puppetlabs/puppet.git#main"
+            openvox: "https://github.com/openvoxlabs/puppet.git#main"
+
+          - ruby: "3.0"
+            openvox: "https://github.com/openvoxproject/puppet.git#main"
+          - ruby: "2.7"
+            openvox: "https://github.com/openvoxproject/puppet.git#main"
+
     env:
-      PUPPET_VERSION: ${{ matrix.puppet }}
+      OPENVOX_VERSION: ${{ matrix.openvox }}
       COVERAGE: ${{ matrix.coverage }}
-    name: "Ruby ${{ matrix.ruby }} - Puppet ${{ matrix.puppet }}"
+    name: "Ruby ${{ matrix.ruby }} - OpenVox ${{ matrix.openvox }}"
     steps:
       - name: Enable coverage reporting on Ruby 3.1
-        if: matrix.puppet == '~> 7.24' && matrix.ruby == '3.1'
+        if: matrix.openvox == '~> 7.24' && matrix.ruby == '3.1'
         run: echo 'COVERAGE=yes' >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - name: Install expect
@@ -65,6 +72,8 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+      - name: Display Ruby environment
+        run: bundle env
       - name: spec tests
         run: bundle exec rake features
       - name: Verify gem builds

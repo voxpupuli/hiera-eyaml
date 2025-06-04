@@ -21,7 +21,7 @@ group :development do
   gem 'aruba', '~> 2.2'
   gem 'cucumber', '~> 9.2'
   gem 'hiera-eyaml-plaintext'
-  gem 'puppet', *location_for(ENV['PUPPET_VERSION']) if ENV['PUPPET_VERSION']
+  gem 'openvox', *location_for(ENV['OPENVOX_VERSION']) if ENV['OPENVOX_VERSION']
 end
 
 group :release do
