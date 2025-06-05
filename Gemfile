@@ -33,3 +33,10 @@ group :coverage, optional: ENV['COVERAGE'] != 'yes' do
   gem 'codecov', require: false
   gem 'simplecov-console', require: false
 end
+
+# openvox gem depends on syslog, but doesn't list it as explicit dependency
+# until Ruby 3.4, syslog was part of MRI ruby core
+# https://github.com/OpenVoxProject/puppet/issues/90
+platforms :mri do
+  gem 'syslog', '~> 0.3.0'
+end
