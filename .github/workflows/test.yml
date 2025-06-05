@@ -65,8 +65,6 @@ jobs:
         if: matrix.openvox == '~> 7.24' && matrix.ruby == '3.1'
         run: echo 'COVERAGE=yes' >> $GITHUB_ENV
       - uses: actions/checkout@v4
-      - name: Install expect
-        run: sudo apt-get install expect
       - name: Install Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
