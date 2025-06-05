@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v4.3.0](https://github.com/voxpupuli/hiera-eyaml/tree/v4.3.0) (2025-06-05)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v4.2.0...v4.3.0)
+
+**Implemented enhancements:**
+
+- CI: Replace puppet with openvox [\#390](https://github.com/voxpupuli/hiera-eyaml/pull/390) ([bastelfreak](https://github.com/bastelfreak))
+- Add Ruby 3.3 to CI matrix [\#386](https://github.com/voxpupuli/hiera-eyaml/pull/386) ([bastelfreak](https://github.com/bastelfreak))
+
+**Merged pull requests:**
+
+- voxpupuli-rubocop: Update 2.8.0-\>3.1.0 [\#393](https://github.com/voxpupuli/hiera-eyaml/pull/393) ([bastelfreak](https://github.com/bastelfreak))
+
 ## [v4.2.0](https://github.com/voxpupuli/hiera-eyaml/tree/v4.2.0) (2024-10-21)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v4.1.0...v4.2.0)
