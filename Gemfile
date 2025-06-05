@@ -33,3 +33,6 @@ group :coverage, optional: ENV['COVERAGE'] != 'yes' do
   gem 'codecov', require: false
   gem 'simplecov-console', require: false
 end
+
+# syslog is a dependency of openvox on Ruby 3.4
+gem 'syslog'
