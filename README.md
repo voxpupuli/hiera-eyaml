@@ -65,6 +65,10 @@ files as simple as clear text files.
 Setup
 -----
 
+### Puppet module
+
+The Vox Pupuli [hiera module](https://github.com/voxpupuli/puppet-hiera) can manage the installation and configuration of hiera-eyaml.
+
 ### Installing hiera-eyaml
 
 #### RubyGems
