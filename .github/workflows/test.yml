@@ -16,7 +16,7 @@ jobs:
       BUNDLE_WITHOUT: release
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Install Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
@@ -64,7 +64,7 @@ jobs:
       - name: Enable coverage reporting on Ruby 3.1
         if: matrix.openvox == '~> 7.24' && matrix.ruby == '3.1'
         run: echo 'COVERAGE=yes' >> $GITHUB_ENV
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Install Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
