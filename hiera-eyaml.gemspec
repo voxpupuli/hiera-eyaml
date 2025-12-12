@@ -23,5 +23,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec-expectations', '~> 3.13'
   gem.add_development_dependency 'voxpupuli-rubocop', '~> 3.1.0'
 
-  gem.required_ruby_version = '>= 2.7', ' < 4'
+  # pinning to 3.1 in case people install it into jruby 9.4 (openvoxserver 8)
+  gem.required_ruby_version = '>= 3.1', ' < 4'
 end
