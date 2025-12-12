@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.require_paths = ['lib']
 
+  gem.add_dependency 'base64', '~> 0.3.0'
   gem.add_dependency 'highline', '>= 2.1', '< 4'
   gem.add_dependency 'optimist', '~> 3.1'
 
