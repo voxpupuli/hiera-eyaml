@@ -1,4 +1,5 @@
 require 'openssl'
+require 'base64'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/encrypthelper'
 require 'hiera/backend/eyaml/logginghelper'
@@ -20,6 +21,10 @@ class Hiera
                                    type: :string, },
             public_key_env_var: { desc: 'Name of environment variable to read public key from',
                                   type: :string, },
+            b64_private_key_env_var: { desc: 'Name of environment variable to read private key from, encoded in base64',
+                                       type: :string, },
+            b64_public_key_env_var: { desc: 'Name of environment variable to read public key from, encoded in base64',
+                                      type: :string, },
             keysize: { desc: 'Key size used for encryption',
                        type: :integer,
                        default: 2048, },
@@ -91,9 +96,10 @@ class Hiera
             LoggingHelper.info 'Keys created OK'
           end
 
-          def self.load_ANY_key_pem(optname_key, optname_env_var)
+          def self.load_ANY_key_pem(optname_key, optname_env_var, b64_optname_env_var)
             opt_key = option(optname_key.to_sym)
             opt_key_env_var = option(optname_env_var.to_sym)
+            b64_opt_key_env_var = option(b64_optname_env_var.to_sym)
 
             if opt_key and opt_key_env_var
               warn "both #{optname_key} and #{optname_env_var} specified, using #{optname_env_var}"
@@ -103,6 +109,10 @@ class Hiera
               raise StandardError, "env #{opt_key_env_var} is not set" unless ENV[opt_key_env_var]
 
               opt_key_pem = ENV.fetch(opt_key_env_var, nil)
+            elsif b64_opt_key_env_var
+              raise StandardError, "env #{b64_opt_key_env_var} is not set" unless ENV[b64_opt_key_env_var]
+
+              opt_key_pem = Base64.decode64(ENV.fetch(b64_opt_key_env_var, nil))
             elsif opt_key
               raise StandardError, "file #{opt_key} does not exist" unless File.exist? opt_key
 
@@ -115,11 +125,11 @@ class Hiera
           end
 
           def self.load_public_key_pem
-            load_ANY_key_pem('public_key', 'public_key_env_var')
+            load_ANY_key_pem('public_key', 'public_key_env_var', 'b64_public_key_env_var')
           end
 
           def self.load_private_key_pem
-            load_ANY_key_pem('private_key', 'private_key_env_var')
+            load_ANY_key_pem('private_key', 'private_key_env_var', 'b64_private_key_env_var')
           end
         end
       end
