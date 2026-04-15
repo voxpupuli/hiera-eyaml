@@ -1,7 +1,7 @@
 class Hiera
   module Backend
     module Eyaml
-      VERSION = '5.0.0'
+      VERSION = '5.0.1'
       DESCRIPTION = 'Hiera-eyaml is a backend for Hiera which provides OpenSSL encryption/decryption for Hiera properties'
 
       class RecoverableError < StandardError

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v5.0.1](https://github.com/voxpupuli/hiera-eyaml/tree/v5.0.1) (2026-04-15)
+
+[Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v5.0.0...v5.0.1)
+
+**Merged pull requests:**
+
+- Update syslog gem version constraint in Gemfile [\#417](https://github.com/voxpupuli/hiera-eyaml/pull/417) ([nmburgan](https://github.com/nmburgan))
+- Change base64 dependency version constraint [\#416](https://github.com/voxpupuli/hiera-eyaml/pull/416) ([nmburgan](https://github.com/nmburgan))
+
 ## [v5.0.0](https://github.com/voxpupuli/hiera-eyaml/tree/v5.0.0) (2026-02-21)
 
 [Full Changelog](https://github.com/voxpupuli/hiera-eyaml/compare/v4.3.0...v5.0.0)
