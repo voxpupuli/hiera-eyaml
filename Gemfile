@@ -38,5 +38,5 @@ end
 # until Ruby 3.4, syslog was part of MRI ruby core
 # https://github.com/OpenVoxProject/puppet/issues/90
 platforms :mri do
-  gem 'syslog', '>= 0.3.0', '< 0.5'
+  gem 'syslog', '>= 0.1', '< 0.5'
 end
