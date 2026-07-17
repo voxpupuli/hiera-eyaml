@@ -42,3 +42,12 @@ Feature: Recrypt
     Then the exit status should be 0
     And I run `eyaml decrypt -e test_input.eyaml`
     Then the output should match /encrypted_string: DEC::PKCS7\[planet of the apes\]\!/
+
+  Scenario: Recrypt without --change-encryption preserves the existing encryption method
+    When I run `bash -c 'cp test_input.yaml test_input.eyaml'`
+    And I run `eyaml recrypt -d plaintext test_input.eyaml`
+    Then the exit status should be 0
+    And I run `eyaml recrypt test_input.eyaml`
+    Then the exit status should be 0
+    And I run `eyaml decrypt -e test_input.eyaml`
+    Then the output should match /encrypted_string: DEC::PLAINTEXT\[planet of the apes\]\!/
