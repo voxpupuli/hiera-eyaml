@@ -37,6 +37,5 @@ end
 # openvox gem depends on syslog, but doesn't list it as explicit dependency
 # until Ruby 3.4, syslog was part of MRI ruby core
 # https://github.com/OpenVoxProject/puppet/issues/90
-platforms :mri do
-  gem 'syslog', '>= 0.1', '< 0.5'
-end
+# Also required by latest JRuby 10.0
+gem 'syslog', '>= 0.1', '< 0.5' if RUBY_VERSION >= '3.4'
