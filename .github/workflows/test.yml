@@ -25,6 +25,8 @@ jobs:
       - name: Run Rubocop
         run: bundle exec rake rubocop
   test:
+    needs:
+      - rubocop
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
