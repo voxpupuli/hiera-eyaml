@@ -1,5 +1,6 @@
 require 'openssl'
 require 'base64'
+require 'securerandom'
 require 'hiera/backend/eyaml/encryptor'
 require 'hiera/backend/eyaml/encrypthelper'
 require 'hiera/backend/eyaml/logginghelper'
@@ -37,7 +38,7 @@ class Hiera
 
             public_key_pem = load_public_key_pem
             if public_key_pem.include? 'BEGIN CERTIFICATE'
-              public_key_x509 = OpenSSL::X509::Certificate.new(public_key_pem)
+              public_key_x509 = load_certificate(public_key_pem)
             elsif public_key_pem.include? 'BEGIN PUBLIC KEY'
               public_key_rsa = OpenSSL::PKey::RSA.new(public_key_pem)
               public_key_x509 = OpenSSL::X509::Certificate.new
@@ -48,6 +49,57 @@ class Hiera
 
             cipher = OpenSSL::Cipher.new('aes-256-cbc')
             OpenSSL::PKCS7.encrypt([public_key_x509], plaintext, cipher, OpenSSL::PKCS7::BINARY).to_der
+          end
+
+          # Certificates written by hiera-eyaml 5.0.1 and earlier have an empty
+          # subject and issuer DN, because create_keys never set them. Bouncy
+          # Castle >= 1.85, which backs JRuby's OpenSSL implementation, and
+          # therefore Puppet Server, refuses to parse a certificate with an
+          # empty issuer, so encryption fails against every key pair generated
+          # before that was fixed. Fill in the empty DNs and re-parse in that
+          # case, so existing key pairs keep working on every Ruby engine.
+          def self.load_certificate(public_key_pem)
+            named_pem = name_empty_certificate_dns(public_key_pem)
+            return OpenSSL::X509::Certificate.new(public_key_pem) if named_pem.nil?
+
+            LoggingHelper.warn 'public key certificate has an empty subject and issuer, which newer ' \
+                               "TLS stacks reject.\nReissue it from your existing private key (this " \
+                               "keeps already-encrypted data readable):\n" \
+                               'openssl req -x509 -key private_key.pkcs7.pem -subj "/CN=eyaml" ' \
+                               '-days 18250 -out public_key.pkcs7.pem'
+            named_pem
+          end
+
+          # Returns a copy of the given certificate with any empty subject and
+          # issuer DN replaced by CN=eyaml, or nil when the certificate has a
+          # non-empty issuer and so can simply be parsed as-is. Only the DNs are
+          # rewritten: the public key, serial number and validity all carry over,
+          # and the (now unverifiable) signature is left untouched, since a PKCS7
+          # recipient certificate is never validated - it only supplies the
+          # public key and the issuer/serial pair identifying the recipient.
+          def self.name_empty_certificate_dns(public_key_pem)
+            base64 = public_key_pem[/-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----/m, 1]
+            return nil if base64.nil?
+
+            certificate = OpenSSL::ASN1.decode(Base64.decode64(base64)).value
+            # TBSCertificate ::= SEQUENCE { [0] version OPTIONAL, serialNumber,
+            # signature, issuer, validity, subject, subjectPublicKeyInfo, ... }
+            tbs_certificate = certificate[0].value
+            offset = (tbs_certificate[0].tag_class == :CONTEXT_SPECIFIC && tbs_certificate[0].tag.zero?) ? 1 : 0
+            issuer = tbs_certificate[offset + 2]
+            subject = tbs_certificate[offset + 4]
+            return nil unless issuer.value.empty?
+
+            name = OpenSSL::ASN1.decode(OpenSSL::X509::Name.parse('/CN=eyaml').to_der)
+            tbs_certificate[offset + 2] = name
+            tbs_certificate[offset + 4] = name if subject.value.empty?
+            der = OpenSSL::ASN1::Sequence.new([OpenSSL::ASN1::Sequence.new(tbs_certificate),
+                                               certificate[1], certificate[2],]).to_der
+            OpenSSL::X509::Certificate.new(der)
+          rescue StandardError
+            # Not a certificate shape we know how to repair - hand it back to the
+            # normal parse path so that reports the problem.
+            nil
           end
 
           def self.decrypt(ciphertext)
@@ -88,7 +140,18 @@ class Hiera
                              else # 32bit
                                Time.at(0x7fffffff)
                              end
+            # A v1 certificate with serial 0 is not RFC 5280 conformant, and
+            # strict TLS stacks have been tightening up on both. Emit a v3
+            # certificate with a random 19 byte serial, like `openssl req -x509`.
+            cert.version = 2
+            cert.serial = OpenSSL::BN.new(SecureRandom.hex(19), 16)
             cert.public_key = key.public_key
+            # subject/issuer must be set before signing: JRuby's OpenSSL binding
+            # (backed by BouncyCastle >= 1.85) rejects signing a certificate with
+            # an empty issuer DN. Self-signed, so subject and issuer are the same.
+            name = OpenSSL::X509::Name.parse('/CN=eyaml')
+            cert.subject = name
+            cert.issuer = name
             cert.sign key, OpenSSL::Digest.new('SHA256')
 
             EncryptHelper.ensure_key_dir_exists public_key
