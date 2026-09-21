@@ -111,6 +111,22 @@ The first step is to create a pair of keys:
 
 This creates a public and private key with default names in the default location. (./keys)
 
+#### Certificates created by hiera-eyaml 5.0.1 and earlier
+
+Up to and including 5.0.1, `eyaml createkeys` left the certificate's subject and issuer empty.
+Bouncy Castle 1.85 - which backs JRuby's OpenSSL implementation, and therefore Puppet Server -
+refuses to parse such a certificate, so encrypting under JRuby against one of those older key
+pairs fails. hiera-eyaml works around this by rebuilding the recipient certificate from the
+public key stored inside it, and warns when it does, but you should reissue the certificate.
+
+Do **not** simply re-run `eyaml createkeys`: that generates a whole new key pair, and anything
+encrypted with the old one can no longer be decrypted. Reissue the certificate from your
+existing private key instead:
+
+    $ openssl req -x509 -key private_key.pkcs7.pem -subj "/CN=eyaml" -days 18250 -out public_key.pkcs7.pem
+
+Already-encrypted data keeps working: decryption only ever needs the private key.
+
 #### Storing the keys securely when using Puppet
 
 Since the point of using this module is to securely store sensitive information, it's important to store these keys securely.
