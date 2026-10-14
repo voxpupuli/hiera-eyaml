@@ -39,11 +39,14 @@ jobs:
           - "4.0"
           - jruby-9.4
           - jruby-10.0
+          - jruby-10.1
         openvox:
           - "~> 8"
           - "~> 7"
           - "https://github.com/OpenVoxProject/puppet.git#main"
         exclude:
+          - ruby: jruby-10.1
+            openvox: "~> 7"
           - ruby: jruby-10.0
             openvox: "~> 7"
           - ruby: "4.0"

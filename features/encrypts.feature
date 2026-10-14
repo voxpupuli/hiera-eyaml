@@ -39,3 +39,9 @@ Feature: eyaml encrypting
   Scenario: encrypt as block with a label
     When I run `eyaml encrypt -o block -s secret_thing -l db-password`
     Then the output should match /db-password: \>\s*ENC\[PKCS7,(.*?)\]$/
+
+  Scenario: encrypt against a legacy certificate with an empty subject and issuer
+    When I successfully run `bash -c "eyaml encrypt -o string -s legacy_secret --pkcs7-public-key keys/legacy_public_key.pkcs7.pem > legacy_output.txt"`
+    Then the stderr should contain "empty subject and issuer"
+    When I successfully run `eyaml decrypt -f legacy_output.txt --pkcs7-public-key keys/legacy_public_key.pkcs7.pem --pkcs7-private-key keys/private_key.pkcs7.pem`
+    Then the output should match /legacy_secret/
