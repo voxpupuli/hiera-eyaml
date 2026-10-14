@@ -10,9 +10,9 @@ class Hiera
           def self.options
             [
               { name: :change_encryption,
-                description: 'Specify the new encryption method that should be used for the file',
+                description: 'Specify the new encryption method that should be used for the file (defaults to keeping the existing encryption method of each value)',
                 short: 'd',
-                default: 'pkcs7', },
+                type: :string, },
             ]
           end
 
