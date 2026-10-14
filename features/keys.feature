@@ -31,3 +31,17 @@ Feature: eyaml key generation
   Scenario: create some plaintext keys
     When I run `eyaml createkeys -n plaintext`
     Then the output should match /success/
+
+  Scenario: pkcs7 keys created by createkeys have a non-empty subject and issuer
+    When I successfully run `eyaml createkeys --pkcs7-public-key keys/subject_public_key.pem --pkcs7-private-key keys/subject_private_key.pem`
+    Then the output should match /Keys created OK/
+    When I successfully run `openssl x509 -in keys/subject_public_key.pem -noout -subject -issuer`
+    Then the output should match /^subject=\s*CN\s*=\s*eyaml$/
+    And the output should match /^issuer=\s*CN\s*=\s*eyaml$/
+
+  Scenario: keys created by createkeys can encrypt and decrypt a value
+    When I successfully run `eyaml createkeys --pkcs7-public-key keys/roundtrip_public_key.pem --pkcs7-private-key keys/roundtrip_private_key.pem`
+    Then the output should match /Keys created OK/
+    When I successfully run `bash -c "eyaml encrypt -o string -s roundtrip_secret --pkcs7-public-key keys/roundtrip_public_key.pem --pkcs7-private-key keys/roundtrip_private_key.pem > roundtrip_output.txt"`
+    And I successfully run `eyaml decrypt -f roundtrip_output.txt --pkcs7-public-key keys/roundtrip_public_key.pem --pkcs7-private-key keys/roundtrip_private_key.pem`
+    Then the output should match /roundtrip_secret/
